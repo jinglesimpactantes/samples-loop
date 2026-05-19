@@ -94,7 +94,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
           <option value="plate" selected>PLATE</option>
           <option value="cathedral">CATHEDRAL</option>
         </select>
-        <div id="rvgbt">⚙</div>
+        <div id="rvgbt" style="display:none;">⚙</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
@@ -283,7 +283,7 @@ function applyIR(){
 function loadPreset(ir){
   var p=PRESETS[ir];if(!p)return;
   RP.predly=p.predly;RP.decay=p.decay;RP.size=p.size;RP.damp=p.damp;RP.diff=p.diff;RP.gain=p.gain;
-  rv=p.mix;
+  rv=p.mix*0.2; // escalar: preset 0.25 = 5% real
   if(wG&&ctx){var gainLin=Math.pow(10,p.gain/20);wG.gain.setTargetAtTime(rv*IRM[ir]*gainLin,ctx.currentTime,0.05);}
   var mx=document.getElementById('rvmix'),mxv=document.getElementById('rvmixv');
   if(mx){mx.value=Math.round(p.mix*100);mxv.textContent=Math.round(p.mix*100)+'%';}
@@ -293,7 +293,11 @@ function loadPreset(ir){
   setTimeout(applyIR,100);
 }
 document.getElementById('irs').addEventListener('change',function(){cIR=this.value;loadPreset(cIR);});
-document.getElementById('rvmix').addEventListener('input',function(){rv=parseFloat(this.value)/100;document.getElementById('rvmixv').textContent=this.value+'%';if(wG&&ctx)wG.gain.setTargetAtTime(rv*IRM[cIR],ctx.currentTime,0.04);});
+document.getElementById('rvmix').addEventListener('input',function(){
+  rv=parseFloat(this.value)*0.002; // 100% display = 0.20 real
+  document.getElementById('rvmixv').textContent=this.value+'%';
+  if(wG&&ctx){var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin,ctx.currentTime,0.04);}
+});
 document.getElementById('rvgbt').addEventListener('pointerdown',function(e){e.preventDefault();var c=document.getElementById('rvcfg');c.style.display=c.style.display==='flex'?'none':'flex';},{passive:false});
 document.getElementById('rvcls').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('rvcfg').style.display='none';},{passive:false});
 document.getElementById('rvcpy').addEventListener('pointerdown',function(e){
@@ -331,15 +335,27 @@ var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay'};
 var dlNode=null,dlWet=null;
 function initDelay(){
   if(dlNode||!ctx)return;
-  dlNode=ctx.createDelay(2.0);dlWet=ctx.createGain();dlWet.gain.value=0;
-  var dlFb=ctx.createGain();dlFb.gain.value=0.35;
-  dG.connect(dlNode);dlNode.connect(dlFb);dlFb.connect(dlNode);dlNode.connect(dlWet);dlWet.connect(ctx.destination);
+  // Tape delay: delay + lowpass filter en el feedback para oscurecer repeticiones
+  dlNode=ctx.createDelay(2.0);
+  var dlFb=ctx.createGain();dlFb.gain.value=0.28; // feedback moderado
+  var dlFilt=ctx.createBiquadFilter();dlFilt.type='lowpass';dlFilt.frequency.value=2800; // filtra agudos = efecto tape
+  dlFilt.Q.value=0.5;
+  dlWet=ctx.createGain();dlWet.gain.value=0;
+  // Cadena: dry -> delay -> filter -> feedback -> delay (loop) + wet out
+  dG.connect(dlNode);
+  dlNode.connect(dlFilt);
+  dlFilt.connect(dlFb);
+  dlFb.connect(dlNode);
+  dlNode.connect(dlWet);
+  dlWet.connect(ctx.destination);
   dlNode.delayTime.value=getDlTime();
 }
 function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120;var sub=parseFloat(document.getElementById('dlsub').value)||8;return Math.min((60/bpm)*(4/sub),2.0);}
 document.getElementById('dlmix').addEventListener('input',function(){
   document.getElementById('dlmixv').textContent=this.value+'%';
-  initDelay();if(dlWet&&ctx)dlWet.gain.setTargetAtTime(parseFloat(this.value)/100,ctx.currentTime,0.04);
+  initDelay();
+  // Escalar: 100% usuario = 0.20 real
+  if(dlWet&&ctx)dlWet.gain.setTargetAtTime(parseFloat(this.value)*0.002,ctx.currentTime,0.04);
 });
 document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
 document.getElementById('dlsub').addEventListener('change',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
