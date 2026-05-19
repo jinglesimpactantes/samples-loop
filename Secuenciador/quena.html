@@ -85,7 +85,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- Panel Reverb -->
-    <div id="pnl-reverb" style="display:none;position:relative;">
+    <div id="pnl-reverb" style="display:none;position:relative;flex-direction:column;gap:4px;width:100%;">
       <div class="rvrow">
         <span class="rvlbl">TIPO</span>
         <select class="rvsel" id="irs">
@@ -102,27 +102,35 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <span class="rvsv" id="rvmixv">25%</span>
       </div>
       <!-- Config desplegable -->
-      <div id="rvcfg" style="display:none;position:absolute;bottom:100%;left:0;right:0;background:#0d0b06;border:1px solid rgba(255,217,0,0.3);border-radius:6px;padding:8px;z-index:10;gap:4px;flex-direction:column;">
+      <div id="rvcfg" style="display:none;position:absolute;bottom:105%;left:0;right:0;background:#0d0b06;border:1px solid rgba(255,217,0,0.3);border-radius:6px;padding:8px;z-index:10;flex-direction:column;gap:5px;">
         <div class="rvrow"><span class="rvlbl">PRE-DLY</span><input class="rvsi" id="p2" type="range" min="0" max="200" step="5" value="40"/><span class="rvsv" id="p2v">40ms</span></div>
         <div class="rvrow"><span class="rvlbl">DECAY</span><input class="rvsi" id="d2" type="range" min="0.3" max="8" step="0.1" value="3.3"/><span class="rvsv" id="d2v">3.3s</span></div>
         <div class="rvrow"><span class="rvlbl">SIZE</span><input class="rvsi" id="s2" type="range" min="10" max="100" step="5" value="70"/><span class="rvsv" id="s2v">70</span></div>
         <div class="rvrow"><span class="rvlbl">DAMP</span><input class="rvsi" id="a2" type="range" min="0" max="100" step="5" value="40"/><span class="rvsv" id="a2v">40%</span></div>
         <div class="rvrow"><span class="rvlbl">DIFF</span><input class="rvsi" id="f2" type="range" min="0" max="100" step="5" value="45"/><span class="rvsv" id="f2v">45</span></div>
-        <div class="rvrow"><span class="rvlbl">GAIN</span><input class="rvsi" id="g2" type="range" min="-12" max="6" step="0.5" value="-2"/><span class="rvsv" id="g2v">-2dB</span></div>
-        <div style="display:flex;justify-content:flex-end;"><div id="rvcls" style="color:#FFD900;font-size:13px;padding:2px 8px;cursor:pointer;">✕</div></div>
+        <div class="rvrow"><span class="rvlbl">GAIN</span><input class="rvsi" id="g2" type="range" min="-12" max="6" step="0.5" value="-2"/><span class="rvsv" id="g2v">-2.0dB</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;">
+          <div id="rvcpy" style="font-family:system-ui,sans-serif;font-size:9px;color:#0a0804;background:#FFD900;border-radius:4px;padding:3px 8px;cursor:pointer;touch-action:manipulation;">📋 COPIAR</div>
+          <div id="rvcls" style="color:#FFD900;font-size:13px;padding:2px 8px;cursor:pointer;touch-action:manipulation;">✕</div>
+        </div>
       </div>
     </div>
     <!-- Panel Delay -->
-    <div id="pnl-delay" style="display:none;">
+    <div id="pnl-delay" style="display:none;flex-direction:column;gap:4px;width:100%;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
-        <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="20"/>
-        <span class="rvsv" id="dlmixv">20%</span>
+        <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="0"/>
+        <span class="rvsv" id="dlmixv">0%</span>
       </div>
       <div class="rvrow">
-        <span class="rvlbl">TEMPO</span>
-        <input class="rvsi" id="dltmp" type="range" min="40" max="200" step="1" value="120"/>
-        <span class="rvsv" id="dltmpv">120</span>
+        <span class="rvlbl">BPM</span>
+        <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:52px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;font-size:12px;padding:2px 4px;text-align:center;"/>
+        <select id="dlsub" style="font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;padding:2px 3px;margin-left:4px;">
+          <option value="4">1/4</option>
+          <option value="8" selected>1/8</option>
+          <option value="16">1/16</option>
+          <option value="2">1/2</option>
+        </select>
       </div>
     </div>
   </div>
@@ -288,6 +296,13 @@ document.getElementById('irs').addEventListener('change',function(){cIR=this.val
 document.getElementById('rvmix').addEventListener('input',function(){rv=parseFloat(this.value)/100;document.getElementById('rvmixv').textContent=this.value+'%';if(wG&&ctx)wG.gain.setTargetAtTime(rv*IRM[cIR],ctx.currentTime,0.04);});
 document.getElementById('rvgbt').addEventListener('pointerdown',function(e){e.preventDefault();var c=document.getElementById('rvcfg');c.style.display=c.style.display==='flex'?'none':'flex';},{passive:false});
 document.getElementById('rvcls').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('rvcfg').style.display='none';},{passive:false});
+document.getElementById('rvcpy').addEventListener('pointerdown',function(e){
+  e.preventDefault();
+  var txt='IR:'+cIR+' MIX:'+Math.round(rv*100)+'% PRE-DLY:'+RP.predly+'ms DECAY:'+RP.decay+'s SIZE:'+RP.size+' DAMP:'+RP.damp+'% DIFF:'+RP.diff+' GAIN:'+RP.gain+'dB';
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).catch(function(){});}
+  else{var t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.focus();t.select();try{document.execCommand('copy');}catch(er){}document.body.removeChild(t);}
+  this.textContent='✓ COPIADO';var self=this;setTimeout(function(){self.textContent='📋 COPIAR';},1500);
+},{passive:false});
 // Config sliders
 var slCfg=[
   ['p2','p2v','predly',function(v){return Math.round(v)+'ms';}],
@@ -313,6 +328,21 @@ slCfg.forEach(function(x){
   });
 });
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay'};
+var dlNode=null,dlWet=null;
+function initDelay(){
+  if(dlNode||!ctx)return;
+  dlNode=ctx.createDelay(2.0);dlWet=ctx.createGain();dlWet.gain.value=0;
+  var dlFb=ctx.createGain();dlFb.gain.value=0.35;
+  dG.connect(dlNode);dlNode.connect(dlFb);dlFb.connect(dlNode);dlNode.connect(dlWet);dlWet.connect(ctx.destination);
+  dlNode.delayTime.value=getDlTime();
+}
+function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120;var sub=parseFloat(document.getElementById('dlsub').value)||8;return Math.min((60/bpm)*(4/sub),2.0);}
+document.getElementById('dlmix').addEventListener('input',function(){
+  document.getElementById('dlmixv').textContent=this.value+'%';
+  initDelay();if(dlWet&&ctx)dlWet.gain.setTargetAtTime(parseFloat(this.value)/100,ctx.currentTime,0.04);
+});
+document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
+document.getElementById('dlsub').addEventListener('change',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
 function switchPanel(name){
   Object.keys(panels).forEach(function(k){
     document.getElementById(panels[k]).style.display=k===name?'flex':'none';
