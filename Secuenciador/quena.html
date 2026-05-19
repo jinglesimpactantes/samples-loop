@@ -51,7 +51,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .rvsel{font-family:system-ui,sans-serif;font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;padding:2px 4px;flex:1;touch-action:manipulation;}
 .rvsi{-webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:3px;background:rgba(255,217,0,0.15);outline:none;touch-action:manipulation;}
 .rvsi::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
-.rvsv{font-family:system-ui,sans-serif;font-size:9px;color:#FFD900;width:30px;text-align:right;flex-shrink:0;}
+#rvgbt{width:22px;height:22px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.3);border-radius:4px;color:#FFD900;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;margin-left:4px;}
 /* PANEL DELAY */
 #pnl-delay{display:flex;flex-direction:column;gap:4px;width:100%;}
 
@@ -85,7 +85,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- Panel Reverb -->
-    <div id="pnl-reverb" style="display:none;">
+    <div id="pnl-reverb" style="display:none;position:relative;">
       <div class="rvrow">
         <span class="rvlbl">TIPO</span>
         <select class="rvsel" id="irs">
@@ -94,11 +94,22 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
           <option value="plate" selected>PLATE</option>
           <option value="cathedral">CATHEDRAL</option>
         </select>
+        <div id="rvgbt">⚙</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="25"/>
         <span class="rvsv" id="rvmixv">25%</span>
+      </div>
+      <!-- Config desplegable -->
+      <div id="rvcfg" style="display:none;position:absolute;bottom:100%;left:0;right:0;background:#0d0b06;border:1px solid rgba(255,217,0,0.3);border-radius:6px;padding:8px;z-index:10;gap:4px;flex-direction:column;">
+        <div class="rvrow"><span class="rvlbl">PRE-DLY</span><input class="rvsi" id="p2" type="range" min="0" max="200" step="5" value="40"/><span class="rvsv" id="p2v">40ms</span></div>
+        <div class="rvrow"><span class="rvlbl">DECAY</span><input class="rvsi" id="d2" type="range" min="0.3" max="8" step="0.1" value="3.3"/><span class="rvsv" id="d2v">3.3s</span></div>
+        <div class="rvrow"><span class="rvlbl">SIZE</span><input class="rvsi" id="s2" type="range" min="10" max="100" step="5" value="70"/><span class="rvsv" id="s2v">70</span></div>
+        <div class="rvrow"><span class="rvlbl">DAMP</span><input class="rvsi" id="a2" type="range" min="0" max="100" step="5" value="40"/><span class="rvsv" id="a2v">40%</span></div>
+        <div class="rvrow"><span class="rvlbl">DIFF</span><input class="rvsi" id="f2" type="range" min="0" max="100" step="5" value="45"/><span class="rvsv" id="f2v">45</span></div>
+        <div class="rvrow"><span class="rvlbl">GAIN</span><input class="rvsi" id="g2" type="range" min="-12" max="6" step="0.5" value="-2"/><span class="rvsv" id="g2v">-2dB</span></div>
+        <div style="display:flex;justify-content:flex-end;"><div id="rvcls" style="color:#FFD900;font-size:13px;padding:2px 8px;cursor:pointer;">✕</div></div>
       </div>
     </div>
     <!-- Panel Delay -->
@@ -265,15 +276,42 @@ function loadPreset(ir){
   var p=PRESETS[ir];if(!p)return;
   RP.predly=p.predly;RP.decay=p.decay;RP.size=p.size;RP.damp=p.damp;RP.diff=p.diff;RP.gain=p.gain;
   rv=p.mix;
-  if(wG&&ctx)wG.gain.setTargetAtTime(rv*IRM[ir],ctx.currentTime,0.05);
+  if(wG&&ctx){var gainLin=Math.pow(10,p.gain/20);wG.gain.setTargetAtTime(rv*IRM[ir]*gainLin,ctx.currentTime,0.05);}
   var mx=document.getElementById('rvmix'),mxv=document.getElementById('rvmixv');
   if(mx){mx.value=Math.round(p.mix*100);mxv.textContent=Math.round(p.mix*100)+'%';}
+  var sl={p2:p.predly,d2:p.decay,s2:p.size,a2:p.damp,f2:p.diff,g2:p.gain};
+  var sv={p2:p.predly+'ms',d2:p.decay.toFixed(1)+'s',s2:p.size,a2:p.damp+'%',f2:p.diff,g2:p.gain.toFixed(1)+'dB'};
+  Object.keys(sl).forEach(function(k){var e=document.getElementById(k),v=document.getElementById(k+'v');if(e)e.value=sl[k];if(v)v.textContent=sv[k];});
   setTimeout(applyIR,100);
 }
 document.getElementById('irs').addEventListener('change',function(){cIR=this.value;loadPreset(cIR);});
 document.getElementById('rvmix').addEventListener('input',function(){rv=parseFloat(this.value)/100;document.getElementById('rvmixv').textContent=this.value+'%';if(wG&&ctx)wG.gain.setTargetAtTime(rv*IRM[cIR],ctx.currentTime,0.04);});
-document.getElementById('dlmix').addEventListener('input',function(){document.getElementById('dlmixv').textContent=this.value+'%';});
-document.getElementById('dltmp').addEventListener('input',function(){document.getElementById('dltmpv').textContent=this.value;});
+document.getElementById('rvgbt').addEventListener('pointerdown',function(e){e.preventDefault();var c=document.getElementById('rvcfg');c.style.display=c.style.display==='flex'?'none':'flex';},{passive:false});
+document.getElementById('rvcls').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('rvcfg').style.display='none';},{passive:false});
+// Config sliders
+var slCfg=[
+  ['p2','p2v','predly',function(v){return Math.round(v)+'ms';}],
+  ['d2','d2v','decay',function(v){return v.toFixed(1)+'s';}],
+  ['s2','s2v','size',function(v){return Math.round(v);}],
+  ['a2','a2v','damp',function(v){return Math.round(v)+'%';}],
+  ['f2','f2v','diff',function(v){return Math.round(v);}],
+  ['g2','g2v','gain',function(v){return v.toFixed(1)+'dB';}]
+];
+slCfg.forEach(function(x){
+  var el=document.getElementById(x[0]),vl=document.getElementById(x[1]);
+  if(!el||!vl)return;
+  el.addEventListener('input',function(){
+    var v=parseFloat(this.value);
+    RP[x[2]]=v;
+    vl.textContent=x[3](v);
+    if(x[2]==='gain'&&wG&&ctx){
+      var gainLin=Math.pow(10,v/20);
+      wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin,ctx.currentTime,0.04);
+    } else {
+      applyIR();
+    }
+  });
+});
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay'};
 function switchPanel(name){
   Object.keys(panels).forEach(function(k){
