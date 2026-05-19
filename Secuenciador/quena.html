@@ -51,7 +51,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .rvsel{font-family:system-ui,sans-serif;font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;padding:2px 4px;flex:1;touch-action:manipulation;}
 .rvsi{-webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:3px;background:rgba(255,217,0,0.15);outline:none;touch-action:manipulation;}
 .rvsi::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
-#rvgbt{width:22px;height:22px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.3);border-radius:4px;color:#FFD900;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;margin-left:4px;}
+.byp{font-family:system-ui,sans-serif;font-size:9px;font-weight:bold;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,217,0,0.4);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;margin-left:4px;}
+.byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* PANEL DELAY */
 #pnl-delay{display:flex;flex-direction:column;gap:4px;width:100%;}
 
@@ -98,8 +99,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
-        <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="25"/>
-        <span class="rvsv" id="rvmixv">25%</span>
+        <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="18"/>
+        <span class="rvsv" id="rvmixv">18%</span>
+        <div id="rvbyp" class="byp act">ON</div>
       </div>
       <!-- Config desplegable -->
       <div id="rvcfg" style="display:none;position:absolute;bottom:105%;left:0;right:0;background:#0d0b06;border:1px solid rgba(255,217,0,0.3);border-radius:6px;padding:8px;z-index:10;flex-direction:column;gap:5px;">
@@ -121,6 +123,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="0"/>
         <span class="rvsv" id="dlmixv">0%</span>
+        <div id="dlbyp" class="byp act">ON</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">BPM</span>
@@ -248,10 +251,10 @@ mkW('pw','pwc','pwv',-1,1,function(v){pb=v;if(ctx)Object.keys(nds).forEach(funct
 (function(){})();
 // PRESETS
 var PRESETS={
-  plate:{predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0,mix:25},
-  hall:{predly:0,decay:3.3,size:50,damp:20,diff:50,gain:1.0,mix:25},
-  room:{predly:50,decay:5.7,size:30,damp:35,diff:70,gain:-7.0,mix:25},
-  cathedral:{predly:25,decay:8.0,size:100,damp:50,diff:60,gain:-2.0,mix:25}
+  plate:{predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0,mix:18},
+  hall:{predly:0,decay:3.3,size:50,damp:20,diff:50,gain:1.0,mix:18},
+  room:{predly:50,decay:5.7,size:30,damp:35,diff:70,gain:-7.0,mix:18},
+  cathedral:{predly:25,decay:8.0,size:100,damp:50,diff:60,gain:-2.0,mix:18}
 };
 var RP={predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0};
 function applyIR(){
@@ -284,7 +287,7 @@ function loadPreset(ir){
   var p=PRESETS[ir];if(!p)return;
   RP.predly=p.predly;RP.decay=p.decay;RP.size=p.size;RP.damp=p.damp;RP.diff=p.diff;RP.gain=p.gain;
   rv=p.mix/100;
-  var irScale=(ir==='cathedral')?0.8:1.0;
+  var irScale=(ir==='cathedral')?0.2:1.0;
   if(wG&&ctx){var gainLin=Math.pow(10,p.gain/20);wG.gain.setTargetAtTime(rv*IRM[ir]*gainLin*irScale,ctx.currentTime,0.05);}
   var mx=document.getElementById('rvmix'),mxv=document.getElementById('rvmixv');
   if(mx){mx.value=p.mix;mxv.textContent=p.mix+'%';}
@@ -297,9 +300,20 @@ document.getElementById('irs').addEventListener('change',function(){cIR=this.val
 document.getElementById('rvmix').addEventListener('input',function(){
   rv=parseFloat(this.value)/100;
   document.getElementById('rvmixv').textContent=this.value+'%';
-  var irScale=(cIR==='cathedral')?0.8:1.0;
-  if(wG&&ctx){var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin*irScale,ctx.currentTime,0.04);}
+  var irScale=(cIR==='cathedral')?0.2:1.0;
+  if(wG&&ctx&&rvOn){var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin*irScale,ctx.currentTime,0.04);}
 });
+var rvOn=true,dlOn=true;
+document.getElementById('rvbyp').addEventListener('pointerdown',function(e){
+  e.preventDefault();rvOn=!rvOn;
+  this.textContent=rvOn?'ON':'OFF';this.classList.toggle('act',rvOn);
+  if(wG&&ctx){var irScale=(cIR==='cathedral')?0.2:1.0;var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rvOn?rv*IRM[cIR]*gainLin*irScale:0,ctx.currentTime,0.04);}
+},{passive:false});
+document.getElementById('dlbyp').addEventListener('pointerdown',function(e){
+  e.preventDefault();dlOn=!dlOn;
+  this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);
+  if(dlWet&&ctx)dlWet.gain.setTargetAtTime(dlOn?parseFloat(document.getElementById('dlmix').value)*0.002:0,ctx.currentTime,0.04);
+},{passive:false});
 document.getElementById('rvgbt').addEventListener('pointerdown',function(e){e.preventDefault();var c=document.getElementById('rvcfg');c.style.display=c.style.display==='flex'?'none':'flex';},{passive:false});
 document.getElementById('rvcls').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('rvcfg').style.display='none';},{passive:false});
 document.getElementById('rvcpy').addEventListener('pointerdown',function(e){
