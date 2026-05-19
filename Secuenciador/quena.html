@@ -2,7 +2,10 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
@@ -37,14 +40,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #rkd{position:absolute;width:3px;height:3px;background:#FFD900;border-radius:50%;top:3px;left:50%;transform:translateX(-50%);}
 #rkv{font-family:system-ui,sans-serif;font-size:9px;color:#FFD900;}
 #gbt{width:24px;height:24px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.2);border-radius:3px;color:#FFD900;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
-#bot2{height:78px;flex-shrink:0;display:none;align-items:center;gap:3px;padding:4px 8px;border-top:1px solid rgba(255,217,0,0.2);background:#0a0804;}
-.rp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
-.rl{font-family:system-ui,sans-serif;font-size:7px;color:rgba(255,217,0,0.7);}
-.rc{display:flex;align-items:center;gap:1px;}
-.rb{width:18px;height:18px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.2);border-radius:3px;color:#FFD900;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
-.rv2{font-family:system-ui,sans-serif;font-size:9px;color:#FFD900;min-width:26px;text-align:center;background:rgba(0,0,0,0.5);border:1px solid rgba(255,217,0,0.15);border-radius:3px;padding:1px 2px;}
-.ru{font-family:system-ui,sans-serif;font-size:7px;color:rgba(255,217,0,0.5);}
-#xcl{width:22px;height:22px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.2);border-radius:3px;color:#FFD900;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
+#bot2{flex-shrink:0;display:none;flex-direction:column;gap:8px;padding:10px 14px;border-top:1px solid rgba(255,217,0,0.2);background:#0a0804;}
+.sp{display:flex;align-items:center;gap:8px;}
+.sl{font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.8);width:58px;flex-shrink:0;}
+.si{-webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:3px;background:rgba(255,217,0,0.15);outline:none;touch-action:manipulation;}
+.si::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
+.sv{font-family:system-ui,sans-serif;font-size:11px;color:#FFD900;width:36px;text-align:right;flex-shrink:0;}
+#xcl{width:28px;height:28px;background:rgba(255,217,0,0.08);border:1px solid rgba(255,217,0,0.2);border-radius:3px;color:#FFD900;font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;align-self:center;}
 </style>
 </head>
 <body oncontextmenu="return false">
@@ -87,12 +89,14 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   </div>
 </div>
 <div id="bot2">
-  <div class="rp"><div class="rl">PRE-DLY</div><div class="rc"><div class="rb" id="p1">▼</div><div class="rv2" id="p2">10</div><div class="rb" id="p3">▲</div></div><div class="ru">ms</div></div>
-  <div class="rp"><div class="rl">DECAY</div><div class="rc"><div class="rb" id="d1">▼</div><div class="rv2" id="d2">2.0</div><div class="rb" id="d3">▲</div></div><div class="ru">s</div></div>
-  <div class="rp"><div class="rl">SIZE</div><div class="rc"><div class="rb" id="s1">▼</div><div class="rv2" id="s2">65</div><div class="rb" id="s3">▲</div></div></div>
-  <div class="rp"><div class="rl">DAMP</div><div class="rc"><div class="rb" id="a1">▼</div><div class="rv2" id="a2">40</div><div class="rb" id="a3">▲</div></div><div class="ru">%</div></div>
-  <div class="rp"><div class="rl">DIFF</div><div class="rc"><div class="rb" id="f1">▼</div><div class="rv2" id="f2">70</div><div class="rb" id="f3">▲</div></div></div>
-  <div class="rp"><div class="rl">GAIN</div><div class="rc"><div class="rb" id="g1">▼</div><div class="rv2" id="g2">0.0</div><div class="rb" id="g3">▲</div></div><div class="ru">dB</div></div>
+  <div style="display:flex;gap:6px;flex-direction:column;">
+    <div class="sp"><span class="sl">PRE-DLY</span><input class="si" id="p2" type="range" min="0" max="200" step="5" value="10"/><span class="sv" id="p2v">10ms</span></div>
+    <div class="sp"><span class="sl">DECAY</span><input class="si" id="d2" type="range" min="0.3" max="8" step="0.1" value="2"/><span class="sv" id="d2v">2.0s</span></div>
+    <div class="sp"><span class="sl">SIZE</span><input class="si" id="s2" type="range" min="10" max="100" step="5" value="65"/><span class="sv" id="s2v">65</span></div>
+    <div class="sp"><span class="sl">DAMP</span><input class="si" id="a2" type="range" min="0" max="100" step="5" value="40"/><span class="sv" id="a2v">40%</span></div>
+    <div class="sp"><span class="sl">DIFF</span><input class="si" id="f2" type="range" min="0" max="100" step="5" value="70"/><span class="sv" id="f2v">70</span></div>
+    <div class="sp"><span class="sl">GAIN</span><input class="si" id="g2" type="range" min="-12" max="6" step="0.5" value="0"/><span class="sv" id="g2v">0dB</span></div>
+  </div>
   <div id="xcl">✕</div>
 </div>
 <script>
@@ -206,18 +210,14 @@ mkW('pw','pwc','pwv',-1,1,function(v){pb=v;if(ctx)Object.keys(nds).forEach(funct
 document.getElementById('irs').addEventListener('change',function(){cIR=this.value;if(irb[cIR]&&cv)cv.buffer=irb[cIR];if(wG&&ctx)wG.gain.setTargetAtTime(rv*IRM[cIR],ctx.currentTime,0.05);});
 document.getElementById('gbt').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('bot').style.display='none';document.getElementById('bot2').style.display='flex';},{passive:false});
 document.getElementById('xcl').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('bot2').style.display='none';document.getElementById('bot').style.display='flex';},{passive:false});
-function mkC(u,d,v,mn,mx,st,fl,cb){
-  var val=parseFloat(document.getElementById(v).textContent);
-  function up(delta){val=fl?Math.round((val+delta)*10)/10:Math.round(val+delta);val=Math.max(mn,Math.min(mx,val));document.getElementById(v).textContent=fl?val.toFixed(1):val;cb(val);}
-  document.getElementById(u).addEventListener('pointerdown',function(e){e.preventDefault();up(st);},{passive:false});
-  document.getElementById(d).addEventListener('pointerdown',function(e){e.preventDefault();up(-st);},{passive:false});
-}
-mkC('p3','p1','p2',0,200,5,false,function(){});
-mkC('d3','d1','d2',0.3,8,0.1,true,function(){});
-mkC('s3','s1','s2',10,100,5,false,function(){});
-mkC('a3','a1','a2',0,100,5,false,function(){});
-mkC('f3','f1','f2',0,100,5,false,function(){});
-mkC('g3','g1','g2',-12,6,0.5,true,function(){});
+// Sliders reverb
+[['p2','p2v','ms',1],['d2','d2v','s',1],['s2','s2v','',0],['a2','a2v','%',0],['f2','f2v','',0],['g2','g2v','dB',1]].forEach(function(x){
+  var el=document.getElementById(x[0]),vl=document.getElementById(x[1]);
+  el.addEventListener('input',function(){
+    var v=parseFloat(this.value);
+    vl.textContent=(x[3]?v.toFixed(1):Math.round(v))+x[2];
+  });
+});
 document.getElementById('mzi').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi<KWS.length-1){kwi++;bKb();}},{passive:false});
 document.getElementById('mzo').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi>0){kwi--;bKb();}},{passive:false});
 function bKb(){
