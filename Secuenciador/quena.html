@@ -248,10 +248,10 @@ mkW('pw','pwc','pwv',-1,1,function(v){pb=v;if(ctx)Object.keys(nds).forEach(funct
 (function(){})();
 // PRESETS
 var PRESETS={
-  plate:{predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0,mix:0.25},
-  hall:{predly:0,decay:3.3,size:50,damp:20,diff:50,gain:1.0,mix:0.25},
-  room:{predly:50,decay:5.7,size:30,damp:35,diff:70,gain:-7.0,mix:0.25},
-  cathedral:{predly:25,decay:8.0,size:100,damp:50,diff:60,gain:-2.0,mix:0.18}
+  plate:{predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0,mix:25},
+  hall:{predly:0,decay:3.3,size:50,damp:20,diff:50,gain:1.0,mix:25},
+  room:{predly:50,decay:5.7,size:30,damp:35,diff:70,gain:-7.0,mix:25},
+  cathedral:{predly:25,decay:8.0,size:100,damp:50,diff:60,gain:-2.0,mix:25}
 };
 var RP={predly:40,decay:3.3,size:70,damp:40,diff:45,gain:-2.0};
 function applyIR(){
@@ -283,10 +283,11 @@ function applyIR(){
 function loadPreset(ir){
   var p=PRESETS[ir];if(!p)return;
   RP.predly=p.predly;RP.decay=p.decay;RP.size=p.size;RP.damp=p.damp;RP.diff=p.diff;RP.gain=p.gain;
-  rv=p.mix*0.2; // escalar: preset 0.25 = 5% real
-  if(wG&&ctx){var gainLin=Math.pow(10,p.gain/20);wG.gain.setTargetAtTime(rv*IRM[ir]*gainLin,ctx.currentTime,0.05);}
+  rv=p.mix/100;
+  var irScale=(ir==='cathedral')?0.8:1.0;
+  if(wG&&ctx){var gainLin=Math.pow(10,p.gain/20);wG.gain.setTargetAtTime(rv*IRM[ir]*gainLin*irScale,ctx.currentTime,0.05);}
   var mx=document.getElementById('rvmix'),mxv=document.getElementById('rvmixv');
-  if(mx){mx.value=Math.round(p.mix*100);mxv.textContent=Math.round(p.mix*100)+'%';}
+  if(mx){mx.value=p.mix;mxv.textContent=p.mix+'%';}
   var sl={p2:p.predly,d2:p.decay,s2:p.size,a2:p.damp,f2:p.diff,g2:p.gain};
   var sv={p2:p.predly+'ms',d2:p.decay.toFixed(1)+'s',s2:p.size,a2:p.damp+'%',f2:p.diff,g2:p.gain.toFixed(1)+'dB'};
   Object.keys(sl).forEach(function(k){var e=document.getElementById(k),v=document.getElementById(k+'v');if(e)e.value=sl[k];if(v)v.textContent=sv[k];});
@@ -294,9 +295,10 @@ function loadPreset(ir){
 }
 document.getElementById('irs').addEventListener('change',function(){cIR=this.value;loadPreset(cIR);});
 document.getElementById('rvmix').addEventListener('input',function(){
-  rv=parseFloat(this.value)*0.002; // 100% display = 0.20 real
+  rv=parseFloat(this.value)/100;
   document.getElementById('rvmixv').textContent=this.value+'%';
-  if(wG&&ctx){var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin,ctx.currentTime,0.04);}
+  var irScale=(cIR==='cathedral')?0.8:1.0;
+  if(wG&&ctx){var gainLin=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gainLin*irScale,ctx.currentTime,0.04);}
 });
 document.getElementById('rvgbt').addEventListener('pointerdown',function(e){e.preventDefault();var c=document.getElementById('rvcfg');c.style.display=c.style.display==='flex'?'none':'flex';},{passive:false});
 document.getElementById('rvcls').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('rvcfg').style.display='none';},{passive:false});
