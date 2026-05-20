@@ -19,10 +19,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #mm-oct{font-family:'Michroma',sans-serif;font-size:8px;color:#FFD900;flex-shrink:0;}
 #kbwrap{flex:1;position:relative;overflow:hidden;touch-action:none;min-height:0;}
 #kb{position:absolute;top:0;left:0;bottom:0;touch-action:none;}
-.w{position:absolute;bottom:3px;top:4px;background:linear-gradient(135deg,rgba(255,255,255,0.5) 0%,transparent 35%),linear-gradient(180deg,#c8c0a8,#f8f4ea);border:1px solid rgba(0,0,0,0.2);border-radius:0 0 6px 6px;touch-action:none;box-shadow:0 5px 12px rgba(0,0,0,0.5);}
-.w.on{background:linear-gradient(180deg,#b8a800,#FFD900);box-shadow:0 0 16px rgba(255,217,0,0.6);}
-.b{position:absolute;top:4px;z-index:2;background:linear-gradient(180deg,#111,#222);border-radius:0 0 4px 4px;touch-action:none;box-shadow:2px 5px 10px rgba(0,0,0,0.8);height:42%;}
-.b.on{background:linear-gradient(180deg,#2a1e00,#FFD900);box-shadow:0 0 14px rgba(255,217,0,0.6);}
+.w{position:absolute;bottom:3px;top:4px;background:url('https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/TeclaBlanca.png') center/100% 100% no-repeat;border-radius:0 0 6px 6px;touch-action:none;}
+.w.on{background:url('https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/TeclaBlanca.png') center/100% 100% no-repeat;filter:sepia(1) saturate(5) hue-rotate(5deg) brightness(1.2);}
+.b{position:absolute;top:4px;z-index:2;background:url('https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Tecla%20Negra.png') center/100% 100% no-repeat;border-radius:0 0 4px 4px;touch-action:none;height:42%;}
+.b.on{filter:sepia(1) saturate(8) hue-rotate(5deg) brightness(1.4);}
 #bot{height:90px;flex-shrink:0;display:flex;align-items:stretch;gap:0;border-top:1px solid rgba(255,217,0,0.12);background:#0a0804;}
 /* CAJA */
 #caja{flex:2;min-width:0;border-right:1px solid rgba(255,217,0,0.12);padding:6px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
@@ -30,9 +30,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #lista{width:62px;flex-shrink:0;border-right:1px solid rgba(255,217,0,0.12);display:flex;flex-direction:column;justify-content:space-around;align-items:center;padding:4px 0;}
 .lbtn{font-family:system-ui,sans-serif;font-size:9px;color:rgba(255,217,0,0.45);letter-spacing:0.5px;cursor:pointer;touch-action:manipulation;padding:3px 6px;border-radius:4px;border:1px solid transparent;width:100%;text-align:center;}
 .lbtn.act{color:#0a0804;background:#FFD900;border-color:#FFD900;font-weight:bold;}
-/* BANNER */
-#bnr{flex-shrink:0;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(255,217,0,0.12);overflow:hidden;}
-#bnr img{height:100%;width:auto;object-fit:contain;display:block;}
+/* BANNER -> WAVEFORM */
+#bnr{flex:1;flex-shrink:0;border-right:1px solid rgba(255,217,0,0.12);overflow:hidden;background:#000;position:relative;}
+#wfcv{display:block;width:100%;height:100%;}
 /* TUERCA */
 #trc{width:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
 #trc img{width:28px;height:28px;object-fit:contain;}
@@ -130,9 +130,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:52px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;font-size:12px;padding:2px 4px;text-align:center;"/>
         <select id="dlsub" style="font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.3);border-radius:3px;padding:2px 3px;margin-left:4px;">
           <option value="4">1/4</option>
+          <option value="4d">1/4.</option>
           <option value="8" selected>1/8</option>
-          <option value="16">1/16</option>
-          <option value="2">1/2</option>
+          <option value="8d">1/8.</option>
         </select>
       </div>
     </div>
@@ -143,8 +143,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="lbtn" id="btn-reverb">REVERB</div>
     <div class="lbtn" id="btn-delay">DELAY</div>
   </div>
-  <!-- BANNER -->
-  <div id="bnr"><img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Quena_Banner.jpg" alt=""/></div>
+  <!-- WAVEFORM -->
+  <div id="bnr"><canvas id="wfcv"></canvas></div>
   <!-- TUERCA -->
   <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt=""/></div>
 </div>
@@ -366,12 +366,20 @@ function initDelay(){
   dlWet.connect(ctx.destination);
   dlNode.delayTime.value=getDlTime();
 }
-function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120;var sub=parseFloat(document.getElementById('dlsub').value)||8;return Math.min((60/bpm)*(4/sub),2.0);}
+function getDlTime(){
+  var bpm=parseFloat(document.getElementById('dlbpm').value)||120;
+  var sub=document.getElementById('dlsub').value;
+  var beat=60/bpm;
+  if(sub==='4')return Math.min(beat,2.0);
+  if(sub==='4d')return Math.min(beat*1.5,2.0);
+  if(sub==='8')return Math.min(beat*0.5,2.0);
+  if(sub==='8d')return Math.min(beat*0.75,2.0);
+  return Math.min(beat*0.5,2.0);
+}
 document.getElementById('dlmix').addEventListener('input',function(){
   document.getElementById('dlmixv').textContent=this.value+'%';
   initDelay();
-  // Escalar: 100% usuario = 0.20 real
-  if(dlWet&&ctx)dlWet.gain.setTargetAtTime(parseFloat(this.value)*0.002,ctx.currentTime,0.04);
+  if(dlWet&&ctx&&dlOn)dlWet.gain.setTargetAtTime(Math.min(parseFloat(this.value)*0.004,1.0),ctx.currentTime,0.04);
 });
 document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
 document.getElementById('dlsub').addEventListener('change',function(){if(dlNode&&ctx)dlNode.delayTime.setTargetAtTime(getDlTime(),ctx.currentTime,0.05);});
@@ -414,9 +422,39 @@ function bnKb(){
   wrap._pu=function(e){var pr=pts[e.pointerId];if(pr===undefined)return;var pe=gE(pr);if(pe)pe.classList.remove('on');stp(pr);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
-window.addEventListener('resize',function(){bKb();dW('mwc',mwO);dW('pwc',pwO);});
-function init(){var w=document.getElementById('kbwrap');if(w&&w.offsetHeight>10){bKb();setTimeout(function(){dW('mwc',0);dW('pwc',0);},100);}else{setTimeout(init,50);}}
-document.body.addEventListener('pointerdown',function initAudio(){loadS();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
+window.addEventListener('resize',function(){bKb();dW('mwc',mwO);dW('pwc',pwO);initWF();});
+
+// WAVEFORM
+var analyser=null,wfBuf=null,wfRaf=null;
+function initWF(){
+  var c=document.getElementById('wfcv'),p=c.parentElement;
+  c.width=p.offsetWidth;c.height=p.offsetHeight;
+}
+function startWF(){
+  if(!ctx||analyser)return;
+  analyser=ctx.createAnalyser();analyser.fftSize=256;
+  wfBuf=new Uint8Array(analyser.fftSize);
+  dG.connect(analyser);
+  drawWF();
+}
+function drawWF(){
+  wfRaf=requestAnimationFrame(drawWF);
+  var c=document.getElementById('wfcv');if(!c)return;
+  var W=c.width,H=c.height,ct=c.getContext('2d');
+  ct.fillStyle='#000';ct.fillRect(0,0,W,H);
+  if(!analyser)return;
+  analyser.getByteTimeDomainData(wfBuf);
+  ct.beginPath();ct.strokeStyle='#FFD900';ct.lineWidth=1.5;
+  var sl=W/wfBuf.length;
+  for(var i=0;i<wfBuf.length;i++){
+    var y=H/2+(wfBuf[i]-128)/128*(H/2*0.85);
+    i===0?ct.moveTo(0,y):ct.lineTo(i*sl,y);
+  }
+  ct.stroke();
+}
+
+function init(){var w=document.getElementById('kbwrap');if(w&&w.offsetHeight>10){bKb();initWF();setTimeout(function(){dW('mwc',0);dW('pwc',0);},100);}else{setTimeout(init,50);}}
+document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
 init();
 </script>
 </body>
