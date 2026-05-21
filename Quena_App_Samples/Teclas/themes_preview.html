@@ -47,10 +47,14 @@ var COMBOS=[
   {name:'CLASSIC 2 — Blanca + Negra',larga:'blancaL',corta:'negraC'},
   {name:'DARK — Gris + Negra',larga:'grisL',corta:'negraC'},
   {name:'RED/BLACK — Negra + Roja',larga:'negraL',corta:'rojaC'},
+  {name:'RED/BLACK 2 — Roja + Negra',larga:'rojaL',corta:'negraC'},
+  {name:'ALL RED — Roja + Roja',larga:'rojaL',corta:'rojaC'},
   {name:'INVERTED — Negra + Blanca',larga:'negraL',corta:'blancaC'},
   {name:'WOOD — Caña + Caña',larga:'caniaL',corta:'caniaC'},
   {name:'DARK RED — Gris + Roja',larga:'grisL',corta:'rojaC'},
   {name:'IVORY — Blanca + Caña',larga:'blancaL',corta:'caniaC'},
+  {name:'ROUGE — Roja + Blanca',larga:'rojaL',corta:'blancaC'},
+  {name:'FIRE — Roja + Caña',larga:'rojaL',corta:'caniaC'},
   {name:'NOIR — Negra + Negra',larga:'negraL',corta:'negraC'}
 ];
 
@@ -66,7 +70,7 @@ function buildAll(){
 }
 
 function drawKb(combo){
-  var W=window.innerWidth-24,H=120;
+  var W=window.innerWidth-24,H=160;
   var c=document.createElement('canvas');c.width=W;c.height=H;
   var g=c.getContext('2d');
   var nw=14,kw=Math.floor((W-2)/nw)-1,bw=Math.floor(kw*0.54),bh=Math.floor(H*0.57);
