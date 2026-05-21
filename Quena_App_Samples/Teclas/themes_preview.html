@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0804;padding:12px;display:flex;flex-direction:column;gap:20px;}
+.thm{display:flex;flex-direction:column;gap:6px;}
+.lbl{font-family:monospace;font-size:10px;color:#FFD900;letter-spacing:2px;}
+canvas{display:block;width:100%;}
+#loading{color:#FFD900;font-family:monospace;font-size:12px;text-align:center;padding:30px;}
+</style>
+</head>
+<body>
+<div id="loading">Cargando imágenes...</div>
+<script>
+var BASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Teclas/';
+var IMGS={
+  blancaL:null,blancaC:null,
+  negraL:null,negraC:null,
+  rojaL:null,rojaC:null,
+  caniaL:null,caniaC:null,
+  grisL:null
+};
+var names={
+  blancaL:'TeclaBlanca_Larga.png',
+  blancaC:'TeclaBlanca_Corta.png',
+  negraL:'TeclaNegra_Larga.png',
+  negraC:'TeclaNegra_Corta.png',
+  rojaL:'TeclaRoja_Larga.png',
+  rojaC:'TeclaRoja_Corta.png',
+  caniaL:'TeclaCania_Larga.png',
+  caniaC:'TeclaCania_Corta.png',
+  grisL:'TeclaGris_Larga.png'
+};
+var loaded=0,total=Object.keys(names).length;
+Object.keys(names).forEach(function(k){
+  var img=new Image();
+  img.onload=function(){IMGS[k]=img;loaded++;if(loaded===total)buildAll();};
+  img.onerror=function(){loaded++;if(loaded===total)buildAll();};
+  img.src=BASE+names[k];
+});
+
+var COMBOS=[
+  {name:'CLASSIC — Caña + Negra',larga:'caniaL',corta:'negraC'},
+  {name:'CLASSIC 2 — Blanca + Negra',larga:'blancaL',corta:'negraC'},
+  {name:'DARK — Gris + Negra',larga:'grisL',corta:'negraC'},
+  {name:'RED/BLACK — Negra + Roja',larga:'negraL',corta:'rojaC'},
+  {name:'INVERTED — Negra + Blanca',larga:'negraL',corta:'blancaC'},
+  {name:'WOOD — Caña + Caña',larga:'caniaL',corta:'caniaC'},
+  {name:'DARK RED — Gris + Roja',larga:'grisL',corta:'rojaC'},
+  {name:'IVORY — Blanca + Caña',larga:'blancaL',corta:'caniaC'},
+  {name:'NOIR — Negra + Negra',larga:'negraL',corta:'negraC'}
+];
+
+function buildAll(){
+  document.getElementById('loading').style.display='none';
+  COMBOS.forEach(function(combo){
+    var wrap=document.createElement('div');wrap.className='thm';
+    var lbl=document.createElement('div');lbl.className='lbl';lbl.textContent=combo.name;
+    wrap.appendChild(lbl);
+    wrap.appendChild(drawKb(combo));
+    document.body.appendChild(wrap);
+  });
+}
+
+function drawKb(combo){
+  var W=window.innerWidth-24,H=120;
+  var c=document.createElement('canvas');c.width=W;c.height=H;
+  var g=c.getContext('2d');
+  var nw=14,kw=Math.floor((W-2)/nw)-1,bw=Math.floor(kw*0.54),bh=Math.floor(H*0.57);
+  var BPOS=[0.65,1.65,null,3.65,4.65,5.65,null,7.65,8.65,null,10.65,11.65,12.65,null];
+
+  g.fillStyle='#080604';g.fillRect(0,0,W,H);
+
+  // Teclas largas (abajo)
+  for(var i=0;i<nw;i++){
+    var x=i*(kw+1)+1;
+    if(IMGS[combo.larga]){
+      g.drawImage(IMGS[combo.larga],x,2,kw,H-4);
+    } else {
+      g.fillStyle='#f0ead5';g.fillRect(x,2,kw,H-4);
+    }
+  }
+
+  // Teclas cortas (arriba) con sombra
+  for(var j=0;j<BPOS.length;j++){
+    if(BPOS[j]===null)continue;
+    var bx=Math.floor(BPOS[j]*(kw+1))+1;
+    // sombra
+    g.save();
+    g.shadowColor='rgba(0,0,0,0.55)';g.shadowBlur=8;g.shadowOffsetX=3;g.shadowOffsetY=5;
+    g.fillStyle='#000';g.fillRect(bx,0,bw,bh);
+    g.restore();
+    // imagen
+    if(IMGS[combo.corta]){
+      g.drawImage(IMGS[combo.corta],bx,0,bw,bh);
+    } else {
+      g.fillStyle='#111';g.fillRect(bx,0,bw,bh);
+    }
+  }
+  return c;
+}
+</script>
+</body>
+</html>
