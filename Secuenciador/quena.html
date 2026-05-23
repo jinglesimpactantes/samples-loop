@@ -34,9 +34,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #pnl-ruedas{display:flex;align-items:center;width:100%;height:100%;gap:4px;}
 .whl2{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
 .wl2{font-family:'Michroma',monospace;font-size:6px;color:#FFD900;letter-spacing:1px;}
-.wb2{width:100%;height:34px;border-radius:6px;overflow:hidden;position:relative;touch-action:none;background:#111;border:1px solid rgba(255,217,0,0.2);}
+.wb2{width:100%;height:58px;border-radius:8px;overflow:hidden;position:relative;touch-action:none;background:#111;border:1px solid rgba(255,217,0,0.2);}
 .wb2 canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
 .wv2{font-family:'Michroma',monospace;font-size:7px;color:#FFD900;}
+.cfg-btn{font-family:system-ui,sans-serif;font-size:8px;color:#FFD900;border:1px solid rgba(255,217,0,0.4);border-radius:3px;padding:2px 5px;cursor:pointer;touch-action:manipulation;flex-shrink:0;background:rgba(255,217,0,0.05);}
 /* PANELS */
 .pnl{display:none;flex-direction:column;gap:4px;width:100%;}
 .rvrow{display:flex;align-items:center;gap:4px;}
@@ -92,7 +93,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="wb2" id="pw"><canvas id="pwc"></canvas></div>
         <div class="wv2" id="pwv">0</div>
       </div>
-      <span class="gear" id="gear-ruedas">⚙</span>
+      <div class="cfg-btn" id="gear-ruedas">Config</div>
     </div>
     <div id="pnl-reverb" class="pnl">
       <div class="rvrow">
@@ -104,7 +105,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
           <option value="cathedral">CATHEDRAL</option>
         </select>
         <div id="rvbyp" class="byp act">ON</div>
-        <span class="gear" id="gear-reverb">⚙</span>
+        <div class="cfg-btn" id="gear-reverb">Config</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
@@ -118,7 +119,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="0"/>
         <span class="rvsv" id="dlmixv">0%</span>
         <div id="dlbyp" class="byp act">ON</div>
-        <span class="gear" id="gear-delay">⚙</span>
+        <div class="cfg-btn" id="gear-delay">Config</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">BPM</span>
@@ -136,7 +137,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="vbtn act" id="vbtn-poly">POLY</div>
         <div class="vbtn" id="vbtn-mono">MONO</div>
         <div class="vbtn" id="vbtn-legato">LEGATO</div>
-        <span class="gear" id="gear-voice" style="margin-left:auto;">⚙</span>
+        <div class="cfg-btn" id="gear-voice" style="margin-left:auto;">Config</div>
       </div>
       <div class="rvrow">
         <span class="rvlbl">GLIDE</span>
@@ -252,7 +253,7 @@ var mwO=0,pwO=0,sx=0,rvOn=true,dlOn=true;
 var dG,wG,cvR,dlNode=null,dlWet=null,dlFbNode=null,dlFiltNode=null;
 var analyser=null,wfBuf=null;
 var voiceMode='poly',glideTime=0.08,maxVoices=8,pbRange=2;
-var vibRate=3.2,vibDepthMul=0.28;
+var vibRate=4.2,vibDepthMul=0.28;
 
 // WHEEL IMAGE
 var wheelImg=new Image();wheelImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Wheel.png';
@@ -364,16 +365,15 @@ function dW(cid,off,isPitch){
     ct.strokeStyle='rgba(0,0,0,'+al+')';ct.lineWidth=2;ct.stroke();
   }
   ct.restore();
-  // Center glow rectangle
-  var cw=Math.floor(w*0.18),ch=h-4;
+  // Center glow rectangle - thin line
+  var cw=8,ch=h-6;
   var cx=Math.floor(w/2-cw/2);
-  // If pitch wheel — show position offset from center
   if(isPitch){cx=Math.floor(w/2+off*(w/2/100)-cw/2);}
   ct.save();
-  ct.shadowColor='#FFD900';ct.shadowBlur=12;
+  ct.shadowColor='#FFD900';ct.shadowBlur=14;
   var grd=ct.createLinearGradient(cx,2,cx,h-2);
-  grd.addColorStop(0,'rgba(255,217,0,0.9)');grd.addColorStop(0.5,'rgba(255,240,80,1)');grd.addColorStop(1,'rgba(255,217,0,0.9)');
-  ct.fillStyle=grd;ct.fillRect(cx,2,cw,ch);
+  grd.addColorStop(0,'rgba(255,217,0,0.85)');grd.addColorStop(0.5,'rgba(255,240,80,1)');grd.addColorStop(1,'rgba(255,217,0,0.85)');
+  ct.fillStyle=grd;ct.fillRect(cx,3,cw,ch);
   ct.restore();
 }
 
