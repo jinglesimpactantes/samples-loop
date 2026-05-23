@@ -52,7 +52,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .vbtn{font-family:'Michroma',monospace;font-size:7px;padding:3px 6px;border-radius:4px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);cursor:pointer;touch-action:manipulation;}
 .vbtn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* ADVANCED PANELS - full screen from bottom like themes */
-.adv{position:fixed;left:0;right:0;bottom:0;background:#0a0804;border-top:2px solid rgba(255,217,0,0.35);z-index:200;display:none;flex-direction:column;padding:12px;gap:8px;overflow-y:auto;max-height:50%;}
+.adv{position:fixed;left:0;right:0;bottom:0;background:#0a0804;border-top:2px solid rgba(255,217,0,0.35);z-index:200;display:none;flex-direction:row;max-height:50%;}
+.adv-content{flex:1;display:flex;flex-direction:column;padding:12px;gap:8px;overflow-y:auto;}
+.adv-scroll-zone{width:18%;flex-shrink:0;background:rgba(255,217,0,0.03);border-left:1px solid rgba(255,217,0,0.08);display:flex;align-items:center;justify-content:center;}
+.adv-scroll-zone span{font-family:system-ui,sans-serif;font-size:8px;color:rgba(255,217,0,0.2);writing-mode:vertical-rl;letter-spacing:2px;}
 .adv h4{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:2px;margin-bottom:4px;}
 .adv-row{display:flex;align-items:center;gap:8px;padding:3px 0;}
 .adv-lbl{font-family:'Michroma',monospace;font-size:8px;color:rgba(255,217,0,0.7);width:70px;flex-shrink:0;}
@@ -158,16 +161,19 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 <!-- ADV RUEDAS -->
 <div id="adv-ruedas" class="adv">
+  <div class="adv-content">
   <h4>⚙ MOD / PITCH — AVANZADO</h4>
-  <div class="adv-row"><span class="adv-lbl">VIB RATE</span><input class="adv-si" id="vib-rate" type="range" min="1" max="9" step="0.1" value="3.2"/><span class="adv-val" id="vib-ratev">3.2 Hz</span></div>
+  <div class="adv-row"><span class="adv-lbl">VIB RATE</span><input class="adv-si" id="vib-rate" type="range" min="1" max="9" step="0.1" value="4.2"/><span class="adv-val" id="vib-ratev">4.2 Hz</span></div>
   <div class="adv-row"><span class="adv-lbl">VIB DEPTH</span><input class="adv-si" id="vib-depth" type="range" min="0" max="100" step="1" value="50"/><span class="adv-val" id="vib-depthv">50%</span></div>
   <div class="adv-row"><span class="adv-lbl">TREMOLO</span><input class="adv-si" id="trem-amt" type="range" min="0" max="100" step="1" value="50"/><span class="adv-val" id="trem-amtv">50%</span></div>
   <div class="adv-row"><span class="adv-lbl">PITCH RANGE</span><input class="adv-si" id="pb-range" type="range" min="1" max="24" step="1" value="2"/><span class="adv-val" id="pb-rangev">±2 st</span></div>
   <div class="adv-close" id="adv-ruedas-close">✕ CERRAR</div>
+  </div><div class="adv-scroll-zone"><span>SCROLL</span></div>
 </div>
 
 <!-- ADV REVERB -->
 <div id="adv-reverb" class="adv">
+  <div class="adv-content">
   <h4>⚙ REVERB — AVANZADO</h4>
   <div class="adv-row"><span class="adv-lbl">IR TYPE</span>
     <select class="rvsel" id="adv-irs" style="flex:1;font-size:8px;padding:4px;">
@@ -185,13 +191,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div class="adv-sep"></div>
   <div class="adv-row" style="gap:8px;">
     <div class="byp act" id="rv-apply" style="padding:6px 14px;font-size:8px;border-radius:5px;cursor:pointer;touch-action:manipulation;">APLICAR</div>
-    <div class="byp" id="rv-bypass2" style="padding:6px 14px;font-size:8px;border-radius:5px;cursor:pointer;touch-action:manipulation;">BYPASS</div>
+    <div class="byp" id="rv-bypass2" style="padding:6px 14px;font-size:8px;border-radius:5px;cursor:pointer;touch-action:manipulation;">BYPASS OFF</div>
   </div>
   <div class="adv-close" id="adv-reverb-close">✕ CERRAR</div>
+  </div><div class="adv-scroll-zone"><span>SCROLL</span></div>
 </div>
 
 <!-- ADV DELAY -->
 <div id="adv-delay" class="adv">
+  <div class="adv-content">
   <h4>⚙ DELAY — AVANZADO</h4>
   <div class="adv-row"><span class="adv-lbl">BPM</span><input class="adv-si" id="adv-dlbpm" type="range" min="40" max="240" step="1" value="120"/><span class="adv-val" id="adv-dlbpmv">120</span></div>
   <div class="adv-row"><span class="adv-lbl">SUBDIV</span>
@@ -211,10 +219,12 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="byp act" id="dl-byp2" style="padding:6px 14px;font-size:8px;border-radius:5px;cursor:pointer;touch-action:manipulation;">ON</div>
   </div>
   <div class="adv-close" id="adv-delay-close">✕ CERRAR</div>
+  </div><div class="adv-scroll-zone"><span>SCROLL</span></div>
 </div>
 
 <!-- ADV VOICE -->
 <div id="adv-voice" class="adv">
+  <div class="adv-content">
   <h4>⚙ VOICE MODE — AVANZADO</h4>
   <div class="adv-row" style="gap:8px;">
     <div class="vbtn act" id="adv-vbtn-poly">POLY</div>
@@ -227,6 +237,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div class="adv-row"><span class="adv-lbl">MAX VOICES</span><input class="adv-si" id="adv-maxv" type="range" min="1" max="10" step="1" value="8"/><span class="adv-val" id="adv-maxvv">8</span></div>
   <div class="adv-row"><span class="adv-lbl">VEL SENSIT</span><input class="adv-si" id="adv-vel" type="range" min="0" max="100" step="1" value="80"/><span class="adv-val" id="adv-velv">80%</span></div>
   <div class="adv-close" id="adv-voice-close">✕ CERRAR</div>
+  </div><div class="adv-scroll-zone"><span>SCROLL</span></div>
 </div>
 
 <!-- THEME EDITOR -->
@@ -344,43 +355,46 @@ function stp(id){
 }
 function uV(id,y,t,b){var nd=nds[id];if(!nd||!actx)return;var p=(y-t)/(b-t),v=Math.max(0.1,Math.min(0.95,0.1+p*0.85));nd.v=v;nd.g.gain.setTargetAtTime(v,actx.currentTime,0.015);}
 
-// WHEEL DRAW
+// WHEEL DRAW - draws inside inner rectangle of PNG
 function dW(cid,val,isPitch){
   var c2=document.getElementById(cid);if(!c2)return;
   var par=c2.parentElement,w=par.offsetWidth,h=par.offsetHeight;if(!w||!h)return;
   c2.width=w;c2.height=h;
   var ct=c2.getContext('2d');
-  // Clip everything inside canvas
-  ct.save();
-  ct.beginPath();ct.rect(0,0,w,h);ct.clip();
-  ct.fillStyle='#111';ct.fillRect(0,0,w,h);
-  // Wheel image background
+  ct.clearRect(0,0,w,h);
+  // Draw PNG background
   if(wheelImg.complete&&wheelImg.naturalWidth>0){
     try{ct.drawImage(wheelImg,0,0,w,h);}catch(e){}
-  }
-  // Animated lines - offset based on value
-  var off=isPitch?val*(w/2):val*w;
-  var sp=8,s=((off%sp)+sp)%sp;
-  for(var x=s-sp;x<w+sp;x+=sp){
-    var dd=Math.abs(x-w/2)/(w/2);
-    var al=Math.max(0,0.5-dd*0.45);
-    ct.beginPath();ct.moveTo(x,0);ct.lineTo(x,h);
-    ct.strokeStyle='rgba(0,0,0,'+al+')';ct.lineWidth=2;ct.stroke();
-  }
-  // Yellow indicator line
-  var lw=6,lx;
-  if(isPitch){
-    // PITCH: center=0, moves left(-) or right(+), range -1 to 1
-    lx=Math.round(w/2+val*(w/2-lw/2-2));
   } else {
-    // MOD: starts at left (0), moves right (1)
-    lx=Math.round(val*(w-lw-4)+2);
+    ct.fillStyle='#222';ct.fillRect(0,0,w,h);
   }
-  lx=Math.max(2,Math.min(w-lw-2,lx));
-  ct.shadowColor='#FFD900';ct.shadowBlur=12;
-  var grd=ct.createLinearGradient(lx,0,lx,h);
-  grd.addColorStop(0,'rgba(255,217,0,0.8)');grd.addColorStop(0.5,'#FFE840');grd.addColorStop(1,'rgba(255,217,0,0.8)');
-  ct.fillStyle=grd;ct.fillRect(lx,3,lw,h-6);
+  // Inner rectangle safe zone
+  var mx=Math.round(w*0.08),my=Math.round(h*0.15);
+  var iw=w-mx*2,ih=h-my*2;
+  // Clip to inner rectangle only
+  ct.save();
+  ct.beginPath();ct.rect(mx,my,iw,ih);ct.clip();
+  // Animated lines inside safe zone
+  var off=isPitch?val*(iw/2):val*iw;
+  var sp=7,s=((off%sp)+sp)%sp;
+  for(var x=s-sp;x<iw+sp;x+=sp){
+    var dd=Math.abs(x-iw/2)/(iw/2);
+    var al=Math.max(0,0.45-dd*0.4);
+    ct.beginPath();ct.moveTo(mx+x,my);ct.lineTo(mx+x,my+ih);
+    ct.strokeStyle='rgba(0,0,0,'+al+')';ct.lineWidth=1.8;ct.stroke();
+  }
+  // Yellow indicator line inside safe zone
+  var lw=5,lx;
+  if(isPitch){
+    lx=Math.round(mx+iw/2+val*(iw/2-lw/2-2));
+  } else {
+    lx=Math.round(mx+val*(iw-lw-4)+2);
+  }
+  lx=Math.max(mx+2,Math.min(mx+iw-lw-2,lx));
+  ct.shadowColor='#FFD900';ct.shadowBlur=10;
+  var grd=ct.createLinearGradient(lx,my,lx,my+ih);
+  grd.addColorStop(0,'rgba(255,217,0,0.7)');grd.addColorStop(0.5,'#FFE840');grd.addColorStop(1,'rgba(255,217,0,0.7)');
+  ct.fillStyle=grd;ct.fillRect(lx,my+2,lw,ih-4);
   ct.restore();
 }
 
