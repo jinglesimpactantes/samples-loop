@@ -47,15 +47,19 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .byp{font-family:'Michroma',monospace;font-size:6.5px;font-weight:bold;padding:2px 5px;border-radius:3px;border:1px solid rgba(255,217,0,0.35);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;}
 .byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
 .adv{position:fixed;left:0;right:0;bottom:0;background:#0a0804;border-top:2px solid rgba(255,217,0,0.35);z-index:200;display:none;flex-direction:column;max-height:50%;}
-.adv-content{flex:1;display:flex;flex-direction:column;padding:12px 14px 12px 12px;gap:8px;overflow-y:auto;}
+.adv-content{flex:1;display:flex;flex-direction:column;padding:12px 12px 12px 12px;gap:8px;overflow-y:auto;}
 .adv h4{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:2px;margin-bottom:4px;}
-.adv-row{display:flex;align-items:center;gap:8px;padding:3px 0;}
+.adv-row{display:flex;align-items:center;gap:6px;padding:3px 0;width:82%;}
 .adv-lbl{font-family:'Michroma',monospace;font-size:8px;color:rgba(255,217,0,0.7);width:70px;flex-shrink:0;}
 .adv-val{font-family:'Michroma',monospace;font-size:8px;color:#FFD900;width:45px;text-align:right;flex-shrink:0;}
 .adv-si{-webkit-appearance:none;flex:1;height:6px;border-radius:3px;background:rgba(255,217,0,0.15);outline:none;touch-action:manipulation;}
-.adv-si::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
-.adv-sep{height:1px;background:rgba(255,217,0,0.1);margin:4px 0;}
-.adv-close{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;padding:8px 16px;border:1px solid rgba(255,217,0,0.3);border-radius:5px;cursor:pointer;touch-action:manipulation;align-self:flex-end;}
+.adv-si::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
+.adv-sep{height:1px;background:rgba(255,217,0,0.1);margin:4px 0;width:82%;}
+.adv-close{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;padding:8px 16px;border:1px solid rgba(255,217,0,0.3);border-radius:5px;cursor:pointer;touch-action:manipulation;align-self:flex-start;margin-top:4px;}
+.apply-btn{font-family:system-ui,sans-serif;font-size:11px;color:#0a0804;background:#FFD900;padding:8px 18px;border-radius:5px;cursor:pointer;touch-action:manipulation;border:none;align-self:flex-start;}
+.cfg-btn{font-family:system-ui,sans-serif;font-size:9px;color:#FFD900;border:1px solid rgba(255,217,0,0.4);border-radius:4px;padding:4px 8px;cursor:pointer;touch-action:manipulation;flex-shrink:0;background:rgba(255,217,0,0.05);}
+.byp{font-family:'Michroma',monospace;font-size:8px;font-weight:bold;padding:4px 8px;border-radius:4px;border:1px solid rgba(255,217,0,0.35);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;}
+.byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
 #thm{position:fixed;left:0;right:0;bottom:0;background:#0a0804;border-top:2px solid rgba(255,217,0,0.3);z-index:100;display:none;flex-direction:column;padding:10px;gap:8px;}
 #thm h3{font-size:10px;color:#FFD900;letter-spacing:2px;}
 .trow{display:flex;gap:5px;flex-wrap:wrap;}
@@ -119,19 +123,19 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 <div id="adv-ruedas" class="adv">
   <div class="adv-content">
-    <h4>⚙ MOD / PITCH</h4>
+    <h4>MOD / PITCH — CONFIG</h4>
     <div class="adv-row"><span class="adv-lbl">VIB RATE</span><input class="adv-si" id="vib-rate" type="range" min="1" max="9" step="0.1" value="4.1"/><span class="adv-val" id="vib-ratev">4.1 Hz</span></div>
     <div class="adv-row"><span class="adv-lbl">VIB DEPTH</span><input class="adv-si" id="vib-depth" type="range" min="0" max="100" step="1" value="92"/><span class="adv-val" id="vib-depthv">92%</span></div>
     <div class="adv-row"><span class="adv-lbl">TREMOLO</span><input class="adv-si" id="trem-amt" type="range" min="0" max="100" step="1" value="50"/><span class="adv-val" id="trem-amtv">50%</span></div>
     <div class="adv-row"><span class="adv-lbl">PITCH RANGE</span><input class="adv-si" id="pb-range" type="range" min="1" max="24" step="1" value="2"/><span class="adv-val" id="pb-rangev">±2 st</span></div>
-    <div class="adv-close" id="adv-ruedas-close">✕ CERRAR</div>
-  </div>
+    <div class="apply-btn" id="rw-apply">APLICAR CAMBIOS</div>
+    </div>
 </div>
 
 <div id="adv-reverb" class="adv">
   <div class="adv-content">
-    <h4>⚙ REVERB</h4>
-    <div class="adv-row"><span class="adv-lbl">IR TYPE</span><select class="rvsel" id="adv-irs" style="flex:1;font-size:8px;padding:4px;"><option value="room">ROOM</option><option value="hall">HALL</option><option value="plate" selected>PLATE</option><option value="cathedral">CATHEDRAL</option></select></div>
+    <h4>REVERB — CONFIG</h4>
+    <div class="adv-row"><span class="adv-lbl">IR TYPE</span><select class="rvsel" id="adv-irs" style="width:100px;font-size:8px;padding:4px;flex:none;"><option value="room">ROOM</option><option value="hall">HALL</option><option value="plate" selected>PLATE</option><option value="cathedral">CATHEDRAL</option></select></div>
     <div class="adv-sep"></div>
     <div class="adv-row"><span class="adv-lbl">PRE-DELAY</span><input class="adv-si" id="rv-predly" type="range" min="0" max="100" step="1" value="40"/><span class="adv-val" id="rv-predlyv">40 ms</span></div>
     <div class="adv-row"><span class="adv-lbl">DECAY</span><input class="adv-si" id="rv-decay" type="range" min="5" max="100" step="1" value="33"/><span class="adv-val" id="rv-decayv">3.3 s</span></div>
@@ -141,22 +145,22 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="adv-row"><span class="adv-lbl">GAIN</span><input class="adv-si" id="rv-gain" type="range" min="-24" max="12" step="1" value="-2"/><span class="adv-val" id="rv-gainv">-2 dB</span></div>
     <div class="adv-row"><span class="adv-lbl">MIX</span><input class="adv-si" id="rv-mix2" type="range" min="0" max="100" step="1" value="12"/><span class="adv-val" id="rv-mix2v">12%</span></div>
     <div class="adv-sep"></div>
-    <div class="adv-row"><div class="byp act" id="rv-apply" style="padding:6px 14px;font-size:8px;border-radius:5px;cursor:pointer;touch-action:manipulation;">APLICAR IR</div></div>
-    <div class="adv-close" id="adv-reverb-close">✕ CERRAR</div>
-  </div>
+    <div class="apply-btn" id="rv-apply">APLICAR CAMBIOS</div>
+    </div>
 </div>
 
 <div id="adv-delay" class="adv">
   <div class="adv-content">
-    <h4>⚙ DELAY</h4>
+    <h4>DELAY — CONFIG</h4>
     <div class="adv-row"><span class="adv-lbl">BPM</span><input class="adv-si" id="adv-dlbpm" type="range" min="40" max="240" step="1" value="120"/><span class="adv-val" id="adv-dlbpmv">120</span></div>
     <div class="adv-row"><span class="adv-lbl">SUBDIV</span><select class="rvsel" id="adv-dlsub" style="flex:1;font-size:8px;padding:4px;"><option value="4">1/4</option><option value="8d">1/8.</option><option value="6">1/6</option><option value="8" selected>1/8</option></select></div>
     <div class="adv-sep"></div>
     <div class="adv-row"><span class="adv-lbl">FEEDBACK</span><input class="adv-si" id="dl-fb" type="range" min="0" max="85" step="1" value="28"/><span class="adv-val" id="dl-fbv">28%</span></div>
     <div class="adv-row"><span class="adv-lbl">TONO</span><input class="adv-si" id="dl-tone" type="range" min="300" max="8000" step="100" value="2800"/><span class="adv-val" id="dl-tonev">2.8 kHz</span></div>
     <div class="adv-row"><span class="adv-lbl">MIX</span><input class="adv-si" id="dl-mix2" type="range" min="0" max="100" step="1" value="0"/><span class="adv-val" id="dl-mix2v">0%</span></div>
-    <div class="adv-close" id="adv-delay-close">✕ CERRAR</div>
-  </div>
+    <div class="adv-sep"></div>
+    <div class="apply-btn" id="dl-apply">APLICAR CAMBIOS</div>
+    </div>
 </div>
 
 <div id="thm">
@@ -388,7 +392,9 @@ document.getElementById('rvbyp').addEventListener('pointerdown',function(e){
     document.getElementById(p[0]+'v').textContent=(p[3]>1?(v/p[3]).toFixed(1):v)+p[2];
   });
 });
-document.getElementById('rv-apply').addEventListener('pointerdown',function(e){e.preventDefault();applyIR();},{passive:false});
+document.getElementById('rv-apply').addEventListener('pointerdown',function(e){e.preventDefault();applyIR();document.getElementById('adv-reverb').style.display='none';},{passive:false});
+document.getElementById('dl-apply').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('adv-delay').style.display='none';},{passive:false});
+document.getElementById('rw-apply').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById('adv-ruedas').style.display='none';},{passive:false});
 
 // DELAY
 function initDelay(){
@@ -453,11 +459,23 @@ function bKb(){
   function sDraw(g,img,w,h,fb){if(img&&img.complete&&img.naturalWidth>0){try{g.drawImage(img,0,0,w,h);return;}catch(e){}}g.fillStyle=fb;g.fillRect(0,0,w,h);}
   for(var oi=0;oi<TOCTS;oi++){var wi=0;for(var i=0;i<ALL.length;i++){var n=ALL[i];if(n.indexOf('#')>=0)continue;var k=document.createElement('canvas');k.className='w';k.style.cssText='left:'+((oi*7+wi)*(WW+2))+'px;width:'+WW+'px;bottom:3px;top:4px;position:absolute;touch-action:none;';k.width=WW;k.height=Math.max(1,KH);k.dataset.id=n+(SOCT+oi);k.dataset.type='w';sDraw(k.getContext('2d'),imgW,WW,k.height,'#e8dfc8');kb.appendChild(k);wi++;}}
   for(var oi2=0;oi2<TOCTS;oi2++){for(var i2=0;i2<ALL.length;i2++){var n2=ALL[i2];if(n2.indexOf('#')<0)continue;var bh2=Math.floor(KH*0.42);var k2=document.createElement('canvas');k2.className='b';k2.style.cssText='left:'+((oi2*7+(BP[n2]||0))*(WW+2))+'px;width:'+BW+'px;height:'+bh2+'px;top:4px;position:absolute;z-index:2;touch-action:none;';k2.width=BW;k2.height=bh2;k2.dataset.id=n2+(SOCT+oi2);k2.dataset.type='b';sDraw(k2.getContext('2d'),imgB,BW,bh2,'#1a1a1a');kb.appendChild(k2);}}
-  // Shadow overlay under sostenidos
-  var shCanvas=document.createElement('canvas');shCanvas.style.cssText='position:absolute;top:4px;left:0;pointer-events:none;z-index:3;';shCanvas.width=TOCTS*7*(WW+2);shCanvas.height=Math.floor(KH*0.42)+20;
+  // Shadow overlay - left side of each sostenido key, falling on white key to its left
+  var shCanvas=document.createElement('canvas');
+  shCanvas.style.cssText='position:absolute;top:4px;left:0;pointer-events:none;z-index:3;';
+  shCanvas.width=TOCTS*7*(WW+2);shCanvas.height=KH;
   var shG=shCanvas.getContext('2d');
-  var BPOS2={};ALL.forEach(function(n){if(n.indexOf('#')>=0)BPOS2[n]=BP[n];});
-  for(var oi3=0;oi3<TOCTS;oi3++){for(var n3 in BPOS2){var bx=Math.floor((oi3*7+BPOS2[n3])*(WW+2));var shGrd=shG.createRadialGradient(bx+BW/2,Math.floor(KH*0.42),0,bx+BW/2,Math.floor(KH*0.42)+20,BW*0.8);shGrd.addColorStop(0,'rgba(0,0,0,0.35)');shGrd.addColorStop(1,'rgba(0,0,0,0)');shG.fillStyle=shGrd;shG.fillRect(bx-BW*0.3,Math.floor(KH*0.38),BW*1.6,30);}}
+  for(var oi3=0;oi3<TOCTS;oi3++){
+    for(var n3 in BP){
+      var bx3=Math.floor((oi3*7+BP[n3])*(WW+2));
+      var shadowW=Math.floor(BW*1.2);
+      var shGrd=shG.createLinearGradient(bx3,0,bx3-shadowW,0);
+      shGrd.addColorStop(0,'rgba(0,0,0,0.32)');
+      shGrd.addColorStop(0.4,'rgba(0,0,0,0.12)');
+      shGrd.addColorStop(1,'rgba(0,0,0,0)');
+      shG.fillStyle=shGrd;
+      shG.fillRect(bx3-shadowW,0,shadowW,Math.floor(KH*0.45));
+    }
+  }
   kb.appendChild(shCanvas);
   sx=Math.max(0,(4-SOCT)*7*(WW+2));aS();setTimeout(function(){bR();bMM();},80);bnKb();
 }
