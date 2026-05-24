@@ -426,7 +426,6 @@ document.getElementById('pb-range').addEventListener('input',function(){pbRange=
 // ADV open/close
 [['gear-ruedas','adv-ruedas'],['gear-reverb','adv-reverb'],['gear-delay','adv-delay']].forEach(function(p){
   document.getElementById(p[0]).addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById(p[1]).style.display='flex';if(p[1]==='adv-reverb')syncAdvReverb();},{passive:false});
-  document.getElementById(p[1]+'-close').addEventListener('pointerdown',function(e){e.preventDefault();document.getElementById(p[1]).style.display='none';},{passive:false});
 });
 
 // PANELS
