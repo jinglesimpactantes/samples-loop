@@ -84,15 +84,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     </div>
     <div id="pnl-reverb" class="pnl">
       <div class="rvrow">
-        <span class="rvlbl">IR</span>
-        <select class="rvsel" id="irs"><option value="room">ROOM</option><option value="hall">HALL</option><option value="plate" selected>PLATE</option><option value="cathedral">CATHEDRAL</option></select>
+        <span class="rvlbl">MIX</span>
+        <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="12"/>
+        <span class="rvsv" id="rvmixv">12%</span>
         <div id="rvbyp" class="byp act">ON</div>
         <div class="cfg-btn" id="gear-reverb">Config</div>
       </div>
       <div class="rvrow">
-        <span class="rvlbl">MIX</span>
-        <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="12"/>
-        <span class="rvsv" id="rvmixv">12%</span>
+        <span class="rvlbl">IR</span>
+        <select class="rvsel" id="irs" style="max-width:50%;"><option value="room">ROOM</option><option value="hall">HALL</option><option value="plate" selected>PLATE</option><option value="cathedral">CATHEDRAL</option></select>
       </div>
     </div>
     <div id="pnl-delay" class="pnl">
@@ -106,7 +106,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       <div class="rvrow">
         <span class="rvlbl">BPM</span>
         <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:48px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:3px;font-family:'Michroma',monospace;font-size:10px;padding:2px 3px;text-align:center;"/>
-        <select id="dlsub" style="font-family:'Michroma',monospace;font-size:6.5px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:3px;padding:2px 3px;flex:1;">
+        <select id="dlsub" style="font-family:'Michroma',monospace;font-size:6.5px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:3px;padding:2px 3px;max-width:45%;">
           <option value="4">1/4</option><option value="8d">1/8.</option><option value="6">1/6</option><option value="8" selected>1/8</option>
         </select>
       </div>
@@ -128,7 +128,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="adv-row"><span class="adv-lbl">VIB DEPTH</span><input class="adv-si" id="vib-depth" type="range" min="0" max="100" step="1" value="92"/><span class="adv-val" id="vib-depthv">92%</span></div>
     <div class="adv-row"><span class="adv-lbl">TREMOLO</span><input class="adv-si" id="trem-amt" type="range" min="0" max="100" step="1" value="50"/><span class="adv-val" id="trem-amtv">50%</span></div>
     <div class="adv-row"><span class="adv-lbl">PITCH RANGE</span><input class="adv-si" id="pb-range" type="range" min="1" max="24" step="1" value="2"/><span class="adv-val" id="pb-rangev">±2 st</span></div>
-    <div class="apply-btn" id="rw-apply">APLICAR CAMBIOS</div>
+    <div class="apply-btn" id="rw-apply">✕ CERRAR</div>
     </div>
 </div>
 
@@ -145,7 +145,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="adv-row"><span class="adv-lbl">GAIN</span><input class="adv-si" id="rv-gain" type="range" min="-24" max="12" step="1" value="-2"/><span class="adv-val" id="rv-gainv">-2 dB</span></div>
     <div class="adv-row"><span class="adv-lbl">MIX</span><input class="adv-si" id="rv-mix2" type="range" min="0" max="100" step="1" value="12"/><span class="adv-val" id="rv-mix2v">12%</span></div>
     <div class="adv-sep"></div>
-    <div class="apply-btn" id="rv-apply">APLICAR CAMBIOS</div>
+    <div class="apply-btn" id="rv-apply">✕ CERRAR</div>
     </div>
 </div>
 
@@ -159,12 +159,12 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="adv-row"><span class="adv-lbl">TONO</span><input class="adv-si" id="dl-tone" type="range" min="300" max="8000" step="100" value="2800"/><span class="adv-val" id="dl-tonev">2.8 kHz</span></div>
     <div class="adv-row"><span class="adv-lbl">MIX</span><input class="adv-si" id="dl-mix2" type="range" min="0" max="100" step="1" value="0"/><span class="adv-val" id="dl-mix2v">0%</span></div>
     <div class="adv-sep"></div>
-    <div class="apply-btn" id="dl-apply">APLICAR CAMBIOS</div>
+    <div class="apply-btn" id="dl-apply">✕ CERRAR</div>
     </div>
 </div>
 
 <div id="thm">
-  <h3>THEME EDITOR</h3>
+  <h3>PRO SKINS</h3>
   <div class="trow" id="trow-themes"></div>
   <div id="thm-close">✕ CERRAR</div>
 </div>
@@ -326,8 +326,8 @@ mkW('pw','pwc','pwv',-1,1,function(v){pb=v;if(actx)Object.keys(nds).forEach(func
 // REVERB
 var PRESETS={
   plate:{predly:40,decay:33,size:70,damp:40,diff:45,gain:-2,mix:12},
-  hall:{predly:0,decay:33,size:50,damp:20,diff:50,gain:1,mix:12},
-  room:{predly:50,decay:57,size:30,damp:35,diff:70,gain:-7,mix:12},
+  hall:{predly:0,decay:33,size:50,damp:20,diff:50,gain:1,mix:40},
+  room:{predly:50,decay:57,size:30,damp:35,diff:70,gain:-7,mix:40},
   cathedral:{predly:25,decay:80,size:100,damp:50,diff:60,gain:-2,mix:12}
 };
 var RP={predly:40,decay:33,size:70,damp:40,diff:45,gain:-2};
@@ -458,24 +458,6 @@ function bKb(){
   function sDraw(g,img,w,h,fb){if(img&&img.complete&&img.naturalWidth>0){try{g.drawImage(img,0,0,w,h);return;}catch(e){}}g.fillStyle=fb;g.fillRect(0,0,w,h);}
   for(var oi=0;oi<TOCTS;oi++){var wi=0;for(var i=0;i<ALL.length;i++){var n=ALL[i];if(n.indexOf('#')>=0)continue;var k=document.createElement('canvas');k.className='w';k.style.cssText='left:'+((oi*7+wi)*(WW+2))+'px;width:'+WW+'px;bottom:3px;top:4px;position:absolute;touch-action:none;';k.width=WW;k.height=Math.max(1,KH);k.dataset.id=n+(SOCT+oi);k.dataset.type='w';sDraw(k.getContext('2d'),imgW,WW,k.height,'#e8dfc8');kb.appendChild(k);wi++;}}
   for(var oi2=0;oi2<TOCTS;oi2++){for(var i2=0;i2<ALL.length;i2++){var n2=ALL[i2];if(n2.indexOf('#')<0)continue;var bh2=Math.floor(KH*0.42);var k2=document.createElement('canvas');k2.className='b';k2.style.cssText='left:'+((oi2*7+(BP[n2]||0))*(WW+2))+'px;width:'+BW+'px;height:'+bh2+'px;top:4px;position:absolute;z-index:2;touch-action:none;';k2.width=BW;k2.height=bh2;k2.dataset.id=n2+(SOCT+oi2);k2.dataset.type='b';sDraw(k2.getContext('2d'),imgB,BW,bh2,'#1a1a1a');kb.appendChild(k2);}}
-  // Shadow overlay - left side of each sostenido key, falling on white key to its left
-  var shCanvas=document.createElement('canvas');
-  shCanvas.style.cssText='position:absolute;top:4px;left:0;pointer-events:none;z-index:3;';
-  shCanvas.width=TOCTS*7*(WW+2);shCanvas.height=KH;
-  var shG=shCanvas.getContext('2d');
-  for(var oi3=0;oi3<TOCTS;oi3++){
-    for(var n3 in BP){
-      var bx3=Math.floor((oi3*7+BP[n3])*(WW+2));
-      var shadowW=Math.floor(BW*1.2);
-      var shGrd=shG.createLinearGradient(bx3,0,bx3-shadowW,0);
-      shGrd.addColorStop(0,'rgba(0,0,0,0.32)');
-      shGrd.addColorStop(0.4,'rgba(0,0,0,0.12)');
-      shGrd.addColorStop(1,'rgba(0,0,0,0)');
-      shG.fillStyle=shGrd;
-      shG.fillRect(bx3-shadowW,0,shadowW,Math.floor(KH*0.45));
-    }
-  }
-  kb.appendChild(shCanvas);
   sx=Math.max(0,(4-SOCT)*7*(WW+2));aS();setTimeout(function(){bR();bMM();},80);bnKb();
 }
 function setKeyOn(el,on){
