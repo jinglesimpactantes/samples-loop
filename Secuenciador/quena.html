@@ -212,21 +212,22 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 <!-- ACERCA DE -->
 <div id="bg-about" class="ovl-bg">
-<div id="about-panel" class="ovl" style="align-items:center;text-align:center;">
+<div id="about-panel" class="ovl" style="align-items:center;text-align:center;gap:8px;">
   <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
     <h3>ACERCA DE</h3>
     <div class="ovl-close" id="about-close">✕</div>
   </div>
-  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:40%;object-fit:contain;margin:8px auto;display:block;filter:drop-shadow(0 0 16px rgba(255,217,0,0.5));"/>
-  <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:2px;margin:2px 0;">Pro v1.0.0</div>
-  <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.8;margin:8px 0;">
-    Instrumento virtual de vientos nativo-americanos con ruedas de expresión, reverb IR y delay.<br>
-    Pro Skins para las teclas. Múltiples librerías de sonido para inspirarte.
+  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:70%;max-width:280px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
+  <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:3px;">Pro v1.0.0</div>
+  <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
+    Instrumento virtual de vientos nativo-americanos<br>
+    Con ruedas de expresión, reverb IR y delay.<br>
+    Pro Skins y librerías de sonido para inspirarte.
   </div>
-  <div style="width:70%;height:1px;background:rgba(255,255,255,0.1);margin:6px auto;"></div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:2px;">Desarrollo por Mike Valderrama</div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:8px;">Arequipa, Perú</div>
-  <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:8px 24px;border-radius:24px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
+  <div style="width:65%;height:1px;background:rgba(255,255,255,0.12);margin:4px auto;"></div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;">Desarrollo por Mike Valderrama</div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:6px;">Arequipa, Perú</div>
+  <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:9px 22px;border-radius:6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
 </div>
 </div>
 
@@ -416,21 +417,28 @@ document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.pr
 
 // OVERLAY PANELS - stack system
 var panelStack=[];
-var bgMap={'tuerca-panel':'bg-tuerca','thm':'bg-thm','lib-panel':'bg-lib','about-panel':'bg-about'};
+var bgMap={'tuerca-panel':'bg-tuerca','thm':'bg-thm','lib-panel':'bg-lib','about-panel':'bg-about','prox-msg':'prox-msg'};
 function openPanel(id){
   panelStack.push(id);
   var bg=bgMap[id];
-  if(bg)document.getElementById(bg).style.display='flex';
-  else document.getElementById(id).style.display='flex';
+  var el=document.getElementById(bg||id);
+  if(el)el.style.display='flex';
 }
 function closePanel(){
   if(panelStack.length===0)return;
   var id=panelStack.pop();
   var bg=bgMap[id];
-  if(bg)document.getElementById(bg).style.display='none';
-  else document.getElementById(id).style.display='none';
+  var el=document.getElementById(bg||id);
+  if(el)el.style.display='none';
 }
 // Click outside to close
+document.addEventListener('pointerdown',function(e){
+  if(panelStack.length===0)return;
+  var topId=panelStack[panelStack.length-1];
+  var bgId=bgMap[topId];
+  var panel=document.getElementById(bgId||topId);
+  if(panel&&!panel.contains(e.target)){closePanel();}
+},{passive:true});
 // PANELS TOGGLE
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib'};
 function switchPanel(name){
@@ -451,13 +459,19 @@ document.getElementById('tuerca-close').addEventListener('pointerdown',function(
 document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();openPanel('lib-panel');},{passive:false});
+document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('lib-inline-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('about-panel');},{passive:false});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
-document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
+document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+['lib-zam','lib-toyo','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
+});
 ['lib2-zam','lib2-toyo','lib2-tarka','lib2-ocarina','lib2-flauta'].forEach(function(id){
-  document.getElementById(id).addEventListener('pointerdown',function(e){e.preventDefault();openPanel('prox-msg');},{passive:false});
+  var el=document.getElementById(id);
+  if(el)el.addEventListener('pointerdown',function(e){e.preventDefault();openPanel('prox-msg');},{passive:false});
 });
 ['ruedas','reverb','delay'].forEach(function(n){
   document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
