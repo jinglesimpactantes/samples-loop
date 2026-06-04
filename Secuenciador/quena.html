@@ -193,7 +193,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 
 <!-- LIBRERIA -->
-<div id="bg-lib" class="ovl-bg">
+<div id="bg-lib" class="ovl-bg" id="bg-lib">
 <div id="lib-panel" class="ovl">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>LIBRERÍAS DE SONIDO</h3>
@@ -201,11 +201,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   </div>
   <div style="display:flex;flex-direction:column;gap:8px;">
     <div class="lib-item active" id="lib-quena">› Quena Andina</div>
-    <div class="lib-item" id="lib-zam">› Zampoña</div>
-    <div class="lib-item" id="lib-toyo">› Toyo</div>
-    <div class="lib-item" id="lib-tarka">› Tarka</div>
-    <div class="lib-item" id="lib-ocarina">› Ocarina</div>
-    <div class="lib-item" id="lib-flauta">› Flauta Cerámica</div>
+    <div class="lib-item" id="lib-zam" style="display:flex;justify-content:space-between;align-items:center;"><span>› Zampoña</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
+    <div class="lib-item" id="lib-toyo" style="display:flex;justify-content:space-between;align-items:center;"><span>› Toyo</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
+    <div class="lib-item" id="lib-tarka" style="display:flex;justify-content:space-between;align-items:center;"><span>› Tarka</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
+    <div class="lib-item" id="lib-ocarina" style="display:flex;justify-content:space-between;align-items:center;"><span>› Ocarina</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
+    <div class="lib-item" id="lib-flauta" style="display:flex;justify-content:space-between;align-items:center;"><span>› Flauta Cerámica</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
   </div>
 </div>
 </div>
@@ -217,7 +217,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <h3>ACERCA DE</h3>
     <div class="ovl-close" id="about-close">✕</div>
   </div>
-  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:70%;max-width:280px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
+  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:58%;max-width:240px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
   <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:3px;">Pro v1.0.0</div>
   <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
     Instrumento virtual de vientos nativo-americanos<br>
@@ -452,23 +452,32 @@ function switchPanel(name){
 
 // TUERCA
 document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
-document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
-document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
+document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+document.getElementById('bg-tuerca').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
+document.getElementById('tuerca-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('lib-panel');},{passive:false});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-document.getElementById('lib-inline-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
+document.getElementById('bg-lib').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
+document.getElementById('lib-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('about-panel');},{passive:false});
-document.getElementById('about-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
+document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+document.getElementById('bg-about').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
+document.getElementById('about-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+// Quena - active, closes panel
+var libQuena=document.getElementById('lib-quena');
+if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();while(panelStack.length)closePanel();},{passive:false});
+// Not available kits - show proximamente
 ['lib-zam','lib-toyo','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
   var el=document.getElementById(id);
   if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
 });
 ['lib2-zam','lib2-toyo','lib2-tarka','lib2-ocarina','lib2-flauta'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el)el.addEventListener('pointerdown',function(e){e.preventDefault();openPanel('prox-msg');},{passive:false});
+  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
 });
 ['ruedas','reverb','delay'].forEach(function(n){
   document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
@@ -555,10 +564,15 @@ function drawWF(){
   g.stroke();
 }
 window.addEventListener('resize',function(){bKb();dW('mwc',md,false);dW('pwc',0,true);initWF();});
-function init(){var w=document.getElementById('kbwrap');if(w&&w.offsetHeight>10){bKb();initWF();setTimeout(function(){dW('mwc',0,false);dW('pwc',0,true);},100);}else{setTimeout(init,50);}}
+function init(){
+  var w=document.getElementById('kbwrap');
+  if(w&&w.offsetHeight>10){
+    bKb();initWF();
+    switchPanel('ruedas');
+    setTimeout(function(){dW('mwc',0,false);dW('pwc',0,true);},200);
+  }else{setTimeout(init,50);}
+}
 document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
-// Start with RUEDAS visible
-switchPanel('ruedas');
 init();
 </script>
 </body>
