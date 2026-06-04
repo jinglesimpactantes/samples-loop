@@ -57,13 +57,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .ovl-close{font-family:system-ui,sans-serif;font-size:18px;font-weight:700;color:rgba(255,217,0,0.8);cursor:pointer;touch-action:manipulation;padding:2px 8px;line-height:1;}
 /* THEME */
 .trow{display:flex;gap:6px;flex-wrap:wrap;}
-.tbtn{font-family:system-ui,sans-serif;font-size:10px;padding:7px 11px;border-radius:6px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;}
+.tbtn{font-family:system-ui,sans-serif;font-size:9px;padding:6px 4px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;text-align:center;}
 .tbtn.sel{background:#FFD900;color:#000;}
 /* LIBRERIA */
 .lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;display:flex;justify-content:space-between;align-items:center;}
 .lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
 .lib-item.lib-locked{opacity:0.7;cursor:default;}
-#trow-themes-inline{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+#trow-themes-inline{display:grid!important;grid-template-columns:repeat(5,1fr);gap:5px;width:100%;}
 /* CFG MENU - estilo Drunativa */
 .cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
 .cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
@@ -129,7 +129,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <span style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1px;">PRO SKINS</span>
         <div id="skins-close" style="font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;padding:2px 8px;border:1px solid rgba(255,217,0,0.4);border-radius:5px;cursor:pointer;touch-action:manipulation;">✕</div>
       </div>
-      <div id="trow-themes-inline" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+      <div id="trow-themes-inline"></div>
     </div>
     <!-- LIBRERIA inline -->
     <div id="pnl-lib" class="pnl" style="flex-direction:column;gap:4px;">
@@ -487,7 +487,9 @@ function buildThemeButtonsInline(){
     var b=document.createElement('div');
     b.className='tbtn'+(td.id===curThemeData.id?' sel':'');
     b.textContent=td.name;b.dataset.tid=td.id;
-    b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(td);},{passive:false});
+    (function(theme){
+      b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});
+    })(td);
     tr.appendChild(b);
   });
 }
