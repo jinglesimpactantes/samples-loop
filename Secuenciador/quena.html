@@ -46,17 +46,16 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .rvsel{font-family:system-ui,sans-serif;font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;padding:3px 6px;max-width:50%;}
 .rvsi{-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:rgba(255,217,0,0.5);outline:none;touch-action:manipulation;}
 .rvsi::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#FFD900;cursor:pointer;border:2px solid #000;}
-/* IR and subdivision buttons */
-.ir-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 8px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
-.ir-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
-/* Scale selector */
-.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
-.sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
-.sc-wide{flex:2;}
-.sc-sharp{flex:0.7;}
 .rvsv{font-family:system-ui,sans-serif;font-size:10px;color:#FFD900;width:34px;text-align:right;flex-shrink:0;}
 .byp{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:4px;border:1px solid rgba(255,217,0,0.35);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;}
 .byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
+.ir-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
+.ir-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
+/* SCALE SELECTOR */
+.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
+.sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
+.sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(200,0,0,0.6);background:rgba(200,0,0,0.05);color:rgba(200,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-size:8px;font-weight:700;flex-shrink:0;}
+.sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.6);}
 /* OVERLAY - fondo oscuro semitransparente */
 .ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA */
@@ -113,13 +112,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div id="pnl-reverb" class="pnl">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
-      <div class="rvrow">
-        <span class="rvlbl">MIX</span>
         <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="12"/>
         <span class="rvsv" id="rvmixv">12%</span>
         <div id="rvbyp" class="byp act">ON</div>
       </div>
-      <div class="rvrow" style="gap:5px;">
+      <div class="rvrow" style="gap:4px;">
         <div class="ir-btn act" data-ir="room" id="irbtn-room">ROOM</div>
         <div class="ir-btn" data-ir="hall" id="irbtn-hall">HALL</div>
         <div class="ir-btn" data-ir="plate" id="irbtn-plate">PLATE</div>
@@ -134,9 +131,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <span class="rvsv" id="dlmixv">0%</span>
         <div id="dlbyp" class="byp act">ON</div>
       </div>
-      <div class="rvrow" style="gap:5px;align-items:center;">
+      <div class="rvrow" style="gap:4px;align-items:center;">
         <span class="rvlbl">BPM</span>
-        <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:46px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;font-family:system-ui;font-size:11px;padding:3px 4px;text-align:center;"/>
+        <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:44px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;font-family:system-ui;font-size:11px;padding:3px 4px;text-align:center;"/>
         <div class="ir-btn act" data-sub="4" id="subbtn-4">1/4</div>
         <div class="ir-btn" data-sub="8d" id="subbtn-8d">1/8.</div>
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
@@ -144,8 +141,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
-    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;">
-      <div style="display:flex;gap:4px;flex-wrap:nowrap;">
+    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;">
+      <div style="display:flex;gap:4px;align-items:center;">
         <div class="sc-btn" data-note="C" id="scn-C">C</div>
         <div class="sc-btn" data-note="D" id="scn-D">D</div>
         <div class="sc-btn" data-note="E" id="scn-E">E</div>
@@ -153,13 +150,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-note="G" id="scn-G">G</div>
         <div class="sc-btn" data-note="A" id="scn-A">A</div>
         <div class="sc-btn" data-note="B" id="scn-B">B</div>
-        <div class="sc-btn sc-sharp" id="scn-sharp">#</div>
+        <div class="sc-btn" id="scn-sharp" style="flex:0.7;">#</div>
       </div>
-      <div style="display:flex;gap:4px;">
-        <div class="sc-btn sc-wide" data-scale="major" id="scs-major">MAYOR</div>
-        <div class="sc-btn sc-wide" data-scale="minor" id="scs-minor">MENOR</div>
-        <div class="sc-btn sc-wide" data-scale="penta" id="scs-penta">PENTATÓNICA</div>
-        <div class="sc-btn sc-wide act" data-scale="off" id="scs-off">OFF</div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <div class="sc-btn" data-scale="major" id="scs-major">Mayor</div>
+        <div class="sc-btn" data-scale="minor" id="scs-minor">Menor</div>
+        <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
+        <div class="sc-bypass" id="sc-bypass">BY</div>
       </div>
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
@@ -296,7 +293,6 @@ var sx=0,rvOn=true,dlOn=true;
 var dG,wG,cvR,dlNode=null,dlWet=null,dlFbNode=null,dlFiltNode=null;
 var analyser=null,wfBuf=null;
 var pbRange=2,vibRate=4.1,vibDepthMul=0.92*0.56;
-var curPanel=null;
 
 var wheelImg=new Image();
 wheelImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Wheel.png';
@@ -437,6 +433,7 @@ function loadPreset(ir){
   setTimeout(applyIR,100);
 }
 // IR buttons
+var cIR_btn='room';
 ['room','hall','plate','cathedral'].forEach(function(ir){
   document.getElementById('irbtn-'+ir).addEventListener('pointerdown',function(e){
     e.preventDefault();
@@ -458,10 +455,11 @@ function initDelay(){
   dG.connect(dlNode);dlNode.connect(dlFiltNode);dlFiltNode.connect(dlFbNode);dlFbNode.connect(dlNode);dlNode.connect(dlWet);dlWet.connect(actx.destination);
   dlNode.delayTime.value=getDlTime();
 }
-var curDlSub='4';
-function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120,sub=curDlSub,beat=60/bpm;if(sub==='4')return Math.min(beat,2);if(sub==='8d')return Math.min(beat*0.75,2);if(sub==='6')return Math.min(beat*2/3,2);return Math.min(beat*0.5,2);}
 document.getElementById('dlmix').addEventListener('input',function(){document.getElementById('dlmixv').textContent=this.value+'%';initDelay();if(dlWet&&actx&&dlOn)dlWet.gain.setTargetAtTime(Math.min(parseFloat(this.value)*0.004,1),actx.currentTime,0.04);});
 document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&actx)dlNode.delayTime.setTargetAtTime(getDlTime(),actx.currentTime,0.05);});
+// Subdivision buttons
+var curDlSub='4';
+function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120,sub=curDlSub,beat=60/bpm;if(sub==='4')return Math.min(beat,2);if(sub==='8d')return Math.min(beat*0.75,2);if(sub==='6')return Math.min(beat*2/3,2);return Math.min(beat*0.5,2);}
 ['4','8d','6','8'].forEach(function(sub){
   document.getElementById('subbtn-'+sub).addEventListener('pointerdown',function(e){
     e.preventDefault();curDlSub=sub;
@@ -470,24 +468,23 @@ document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&
     if(dlNode&&actx)dlNode.delayTime.setTargetAtTime(getDlTime(),actx.currentTime,0.05);
   },{passive:false});
 });
-document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
-// SCALE SELECTOR
-var scaleRoot=null,scaleSharp=false,scaleType='off';
+// SELECTOR DE ESCALAS
+var scaleRoot='C',scaleSharp=false,scaleType='penta',scaleActive=false;
 var SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],penta:[0,2,4,7,9]};
-var SEM2={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-var ALL2=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var SEM_SC={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+var ALL_SC=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 function getScaleNotes(){
-  if(!scaleRoot||scaleType==='off')return null;
-  var root=(SEM2[scaleRoot]+(scaleSharp?1:0))%12;
+  if(!scaleActive||!scaleRoot||!scaleType)return null;
+  var root=(SEM_SC[scaleRoot]+(scaleSharp?1:0))%12;
   return SCALES[scaleType].map(function(i){return(root+i)%12;});
 }
 function snapToScale(n){
   var notes=getScaleNotes();if(!notes)return n;
-  var SEM3={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
-  var m=SEM3[n];if(notes.indexOf(m)>=0)return n;
+  var SEM_N={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+  var m=SEM_N[n];if(notes.indexOf(m)>=0)return n;
   var best=n,bd=12;
-  notes.forEach(function(sc){var d=Math.min(Math.abs(sc-m),12-Math.abs(sc-m));if(d<bd){bd=d;best=ALL2[sc];}});
+  notes.forEach(function(sc){var d=Math.min(Math.abs(sc-m),12-Math.abs(sc-m));if(d<bd){bd=d;best=ALL_SC[sc];}});
   return best;
 }
 ['C','D','E','F','G','A','B'].forEach(function(note){
@@ -500,13 +497,17 @@ function snapToScale(n){
 document.getElementById('scn-sharp').addEventListener('pointerdown',function(e){
   e.preventDefault();scaleSharp=!scaleSharp;this.classList.toggle('act',scaleSharp);
 },{passive:false});
-['major','minor','penta','off'].forEach(function(sc){
+['major','minor','penta'].forEach(function(sc){
   document.getElementById('scs-'+sc).addEventListener('pointerdown',function(e){
     e.preventDefault();
     document.querySelectorAll('.sc-btn[data-scale]').forEach(function(b){b.classList.remove('act');});
     scaleType=sc;this.classList.add('act');
   },{passive:false});
 });
+document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
+  e.preventDefault();scaleActive=!scaleActive;this.classList.toggle('act',scaleActive);
+},{passive:false});
+document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
 // OVERLAY PANELS - stack system
 var panelStack=[];
@@ -532,21 +533,14 @@ document.addEventListener('pointerdown',function(e){
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib',scale:'pnl-scale'};
 var curPanel=null;
 function switchPanel(name){
-  var isActive=(curPanel===name)&&(name==='ruedas'||name==='reverb'||name==='delay');
+  var isToggle=(curPanel===name)&&(name==='ruedas'||name==='reverb'||name==='delay');
   Object.keys(panels).forEach(function(k){
     document.getElementById(panels[k]).style.display='none';
     var b=document.getElementById('btn-'+k);if(b)b.classList.remove('act');
   });
-  if(isActive){
-    // Show scale selector
+  if(isToggle){
     document.getElementById('pnl-scale').style.display='flex';
     curPanel='scale';
-  } else if(name==='scale'){
-    // Back to ruedas
-    document.getElementById('pnl-ruedas').style.display='flex';
-    document.getElementById('btn-ruedas').classList.add('act');
-    curPanel='ruedas';
-    setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
   } else {
     document.getElementById(panels[name]).style.display='flex';
     var b=document.getElementById('btn-'+name);if(b)b.classList.add('act');
@@ -591,15 +585,10 @@ function buildThemeButtonsInline(){
     var b=document.createElement('div');
     b.className='tbtn'+(td.id===curThemeData.id?' sel':'');
     b.textContent=td.name;b.dataset.tid=td.id;
-    (function(theme){
-      b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});
-    })(td);
+    (function(theme){b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});})(td);
     tr.appendChild(b);
   });
 }
-['ruedas','reverb','delay'].forEach(function(n){
-  document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
-});
 
 // MINIMAP
 document.getElementById('mzi').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi<KWS.length-1){kwi++;bKb();}},{passive:false});
@@ -677,6 +666,9 @@ function init(){
   }else{setTimeout(init,50);}
 }
 document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
+// Default scale UI state
+document.getElementById('scn-C').classList.add('act');
+document.getElementById('scs-penta').classList.add('act');
 init();
 </script>
 </body>
