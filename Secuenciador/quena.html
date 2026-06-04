@@ -65,7 +65,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .lib-item.lib-locked{opacity:0.7;cursor:default;}
 #trow-themes-inline{display:flex!important;flex-wrap:wrap;gap:5px;width:100%;}
 #trow-themes-inline .tbtn{flex:0 0 calc(20% - 4px);}
-/* CFG MENU - estilo Drunativa */
+/* SWITCHES */
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.sw-lbl{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;color:rgba(255,217,0,0.7);letter-spacing:0.5px;}
+.sw-track{width:36px;height:18px;border-radius:9px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,217,0,0.2);position:relative;cursor:pointer;touch-action:manipulation;transition:background 0.2s;}
+.sw-track.sw-on{background:rgba(255,217,0,0.3);border-color:#FFD900;}
+.sw-thumb{width:14px;height:14px;border-radius:50%;background:#666;position:absolute;top:1px;left:1px;transition:left 0.2s,background 0.2s;}
+.sw-track.sw-on .sw-thumb{left:19px;background:#FFD900;box-shadow:0 0 6px rgba(255,217,0,0.8);}
 .cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
 .cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
 .cfg-item:active{background:rgba(255,217,0,0.1);}
@@ -124,7 +130,24 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         </select>
       </div>
     </div>
-    <!-- PRO SKINS inline -->
+    <!-- PANEL TRASERO - switches -->
+    <div id="pnl-back" class="pnl" style="flex-direction:row;align-items:center;gap:8px;width:100%;height:100%;">
+      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="height:50px;object-fit:contain;opacity:0.9;filter:drop-shadow(0 0 6px rgba(255,217,0,0.3));flex-shrink:0;"/>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+        <div class="sw-row" id="sw-vel">
+          <span class="sw-lbl">VELOCITY</span>
+          <div class="sw-track sw-on" id="sw-vel-track"><div class="sw-thumb"></div></div>
+        </div>
+        <div class="sw-row" id="sw-lim">
+          <span class="sw-lbl">LIMITER</span>
+          <div class="sw-track" id="sw-lim-track"><div class="sw-thumb"></div></div>
+        </div>
+        <div class="sw-row" id="sw-fx">
+          <span class="sw-lbl">EFFECTS</span>
+          <div class="sw-track sw-on" id="sw-fx-track"><div class="sw-thumb"></div></div>
+        </div>
+      </div>
+    </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:column;gap:6px;position:relative;">
       <div style="position:absolute;top:0;right:0;">
         <div id="skins-close" style="font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;padding:2px 8px;border:1px solid rgba(255,217,0,0.4);border-radius:5px;cursor:pointer;touch-action:manipulation;">✕</div>
@@ -290,7 +313,7 @@ function bst(n,o){var m=n2m(n,o),b=null,bd=999;Object.keys(SMIDI).forEach(functi
 function gac(){
   if(!actx){
     try{actx=new(window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});}catch(e){actx=new(window.AudioContext||window.webkitAudioContext)();}
-    var mg=actx.createGain();mg.gain.value=0.65;
+    var mg=actx.createGain();mg.gain.value=1;
     dG=actx.createGain();dG.gain.value=1;
     wG=actx.createGain();wG.gain.value=rv*IRM[cIR];
     cvR=actx.createConvolver();
@@ -332,7 +355,7 @@ function stp(id){
   setTimeout(function(){try{if(s)s.stop();}catch(e){}try{if(o1)o1.stop();if(o2)o2.stop();}catch(e){}try{if(lfo)lfo.stop();}catch(e){}},80);
   delete nds[id];
 }
-function uV(id,y,t,b){var nd=nds[id];if(!nd||!actx)return;var p=(y-t)/(b-t),v=Math.max(0.1,Math.min(0.95,0.1+p*0.85));nd.v=v;nd.g.gain.setTargetAtTime(v,actx.currentTime,0.015);}
+function uV(id,y,t,b){if(!swVel)return;var nd=nds[id];if(!nd||!actx)return;var p=(y-t)/(b-t),v=Math.max(0.1,Math.min(0.95,0.1+p*0.85));nd.v=v;nd.g.gain.setTargetAtTime(v,actx.currentTime,0.015);}
 
 // WHEELS
 function dW(cid,val,isPitch){
@@ -438,18 +461,32 @@ document.addEventListener('pointerdown',function(e){
   var inner=document.getElementById(topId);
   if(bgEl&&bgEl.contains(e.target)&&inner&&!inner.contains(e.target))closePanel();
 },{passive:true});
-// PANELS TOGGLE
-var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib'};
+var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib',back:'pnl-back'};
+var curPanel=null;
 function switchPanel(name){
-  var btn=document.getElementById('btn-'+name);
+  var isActive=(curPanel===name);
+  // Hide all
   Object.keys(panels).forEach(function(k){
     document.getElementById(panels[k]).style.display='none';
-    var b=document.getElementById('btn-'+k);if(b){b.classList.remove('act');}
+    var b=document.getElementById('btn-'+k);if(b)b.classList.remove('act');
   });
-  document.getElementById(panels[name]).style.display='flex';
-  if(btn)btn.classList.add('act');
-  if(name==='ruedas')setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
-  if(name==='skins')buildThemeButtonsInline();
+  if(isActive&&(name==='ruedas'||name==='reverb'||name==='delay')){
+    // Show back panel
+    document.getElementById('pnl-back').style.display='flex';
+    curPanel='back';
+  } else if(name==='back'){
+    // Go back to ruedas
+    document.getElementById(panels['ruedas']).style.display='flex';
+    document.getElementById('btn-ruedas').classList.add('act');
+    curPanel='ruedas';
+    setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
+  } else {
+    document.getElementById(panels[name]).style.display='flex';
+    var b=document.getElementById('btn-'+name);if(b)b.classList.add('act');
+    curPanel=name;
+    if(name==='ruedas')setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
+    if(name==='skins')buildThemeButtonsInline();
+  }
 }
 
 // TUERCA
@@ -498,6 +535,23 @@ function buildThemeButtonsInline(){
 ['ruedas','reverb','delay'].forEach(function(n){
   document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
 });
+
+// SWITCHES
+var swVel=true,swLim=false,swFx=true;
+document.getElementById('sw-vel-track').addEventListener('pointerdown',function(e){
+  e.preventDefault();swVel=!swVel;
+  this.classList.toggle('sw-on',swVel);
+},{passive:false});
+document.getElementById('sw-lim-track').addEventListener('pointerdown',function(e){
+  e.preventDefault();swLim=!swLim;
+  this.classList.toggle('sw-on',swLim);
+},{passive:false});
+document.getElementById('sw-fx-track').addEventListener('pointerdown',function(e){
+  e.preventDefault();swFx=!swFx;
+  this.classList.toggle('sw-on',swFx);
+  if(wG&&actx){var irScale=(cIR==='cathedral')?0.2:1.0;var gL=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(swFx?rv*IRM[cIR]*gL*irScale:0,actx.currentTime,0.05);}
+  if(dlWet&&actx)dlWet.gain.setTargetAtTime(swFx?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.05);
+},{passive:false});
 
 // MINIMAP
 document.getElementById('mzi').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi<KWS.length-1){kwi++;bKb();}},{passive:false});
