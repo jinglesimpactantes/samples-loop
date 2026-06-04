@@ -50,7 +50,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .byp{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:4px;border:1px solid rgba(255,217,0,0.35);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;}
 .byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* OVERLAY - fondo oscuro semitransparente */
-.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:200;display:none;align-items:center;justify-content:center;}
+.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA */
 .ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
 .ovl h3{font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;}
@@ -420,23 +420,21 @@ var panelStack=[];
 var bgMap={'tuerca-panel':'bg-tuerca','thm':'bg-thm','lib-panel':'bg-lib','about-panel':'bg-about','prox-msg':'prox-msg'};
 function openPanel(id){
   panelStack.push(id);
-  var bg=bgMap[id];
-  var el=document.getElementById(bg||id);
+  var el=document.getElementById(bgMap[id]||id);
   if(el)el.style.display='flex';
 }
 function closePanel(){
   if(panelStack.length===0)return;
   var id=panelStack.pop();
-  var bg=bgMap[id];
-  var el=document.getElementById(bg||id);
+  var el=document.getElementById(bgMap[id]||id);
   if(el)el.style.display='none';
 }
-// Click outside inner panel to close
 document.addEventListener('pointerdown',function(e){
   if(panelStack.length===0)return;
   var topId=panelStack[panelStack.length-1];
+  var bgEl=document.getElementById(bgMap[topId]||topId);
   var inner=document.getElementById(topId);
-  if(inner&&!inner.contains(e.target)){closePanel();}
+  if(bgEl&&bgEl.contains(e.target)&&inner&&!inner.contains(e.target))closePanel();
 },{passive:true});
 // PANELS TOGGLE
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib'};
@@ -457,10 +455,10 @@ document.getElementById('trc').addEventListener('pointerdown',function(e){e.stop
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
-document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();openPanel('lib-panel');},{passive:false});
+document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('lib-panel');},{passive:false});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('lib-inline-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
-document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('about-panel');},{passive:false});
+document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('about-panel');},{passive:false});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
