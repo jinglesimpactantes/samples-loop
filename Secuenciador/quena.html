@@ -60,8 +60,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .tbtn{font-family:system-ui,sans-serif;font-size:10px;padding:7px 11px;border-radius:6px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;}
 .tbtn.sel{background:#FFD900;color:#000;}
 /* LIBRERIA */
-.lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;}
+.lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;display:flex;justify-content:space-between;align-items:center;}
 .lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
+.lib-item.lib-locked{opacity:0.7;cursor:default;}
+#trow-themes-inline{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
 /* CFG MENU - estilo Drunativa */
 .cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
 .cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
@@ -193,7 +195,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 
 <!-- LIBRERIA -->
-<div id="bg-lib" class="ovl-bg" id="bg-lib">
+<div id="bg-lib" class="ovl-bg">
 <div id="lib-panel" class="ovl">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>LIBRERÍAS DE SONIDO</h3>
@@ -201,11 +203,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   </div>
   <div style="display:flex;flex-direction:column;gap:8px;">
     <div class="lib-item active" id="lib-quena">› Quena Andina</div>
-    <div class="lib-item" id="lib-zam" style="display:flex;justify-content:space-between;align-items:center;"><span>› Zampoña</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
-    <div class="lib-item" id="lib-toyo" style="display:flex;justify-content:space-between;align-items:center;"><span>› Toyo</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
-    <div class="lib-item" id="lib-tarka" style="display:flex;justify-content:space-between;align-items:center;"><span>› Tarka</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
-    <div class="lib-item" id="lib-ocarina" style="display:flex;justify-content:space-between;align-items:center;"><span>› Ocarina</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
-    <div class="lib-item" id="lib-flauta" style="display:flex;justify-content:space-between;align-items:center;"><span>› Flauta Cerámica</span><span style="color:#FFD900;text-shadow:0 0 8px #FFD900;font-size:16px;">🔒</span></div>
+    <div class="lib-item lib-locked" id="lib-zam"><span>› Zampoña</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.5" style="filter:drop-shadow(0 0 4px #FFD900);flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="lib-item lib-locked" id="lib-toyo"><span>› Toyo</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.5" style="filter:drop-shadow(0 0 4px #FFD900);flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="lib-item lib-locked" id="lib-tarka"><span>› Tarka</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.5" style="filter:drop-shadow(0 0 4px #FFD900);flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="lib-item lib-locked" id="lib-ocarina"><span>› Ocarina</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.5" style="filter:drop-shadow(0 0 4px #FFD900);flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div class="lib-item lib-locked" id="lib-flauta"><span>› Flauta Cerámica</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.5" style="filter:drop-shadow(0 0 4px #FFD900);flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
   </div>
 </div>
 </div>
@@ -467,14 +469,10 @@ document.getElementById('bg-about').addEventListener('pointerdown',function(e){i
 document.getElementById('about-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-// Quena - active, closes panel
+// Quena - active, closes all panels
 var libQuena=document.getElementById('lib-quena');
 if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();while(panelStack.length)closePanel();},{passive:false});
-// Not available kits - show proximamente
-['lib-zam','lib-toyo','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
-});
+// Locked kits - no action
 ['lib2-zam','lib2-toyo','lib2-tarka','lib2-ocarina','lib2-flauta'].forEach(function(id){
   var el=document.getElementById(id);
   if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
