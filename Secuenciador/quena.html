@@ -65,13 +65,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .lib-item.lib-locked{opacity:0.7;cursor:default;}
 #trow-themes-inline{display:flex!important;flex-wrap:wrap;gap:5px;width:100%;}
 #trow-themes-inline .tbtn{flex:0 0 calc(20% - 4px);}
-/* SWITCHES */
-.sw-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.sw-lbl{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;color:rgba(255,217,0,0.7);letter-spacing:0.5px;}
-.sw-track{width:36px;height:18px;border-radius:9px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,217,0,0.2);position:relative;cursor:pointer;touch-action:manipulation;transition:background 0.2s;}
-.sw-track.sw-on{background:rgba(255,217,0,0.3);border-color:#FFD900;}
-.sw-thumb{width:14px;height:14px;border-radius:50%;background:#666;position:absolute;top:1px;left:1px;transition:left 0.2s,background 0.2s;}
-.sw-track.sw-on .sw-thumb{left:19px;background:#FFD900;box-shadow:0 0 6px rgba(255,217,0,0.8);}
+/* CIRCULAR SWITCHES */
+.sw-circ-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.sw-circ-lbl{font-family:system-ui,sans-serif;font-size:8px;font-weight:700;color:rgba(255,217,0,0.5);letter-spacing:1px;text-transform:uppercase;}
+.sw-circ{width:44px;height:44px;border-radius:50%;background:#1a1a1a;border:2px solid rgba(255,217,0,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.sw-circ.sw-circ-on{background:rgba(255,217,0,0.15);border-color:#FFD900;box-shadow:0 0 12px rgba(255,217,0,0.4);}
+.sw-circ-inner{width:22px;height:22px;border-radius:50%;background:#333;transition:all 0.15s;}
+.sw-circ.sw-circ-on .sw-circ-inner{background:#FFD900;box-shadow:0 0 8px rgba(255,217,0,0.8);}
 .cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
 .cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
 .cfg-item:active{background:rgba(255,217,0,0.1);}
@@ -131,20 +131,23 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- PANEL TRASERO - switches -->
-    <div id="pnl-back" class="pnl" style="flex-direction:row;align-items:center;gap:8px;width:100%;height:100%;">
-      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="height:50px;object-fit:contain;opacity:0.9;filter:drop-shadow(0 0 6px rgba(255,217,0,0.3));flex-shrink:0;"/>
-      <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
-        <div class="sw-row" id="sw-vel">
-          <span class="sw-lbl">VELOCITY</span>
-          <div class="sw-track sw-on" id="sw-vel-track"><div class="sw-thumb"></div></div>
+    <div id="pnl-back" class="pnl" style="flex-direction:row;align-items:center;justify-content:space-around;width:100%;height:100%;padding:4px 8px;">
+      <div class="sw-circ-wrap">
+        <span class="sw-circ-lbl">VELOCITY</span>
+        <div class="sw-circ sw-circ-on" id="sw-vel-track">
+          <div class="sw-circ-inner"></div>
         </div>
-        <div class="sw-row" id="sw-lim">
-          <span class="sw-lbl">LIMITER</span>
-          <div class="sw-track" id="sw-lim-track"><div class="sw-thumb"></div></div>
+      </div>
+      <div class="sw-circ-wrap">
+        <span class="sw-circ-lbl">LIMITER</span>
+        <div class="sw-circ" id="sw-lim-track">
+          <div class="sw-circ-inner"></div>
         </div>
-        <div class="sw-row" id="sw-fx">
-          <span class="sw-lbl">EFFECTS</span>
-          <div class="sw-track sw-on" id="sw-fx-track"><div class="sw-thumb"></div></div>
+      </div>
+      <div class="sw-circ-wrap">
+        <span class="sw-circ-lbl">EFFECTS</span>
+        <div class="sw-circ sw-circ-on" id="sw-fx-track">
+          <div class="sw-circ-inner"></div>
         </div>
       </div>
     </div>
@@ -356,6 +359,7 @@ function stp(id){
   delete nds[id];
 }
 function uV(id,y,t,b){if(!swVel)return;var nd=nds[id];if(!nd||!actx)return;var p=(y-t)/(b-t),v=Math.max(0.1,Math.min(0.95,0.1+p*0.85));nd.v=v;nd.g.gain.setTargetAtTime(v,actx.currentTime,0.015);}
+function getVel(y,t,b){if(!swVel)return 0.75;var p=(y-t)/(b-t);return Math.max(0.1,Math.min(0.95,0.1+p*0.85));}
 
 // WHEELS
 function dW(cid,val,isPitch){
@@ -540,15 +544,23 @@ function buildThemeButtonsInline(){
 var swVel=true,swLim=false,swFx=true;
 document.getElementById('sw-vel-track').addEventListener('pointerdown',function(e){
   e.preventDefault();swVel=!swVel;
-  this.classList.toggle('sw-on',swVel);
+  this.classList.toggle('sw-circ-on',swVel);
 },{passive:false});
 document.getElementById('sw-lim-track').addEventListener('pointerdown',function(e){
   e.preventDefault();swLim=!swLim;
-  this.classList.toggle('sw-on',swLim);
+  this.classList.toggle('sw-circ-on',swLim);
+  // Limiter - add/remove dynamics compressor
+  if(actx){
+    if(swLim&&!window._comp){
+      window._comp=actx.createDynamicsCompressor();
+      window._comp.threshold.value=-18;window._comp.knee.value=6;
+      window._comp.ratio.value=4;window._comp.attack.value=0.003;window._comp.release.value=0.1;
+    }
+  }
 },{passive:false});
 document.getElementById('sw-fx-track').addEventListener('pointerdown',function(e){
   e.preventDefault();swFx=!swFx;
-  this.classList.toggle('sw-on',swFx);
+  this.classList.toggle('sw-circ-on',swFx);
   if(wG&&actx){var irScale=(cIR==='cathedral')?0.2:1.0;var gL=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(swFx?rv*IRM[cIR]*gL*irScale:0,actx.currentTime,0.05);}
   if(dlWet&&actx)dlWet.gain.setTargetAtTime(swFx?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.05);
 },{passive:false});
@@ -588,8 +600,8 @@ function gE(id){return document.querySelector('[data-id="'+id+'"]');}
 function bnKb(){
   var wrap=document.getElementById('kbwrap');if(!wrap)return;
   if(wrap._pd){wrap.removeEventListener('pointerdown',wrap._pd);wrap.removeEventListener('pointermove',wrap._pm);wrap.removeEventListener('pointerup',wrap._pu);wrap.removeEventListener('pointercancel',wrap._pu);}
-  wrap._pd=function(e){e.preventDefault();var kr=atP(e.clientX,e.clientY);if(!kr)return;try{wrap.setPointerCapture(e.pointerId);}catch(ex){}pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var n=kr.id.replace(/[0-9]/g,''),o=parseInt(kr.id.match(/[0-9]+/)[0]),p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,n,o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),false);};
-  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var n=kr.id.replace(/[0-9]/g,''),o=parseInt(kr.id.match(/[0-9]+/)[0]),p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,n,o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
+  wrap._pd=function(e){e.preventDefault();var kr=atP(e.clientX,e.clientY);if(!kr)return;try{wrap.setPointerCapture(e.pointerId);}catch(ex){}pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var n=kr.id.replace(/[0-9]/g,''),o=parseInt(kr.id.match(/[0-9]+/)[0]);play(kr.id,n,o,getVel(e.clientY,kr.t,kr.bo),false);};
+  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var n=kr.id.replace(/[0-9]/g,''),o=parseInt(kr.id.match(/[0-9]+/)[0]);play(kr.id,n,o,getVel(e.clientY,kr.t,kr.bo),true);};
   wrap._pu=function(e){var pt=pts[e.pointerId];if(!pt)return;var pe=gE(pt.id);if(pe)setKeyOn(pe,false);stp(pt.id);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
