@@ -23,8 +23,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .b{top:4px;z-index:2;height:48%;}
 #bot{height:100px;flex-shrink:0;display:flex;align-items:stretch;border-top:1px solid rgba(47,111,104,0.4);background:#080604;}
 #caja{flex:2;min-width:0;border-right:1px solid rgba(47,111,104,0.3);padding:4px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;position:relative;}
-#logo-area{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:#000;}
-#logo-area img{max-height:70%;max-width:80%;object-fit:contain;}
+#logo-area{position:absolute;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:#000;}
+#logo-area img{max-height:80%;max-width:90%;object-fit:contain;}
 #lista{width:68px;flex-shrink:0;border-right:1px solid rgba(47,111,104,0.3);display:flex;flex-direction:column;justify-content:space-around;align-items:center;padding:4px 4px;}
 .lbtn{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;color:rgba(255,217,0,0.5);cursor:pointer;touch-action:manipulation;padding:5px 2px;border-radius:4px;border:1px solid transparent;width:100%;text-align:center;}
 .lbtn.act{color:#0a0804;background:#FFD900;border-color:#FFD900;}
@@ -85,7 +85,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="caja">
     <!-- Logo (visible por defecto) -->
     <div id="logo-area">
-      <img src="assets/img/Windiqa_Logo.png" alt="Windiqa"/>
+      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo.png" alt="Windiqa"/>
     </div>
     <!-- RUEDAS -->
     <div id="pnl-ruedas" class="pnl">
@@ -128,7 +128,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="lbtn" id="btn-delay">DELAY</div>
   </div>
   <div id="bnr"><canvas id="wfcv"></canvas></div>
-  <div id="trc"><img src="assets/img/TuercaIcono.png" alt="⚙"/></div>
+  <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt="⚙"/></div>
 </div>
 
 <!-- TUERCA PANEL -->
@@ -172,8 +172,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 
 <script>
-var BASE='assets/audio/';
-var IRB='assets/ir/';
+var BASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/';
+var IRB='https://jinglesimpactantes.github.io/samples-loop/IR/';
 var FILES={G3:'Quena_G_.wav',A3:'Quena_A_.wav',B3:'Quena_B_.wav',D4:'Quena_D.wav',E4:'Quena_E.wav',G4:'Quena_G.wav',A4:'Quena_A.wav',C5:'Quena_C-.wav',E5:'Quena_E-.wav'};
 var IRF={room:'nice_drum_room.wav',hall:'musikvereinsaal.wav',plate:'StudioNordPlate_2sec.wav',cathedral:'scala_milan_opera_hall.wav'};
 var IRM={room:5,hall:1.8,plate:2.5,cathedral:8};
@@ -191,9 +191,9 @@ var pbRange=2,vibRate=4.1,vibDepthMul=0.92*0.56;
 var curPanel=null;
 
 var wheelImg=new Image();
-wheelImg.src='assets/img/Wheel.png';
+wheelImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Wheel.png';
 
-var TBASE='assets/img/';
+var TBASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Teclas/';
 var TPNG={};
 ['blancaL:TeclaBlanca_Larga.png','blancaC:TeclaBlanca_Corta.png','negraL:TeclaNegra_Larga.png','negraC:TeclaNegra_Corta.png','rojaL:TeclaRoja_Larga.png','rojaC:TeclaRoja_Corta.png','caniaL:TeclaCania_Larga.png','caniaC:TeclaCania_Corta.png','grisL:TeclaGris_Larga.png'].forEach(function(s){var p=s.split(':');var img=new Image();img.src=TBASE+p[1];TPNG[p[0]]=img;});
 var THEME_LIST=[
@@ -212,20 +212,7 @@ function applyTheme(td){curThemeData=td;document.querySelectorAll('.tbtn').forEa
 function buildThemeButtons(){var tr=document.getElementById('trow-themes');tr.innerHTML='';THEME_LIST.forEach(function(td){var b=document.createElement('div');b.className='tbtn'+(td.id===curThemeData.id?' sel':'');b.textContent=td.name;b.dataset.tid=td.id;b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(td);},{passive:false});tr.appendChild(b);});}
 
 // PANEL TOGGLE
-function showLogo(){document.getElementById('logo-area').style.display='flex';document.getElementById('pnl-ruedas').style.display='none';document.getElementById('pnl-reverb').style.display='none';document.getElementById('pnl-delay').style.display='none';document.querySelectorAll('.lbtn').forEach(function(b){b.classList.remove('act');});curPanel=null;}
-function switchPanel(name){
-  var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay'};
-  if(curPanel===name){showLogo();return;}
-  curPanel=name;
-  document.getElementById('logo-area').style.display='none';
-  Object.keys(panels).forEach(function(k){
-    var el=document.getElementById(panels[k]);
-    el.style.display=k===name?(k==='ruedas'?'flex':'flex'):'none';
-    var btn=document.getElementById('btn-'+k);if(btn){btn.classList.remove('act');if(k===name)btn.classList.add('act');}
-  });
-  if(name==='ruedas')setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
-}
-['ruedas','reverb','delay'].forEach(function(n){document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});});
+var curPanel=null;
 
 // AUDIO
 function n2m(n,o){return(o+1)*12+SEM[n];}
@@ -452,7 +439,7 @@ function bnKb(){
 }
 
 // WAVEFORM
-function initWF(){var c=document.getElementById('wfcv'),p=c.parentElement;c.width=p.offsetWidth;c.height=p.offsetHeight;if(!window._quenaImg){window._quenaImg=new Image();window._quenaImg.src='assets/img/Quena_Pantalla.jpg';}}
+function initWF(){var c=document.getElementById('wfcv'),p=c.parentElement;c.width=p.offsetWidth;c.height=p.offsetHeight;if(!window._quenaImg){window._quenaImg=new Image();window._quenaImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Quena_Pantalla.jpg';}}
 function startWF(){if(!actx||analyser)return;analyser=actx.createAnalyser();analyser.fftSize=256;wfBuf=new Uint8Array(analyser.fftSize);dG.connect(analyser);drawWF();}
 function drawWF(){
   requestAnimationFrame(drawWF);
@@ -479,6 +466,8 @@ function drawWF(){
 window.addEventListener('resize',function(){bKb();dW('mwc',md,false);dW('pwc',0,true);initWF();});
 function init(){var w=document.getElementById('kbwrap');if(w&&w.offsetHeight>10){bKb();initWF();setTimeout(function(){dW('mwc',0,false);dW('pwc',0,true);},100);}else{setTimeout(init,50);}}
 document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
+// Start with RUEDAS visible
+switchPanel('ruedas');
 init();
 </script>
 </body>
