@@ -217,16 +217,16 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <h3>ACERCA DE</h3>
     <div class="ovl-close" id="about-close">✕</div>
   </div>
-  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="max-height:90px;max-width:55%;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 14px rgba(255,217,0,0.45));"/>
-  <div style="font-family:'Michroma',monospace;font-size:8px;color:rgba(255,217,0,0.45);letter-spacing:2px;">Pro v1.0.0</div>
-  <div style="font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.8);line-height:1.8;margin:6px 0;">
-    Instrumento virtual de vientos nativo-americanos<br>
-    con ruedas de expresión, reverb IR y delay profesionales.<br>
-    Evocadoras librerías de sonido que te inspirarán.
+  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:40%;object-fit:contain;margin:8px auto;display:block;filter:drop-shadow(0 0 16px rgba(255,217,0,0.5));"/>
+  <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:2px;margin:2px 0;">Pro v1.0.0</div>
+  <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.8;margin:8px 0;">
+    Instrumento virtual de vientos nativo-americanos con ruedas de expresión, reverb IR y delay.<br>
+    Pro Skins para las teclas. Múltiples librerías de sonido para inspirarte.
   </div>
-  <div style="width:70%;height:1px;background:rgba(255,217,0,0.12);margin:4px auto;"></div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:rgba(255,217,0,0.4);">Desarrollo por Mike Valderrama · Arequipa, Perú</div>
-  <div style="margin-top:10px;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#FFD900;padding:8px 22px;border:1px solid rgba(255,217,0,0.35);border-radius:20px;cursor:pointer;touch-action:manipulation;" id="about-web">www.looptopus.com</div>
+  <div style="width:70%;height:1px;background:rgba(255,255,255,0.1);margin:6px auto;"></div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:2px;">Desarrollo por Mike Valderrama</div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:8px;">Arequipa, Perú</div>
+  <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:8px 24px;border-radius:24px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
 </div>
 </div>
 
@@ -450,7 +450,7 @@ document.getElementById('trc').addEventListener('pointerdown',function(e){e.stop
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
-document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();switchPanel('lib');},{passive:false});
+document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();openPanel('lib-panel');},{passive:false});
 document.getElementById('lib-inline-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('about-panel');},{passive:false});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
