@@ -52,10 +52,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .ir-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .ir-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* SCALE SELECTOR */
-.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
-.sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
-.sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(200,0,0,0.6);background:rgba(200,0,0,0.05);color:rgba(200,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-size:8px;font-weight:700;flex-shrink:0;}
-.sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.6);}
+.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(90,74,42,0.3);color:rgba(90,74,42,0.7);background:rgba(255,255,255,0.6);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
+.sc-btn.act{background:#5a4a2a;color:#fff;border-color:#5a4a2a;}
+.sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-size:8px;font-weight:700;flex-shrink:0;}
+.sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
 /* OVERLAY - fondo oscuro semitransparente */
 .ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA */
@@ -141,7 +141,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
-    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;">
+    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#f2ece0;border-radius:6px;padding:4px 6px;">
+      <div style="font-family:'Michroma',monospace;font-size:7px;color:#5a4a2a;letter-spacing:1px;text-align:center;">MODO ESCALA</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <div class="sc-btn" data-note="C" id="scn-C">C</div>
         <div class="sc-btn" data-note="D" id="scn-D">D</div>
@@ -156,7 +157,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="major" id="scs-major">Mayor</div>
         <div class="sc-btn" data-scale="minor" id="scs-minor">Menor</div>
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
-        <div class="sc-bypass" id="sc-bypass">BY</div>
+        <div class="sc-bypass" id="sc-bypass">ON</div>
       </div>
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
@@ -482,9 +483,16 @@ function getScaleNotes(){
 function snapToScale(n){
   var notes=getScaleNotes();if(!notes)return n;
   var SEM_N={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
-  var m=SEM_N[n];if(notes.indexOf(m)>=0)return n;
+  var m=SEM_N[n];
+  if(notes.indexOf(m)>=0)return n;
+  // Always go UP to next note in scale within same octave (max +2 semitones)
+  for(var i=1;i<=2;i++){
+    var up=(m+i)%12;
+    if(notes.indexOf(up)>=0)return ALL_SC[up];
+  }
+  // Fallback: nearest
   var best=n,bd=12;
-  notes.forEach(function(sc){var d=Math.min(Math.abs(sc-m),12-Math.abs(sc-m));if(d<bd){bd=d;best=ALL_SC[sc];}});
+  notes.forEach(function(sc){var d=Math.abs(sc-m);if(d<bd){bd=d;best=ALL_SC[sc];}});
   return best;
 }
 ['C','D','E','F','G','A','B'].forEach(function(note){
@@ -505,7 +513,9 @@ document.getElementById('scn-sharp').addEventListener('pointerdown',function(e){
   },{passive:false});
 });
 document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
-  e.preventDefault();scaleActive=!scaleActive;this.classList.toggle('act',scaleActive);
+  e.preventDefault();scaleActive=!scaleActive;
+  this.classList.toggle('act',scaleActive);
+  this.textContent=scaleActive?'OFF':'ON';
 },{passive:false});
 document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
