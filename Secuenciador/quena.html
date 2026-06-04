@@ -117,9 +117,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div id="rvbyp" class="byp act">ON</div>
       </div>
       <div class="rvrow" style="gap:4px;">
-        <div class="ir-btn act" data-ir="room" id="irbtn-room">ROOM</div>
+        <div class="ir-btn" data-ir="room" id="irbtn-room">ROOM</div>
         <div class="ir-btn" data-ir="hall" id="irbtn-hall">HALL</div>
-        <div class="ir-btn" data-ir="plate" id="irbtn-plate">PLATE</div>
+        <div class="ir-btn act" data-ir="plate" id="irbtn-plate">PLATE</div>
         <div class="ir-btn" data-ir="cathedral" id="irbtn-cathedral">CATHEDRAL</div>
       </div>
     </div>
@@ -134,10 +134,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       <div class="rvrow" style="gap:4px;align-items:center;">
         <span class="rvlbl">BPM</span>
         <input id="dlbpm" type="number" min="40" max="240" value="120" style="width:44px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;font-family:system-ui;font-size:11px;padding:3px 4px;text-align:center;"/>
-        <div class="ir-btn act" data-sub="4" id="subbtn-4">1/4</div>
+        <div class="ir-btn" data-sub="4" id="subbtn-4">1/4</div>
         <div class="ir-btn" data-sub="8d" id="subbtn-8d">1/8.</div>
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
-        <div class="ir-btn" data-sub="8" id="subbtn-8">1/8</div>
+        <div class="ir-btn act" data-sub="8" id="subbtn-8">1/8</div>
       </div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
@@ -459,7 +459,7 @@ function initDelay(){
 document.getElementById('dlmix').addEventListener('input',function(){document.getElementById('dlmixv').textContent=this.value+'%';initDelay();if(dlWet&&actx&&dlOn)dlWet.gain.setTargetAtTime(Math.min(parseFloat(this.value)*0.004,1),actx.currentTime,0.04);});
 document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&actx)dlNode.delayTime.setTargetAtTime(getDlTime(),actx.currentTime,0.05);});
 // Subdivision buttons
-var curDlSub='4';
+var curDlSub='8';
 function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120,sub=curDlSub,beat=60/bpm;if(sub==='4')return Math.min(beat,2);if(sub==='8d')return Math.min(beat*0.75,2);if(sub==='6')return Math.min(beat*2/3,2);return Math.min(beat*0.5,2);}
 ['4','8d','6','8'].forEach(function(sub){
   document.getElementById('subbtn-'+sub).addEventListener('pointerdown',function(e){
@@ -515,7 +515,7 @@ document.getElementById('scn-sharp').addEventListener('pointerdown',function(e){
 document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
   e.preventDefault();scaleActive=!scaleActive;
   this.classList.toggle('act',scaleActive);
-  this.textContent=scaleActive?'OFF':'ON';
+  this.textContent=scaleActive?'ON':'OFF';
 },{passive:false});
 document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
