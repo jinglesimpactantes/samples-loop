@@ -290,7 +290,7 @@ function bst(n,o){var m=n2m(n,o),b=null,bd=999;Object.keys(SMIDI).forEach(functi
 function gac(){
   if(!actx){
     try{actx=new(window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});}catch(e){actx=new(window.AudioContext||window.webkitAudioContext)();}
-    var mg=actx.createGain();mg.gain.value=1;
+    var mg=actx.createGain();mg.gain.value=0.65;
     dG=actx.createGain();dG.gain.value=1;
     wG=actx.createGain();wG.gain.value=rv*IRM[cIR];
     cvR=actx.createConvolver();
@@ -308,10 +308,6 @@ function play(id,n,o,vel,gl){
   var c=gac();if(nds[id])stp(id);
   var atk=gl?0.005:0.008,m=bst(n,o);
   var g=c.createGain();g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(vel,c.currentTime+atk);
-  // Fade after 3 seconds to prevent Android ducking
-  var fadeStart=c.currentTime+3.0;
-  g.gain.setValueAtTime(vel,fadeStart);
-  g.gain.linearRampToValueAtTime(vel*0.72,fadeStart+1.5);
   var lfo=c.createOscillator(),lf=c.createGain(),la=c.createGain();
   lfo.type='sine';lfo.frequency.value=vibRate;lf.gain.value=md*0.022;la.gain.value=md*vel*vibDepthMul;
   lfo.connect(lf);lfo.connect(la);lfo.start();
@@ -487,21 +483,12 @@ if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagatio
 
 function buildThemeButtonsInline(){
   var tr=document.getElementById('trow-themes-inline');tr.innerHTML='';
-  // First row: 4 items (25% each)
-  // Second row: 5 items (20% each)
-  // Add a spacer of 20% after first 4 to push them to 4-column layout
   THEME_LIST.forEach(function(td,idx){
-    if(idx===4){
-      // Add spacer to complete first "row" of 4 by pushing remaining to new row
-      var sp=document.createElement('div');
-      sp.style.cssText='flex:0 0 calc(25% - 4px);visibility:hidden;';
-      tr.appendChild(sp);
-    }
     var b=document.createElement('div');
     b.className='tbtn'+(td.id===curThemeData.id?' sel':'');
     b.textContent=td.name;b.dataset.tid=td.id;
-    if(idx<4){b.style.cssText='flex:0 0 calc(25% - 4px);';}
-    else{b.style.cssText='flex:0 0 calc(20% - 4px);';}
+    // First 4: width 25%, last 5: width 20%
+    b.style.cssText='flex:0 0 calc('+(idx<4?'25':'20')+'% - 5px);box-sizing:border-box;';
     (function(theme){
       b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});
     })(td);
