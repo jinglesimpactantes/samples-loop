@@ -50,11 +50,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .byp{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:4px;border:1px solid rgba(255,217,0,0.35);color:rgba(255,217,0,0.4);cursor:pointer;touch-action:manipulation;flex-shrink:0;}
 .byp.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* OVERLAY - fondo oscuro semitransparente */
-.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:100;display:none;align-items:center;justify-content:center;}
+.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.82);z-index:200;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA */
 .ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
 .ovl h3{font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;}
-.ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:rgba(255,217,0,0.6);cursor:pointer;touch-action:manipulation;padding:2px 6px;}
+.ovl-close{font-family:system-ui,sans-serif;font-size:18px;font-weight:700;color:rgba(255,217,0,0.8);cursor:pointer;touch-action:manipulation;padding:2px 8px;line-height:1;}
 /* THEME */
 .trow{display:flex;gap:6px;flex-wrap:wrap;}
 .tbtn{font-family:system-ui,sans-serif;font-size:10px;padding:7px 11px;border-radius:6px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;}
@@ -431,13 +431,12 @@ function closePanel(){
   var el=document.getElementById(bg||id);
   if(el)el.style.display='none';
 }
-// Click outside to close
+// Click outside inner panel to close
 document.addEventListener('pointerdown',function(e){
   if(panelStack.length===0)return;
   var topId=panelStack[panelStack.length-1];
-  var bgId=bgMap[topId];
-  var panel=document.getElementById(bgId||topId);
-  if(panel&&!panel.contains(e.target)){closePanel();}
+  var inner=document.getElementById(topId);
+  if(inner&&!inner.contains(e.target)){closePanel();}
 },{passive:true});
 // PANELS TOGGLE
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib'};
