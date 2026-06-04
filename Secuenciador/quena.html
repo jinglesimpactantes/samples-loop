@@ -52,8 +52,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .ir-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .ir-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 /* SCALE SELECTOR */
-.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(90,74,42,0.3);color:rgba(90,74,42,0.7);background:rgba(255,255,255,0.6);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
-.sc-btn.act{background:#5a4a2a;color:#fff;border-color:#5a4a2a;}
+.sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
+.sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 .sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-size:8px;font-weight:700;flex-shrink:0;}
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
 /* OVERLAY - fondo oscuro semitransparente */
@@ -141,8 +141,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
-    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#f2ece0;border-radius:6px;padding:4px 6px;">
-      <div style="font-family:'Michroma',monospace;font-size:7px;color:#5a4a2a;letter-spacing:1px;text-align:center;">MODO ESCALA</div>
+    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);">
+      <div style="font-family:'Michroma',monospace;font-size:7px;color:rgba(255,217,0,0.6);letter-spacing:1px;text-align:center;">MODO ESCALA</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <div class="sc-btn" data-note="C" id="scn-C">C</div>
         <div class="sc-btn" data-note="D" id="scn-D">D</div>
@@ -157,7 +157,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="major" id="scs-major">Mayor</div>
         <div class="sc-btn" data-scale="minor" id="scs-minor">Menor</div>
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
-        <div class="sc-bypass" id="sc-bypass">ON</div>
+        <div class="sc-bypass" id="sc-bypass">OFF</div>
       </div>
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
