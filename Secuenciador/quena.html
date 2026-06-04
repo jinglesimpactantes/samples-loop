@@ -60,9 +60,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 /* LIBRERIA */
 .lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;}
 .lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
-/* TUERCA */
-.tuerca-row{display:flex;gap:10px;}
-.tuerca-btn{flex:1;font-family:system-ui,sans-serif;font-size:12px;font-weight:600;padding:14px 10px;border-radius:8px;border:1px solid rgba(47,111,104,0.5);color:#FFD900;background:rgba(47,111,104,0.08);cursor:pointer;touch-action:manipulation;text-align:center;}
+/* CFG MENU - estilo Drunativa */
+.cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
+.cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
+.cfg-item:active{background:rgba(255,217,0,0.1);}
+.cfg-icon{font-size:16px;color:#FFD900;width:22px;text-align:center;flex-shrink:0;}
+.cfg-label{font-family:system-ui,sans-serif;font-size:12px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
+.cfg-arrow{font-size:16px;color:rgba(255,217,0,0.4);flex-shrink:0;}
 /* PROXIMAMENTE */
 #prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:400;display:none;align-items:center;justify-content:center;}
 #prox-inner{background:#0a0804;border:2px solid rgba(47,111,104,0.6);border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
@@ -81,10 +85,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
   <div id="caja">
-    <!-- Logo (visible por defecto) -->
-    <div id="logo-area">
-      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" alt="Windiqa"/>
-    </div>
     <!-- RUEDAS -->
     <div id="pnl-ruedas" class="pnl">
       <div class="whl2"><div class="wl2">MOD</div><div class="wb2" id="mw"><canvas id="mwc"></canvas></div><div class="wv2" id="mwv">0</div></div>
@@ -129,26 +129,46 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt="⚙"/></div>
 </div>
 
-<!-- TUERCA PANEL -->
+<!-- TUERCA PANEL - estilo Drunativa -->
 <div id="tuerca-panel" class="ovl">
-  <h3>CONFIGURACIÓN</h3>
-  <div class="tuerca-row">
-    <div class="tuerca-btn" id="btn-proskins">PRO SKINS</div>
-    <div class="tuerca-btn" id="btn-libreria">LIBRERÍAS DE SONIDO</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3>CONFIGURACIÓN</h3>
+    <div class="ovl-close" id="tuerca-close" style="align-self:auto;">✕</div>
   </div>
-  <div class="ovl-close" id="tuerca-close">✕ CERRAR</div>
+  <div class="cfg-menu">
+    <div class="cfg-item" id="btn-proskins">
+      <span class="cfg-icon">◈</span>
+      <span class="cfg-label">PRO SKINS</span>
+      <span class="cfg-arrow">›</span>
+    </div>
+    <div class="cfg-item" id="btn-libreria">
+      <span class="cfg-icon">♩</span>
+      <span class="cfg-label">LIBRERÍAS DE SONIDO</span>
+      <span class="cfg-arrow">›</span>
+    </div>
+    <div class="cfg-item" id="btn-acerca">
+      <span class="cfg-icon">⊙</span>
+      <span class="cfg-label">ACERCA DE WINDIQA</span>
+      <span class="cfg-arrow">›</span>
+    </div>
+  </div>
 </div>
 
 <!-- PRO SKINS -->
 <div id="thm" class="ovl">
-  <h3>PRO SKINS</h3>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3>PRO SKINS</h3>
+    <div class="ovl-close" id="thm-close" style="align-self:auto;">✕</div>
+  </div>
   <div class="trow" id="trow-themes"></div>
-  <div class="ovl-close" id="thm-close">✕ CERRAR</div>
 </div>
 
 <!-- LIBRERIA -->
 <div id="lib-panel" class="ovl">
-  <h3>LIBRERÍAS DE SONIDO</h3>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h3>LIBRERÍAS DE SONIDO</h3>
+    <div class="ovl-close" id="lib-close" style="align-self:auto;">✕</div>
+  </div>
   <div style="display:flex;flex-direction:column;gap:8px;">
     <div class="lib-item active" id="lib-quena">› Quena Andina</div>
     <div class="lib-item" id="lib-zam">› Zampoña</div>
@@ -157,7 +177,25 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div class="lib-item" id="lib-ocarina">› Ocarina</div>
     <div class="lib-item" id="lib-flauta">› Flauta Cerámica</div>
   </div>
-  <div class="ovl-close" id="lib-close">✕ CERRAR</div>
+</div>
+
+<!-- ACERCA DE -->
+<div id="about-panel" class="ovl" style="align-items:center;text-align:center;">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+    <h3>ACERCA DE</h3>
+    <div class="ovl-close" id="about-close" style="align-self:auto;">✕</div>
+  </div>
+  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="max-height:100px;max-width:60%;object-fit:contain;margin:8px auto;display:block;filter:drop-shadow(0 0 12px rgba(255,217,0,0.4));"/>
+  <div style="font-family:'Michroma',monospace;font-size:9px;color:rgba(255,217,0,0.5);letter-spacing:2px;margin:2px 0;">Pro v1.0.0</div>
+  <div style="font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.75);line-height:1.7;margin:8px 0;">
+    Instrumento virtual de vientos nativo-americanos<br>
+    con ruedas de expresión, reverb IR y delay profesionales.<br>
+    Evocadoras librerías de sonido que te inspirarán.
+  </div>
+  <div style="width:80%;height:1px;background:rgba(255,217,0,0.15);margin:8px auto;"></div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:rgba(255,217,0,0.45);">Desarrollo por Mike Valderrama</div>
+  <div style="font-family:system-ui,sans-serif;font-size:10px;color:rgba(255,217,0,0.45);">Arequipa, Perú</div>
+  <div style="margin-top:10px;font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#FFD900;padding:8px 20px;border:1px solid rgba(255,217,0,0.4);border-radius:20px;cursor:pointer;touch-action:manipulation;" id="about-web">www.looptopus.com</div>
 </div>
 
 <!-- PROXIMAMENTE -->
@@ -360,32 +398,26 @@ document.addEventListener('pointerdown',function(e){
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay'};
 function switchPanel(name){
   var btn=document.getElementById('btn-'+name);
-  var isActive=btn.classList.contains('act');
-  // Turn off all
+  // Always show selected, never toggle off
   Object.keys(panels).forEach(function(k){
     document.getElementById(panels[k]).style.display='none';
     document.getElementById('btn-'+k).classList.remove('act');
   });
-  var logo=document.getElementById('logo-area');
-  if(!isActive){
-    // Turn on selected
-    document.getElementById(panels[name]).style.display='flex';
-    btn.classList.add('act');
-    logo.style.display='none';
-  } else {
-    // Show logo
-    logo.style.display='flex';
-  }
-  if(!isActive&&name==='ruedas')setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
+  document.getElementById(panels[name]).style.display='flex';
+  btn.classList.add('act');
+  if(name==='ruedas')setTimeout(function(){dW('mwc',md,false);dW('pwc',0,true);},50);
 }
 
 // TUERCA
-document.getElementById('trc').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('tuerca-panel');},{passive:false});
+document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.preventDefault();buildThemeButtons();openPanel('thm');},{passive:false});
 document.getElementById('thm-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('lib-panel');},{passive:false});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
+document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.preventDefault();openPanel('about-panel');},{passive:false});
+document.getElementById('about-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
+document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 ['lib-zam','lib-toyo','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
   document.getElementById(id).addEventListener('pointerdown',function(e){e.preventDefault();openPanel('prox-msg');},{passive:false});
