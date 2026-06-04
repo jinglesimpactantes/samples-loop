@@ -325,7 +325,7 @@ function bst(n,o){var m=n2m(n,o),b=null,bd=999;Object.keys(SMIDI).forEach(functi
 function gac(){
   if(!actx){
     try{actx=new(window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});}catch(e){actx=new(window.AudioContext||window.webkitAudioContext)();}
-    var mg=actx.createGain();mg.gain.value=1;
+    var mg=actx.createGain();mg.gain.value=0.75;
     dG=actx.createGain();dG.gain.value=1;
     wG=actx.createGain();wG.gain.value=rv*IRM[cIR];
     cvR=actx.createConvolver();
@@ -342,6 +342,9 @@ function loadS(){var c=gac();Object.keys(FILES).forEach(function(n){var nL=n;fet
 function play(id,n,o,vel,gl){
   var c=gac();if(nds[id])stp(id);
   var atk=gl?0.005:0.008,m=bst(n,o);
+  // Max 4 notes
+  var activeKeys=Object.keys(nds);
+  if(activeKeys.length>=4){stp(activeKeys[0]);}
   var g=c.createGain();g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(vel,c.currentTime+atk);
   var lfo=c.createOscillator(),lf=c.createGain(),la=c.createGain();
   lfo.type='sine';lfo.frequency.value=vibRate;lf.gain.value=md*0.022;la.gain.value=md*vel*vibDepthMul;
