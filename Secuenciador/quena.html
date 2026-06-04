@@ -85,7 +85,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="caja">
     <!-- Logo (visible por defecto) -->
     <div id="logo-area">
-      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo.png" alt="Windiqa"/>
+      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" alt="Windiqa"/>
     </div>
     <!-- RUEDAS -->
     <div id="pnl-ruedas" class="pnl">
@@ -212,7 +212,6 @@ function applyTheme(td){curThemeData=td;document.querySelectorAll('.tbtn').forEa
 function buildThemeButtons(){var tr=document.getElementById('trow-themes');tr.innerHTML='';THEME_LIST.forEach(function(td){var b=document.createElement('div');b.className='tbtn'+(td.id===curThemeData.id?' sel':'');b.textContent=td.name;b.dataset.tid=td.id;b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(td);},{passive:false});tr.appendChild(b);});}
 
 // PANEL TOGGLE
-var curPanel=null;
 
 // AUDIO
 function n2m(n,o){return(o+1)*12+SEM[n];}
