@@ -242,56 +242,58 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 </div>
 
-<!-- LIBRERIA - bottom sheet -->
-<div id="bg-lib" class="ovl-bg-bottom">
-<div id="lib-panel" class="ovl-bottom">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-    <h3 style="font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;">LIBRERÍAS DE SONIDO</h3>
+<!-- LIBRERIA - tarjeta centrada con scroll -->
+<div id="bg-lib" class="ovl-bg">
+<div id="lib-panel" class="ovl" style="width:92%;max-width:480px;max-height:78vh;padding:14px 14px 18px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
+    <h3>LIBRERÍAS DE SONIDO</h3>
     <div class="ovl-close" id="lib-close">✕</div>
   </div>
-  <!-- Quena - activa -->
-  <div class="kit-banner-item kit-banner-active" id="lib-quena">
-    <div style="position:relative;">
-      <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
-      <div style="position:absolute;top:6px;right:8px;background:#FFD900;color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
+  <div style="overflow-y:auto;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch;">
+    <!-- Quena - activa -->
+    <div class="kit-banner-item kit-banner-active" id="lib-quena">
+      <div style="position:relative;">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
+        <div style="position:absolute;top:6px;right:8px;background:#FFD900;color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
+      </div>
+      <div class="kit-banner-label">Quena Andina</div>
     </div>
-    <div class="kit-banner-label">Quena Andina</div>
-  </div>
-  <!-- Zampoña - bloqueada -->
-  <div class="kit-banner-item lib-locked" id="lib-zam">
-    <div class="kit-banner-lock-wrap">
-      <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
-      <div class="kit-corner"></div>
-      <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+    <!-- Zampoña -->
+    <div class="kit-banner-item lib-locked" id="lib-zam">
+      <div class="kit-banner-lock-wrap">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
+        <div class="kit-corner"></div>
+        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+      </div>
+      <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-  </div>
-  <!-- Ocarina - bloqueada -->
-  <div class="kit-banner-item lib-locked" id="lib-ocarina">
-    <div class="kit-banner-lock-wrap">
-      <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
-      <div class="kit-corner"></div>
-      <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+    <!-- Ocarina -->
+    <div class="kit-banner-item lib-locked" id="lib-ocarina">
+      <div class="kit-banner-lock-wrap">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
+        <div class="kit-corner"></div>
+        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+      </div>
+      <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-  </div>
-  <!-- Flauta Cerámica - bloqueada -->
-  <div class="kit-banner-item lib-locked" id="lib-flauta">
-    <div class="kit-banner-lock-wrap">
-      <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
-      <div class="kit-corner"></div>
-      <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+    <!-- Flauta Cerámica -->
+    <div class="kit-banner-item lib-locked" id="lib-flauta">
+      <div class="kit-banner-lock-wrap">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
+        <div class="kit-corner"></div>
+        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+      </div>
+      <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-  </div>
-  <!-- Tarka - bloqueada -->
-  <div class="kit-banner-item lib-locked" id="lib-tarka">
-    <div class="kit-banner-lock-wrap">
-      <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
-      <div class="kit-corner"></div>
-      <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+    <!-- Tarka -->
+    <div class="kit-banner-item lib-locked" id="lib-tarka">
+      <div class="kit-banner-lock-wrap">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
+        <div class="kit-corner"></div>
+        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
+      </div>
+      <div class="kit-banner-label">Tarka <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <div class="kit-banner-label">Tarka <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
   </div>
 </div>
 </div>
