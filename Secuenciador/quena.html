@@ -113,7 +113,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
-  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v7</div>
+  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v8</div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
@@ -246,7 +246,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 <!-- LIBRERIA - tarjeta centrada con scroll -->
 <div id="bg-lib" class="ovl-bg">
-<div id="lib-panel" class="ovl" style="width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;display:flex;flex-direction:column;background:#1a1408;border-color:rgba(255,217,0,0.3);">
+<div id="lib-panel" class="ovl" style="width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;display:flex;flex-direction:column;background:#111;border-color:rgba(255,217,0,0.3);">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
     <h3>LIBRERÍAS DE SONIDO</h3>
     <div class="ovl-close" id="lib-close">✕</div>
@@ -622,7 +622,6 @@ function safeTap(el, fn) {
 
 document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-document.getElementById('bg-tuerca').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
 document.getElementById('tuerca-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 safeTap(document.getElementById('btn-proskins'),function(e){e.stopPropagation&&e.stopPropagation();closePanel();switchPanel('skins');});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
@@ -641,7 +640,6 @@ safeTap(document.getElementById('btn-libreria'),function(e){
 });
 safeTap(document.getElementById('btn-acerca'),function(e){openPanel('about-panel');});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-document.getElementById('bg-about').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
 document.getElementById('about-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
