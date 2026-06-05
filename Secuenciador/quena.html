@@ -58,7 +58,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-family:system-ui,sans-serif;font-size:8px;font-weight:700;flex-shrink:0;}
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
 /* OVERLAY - fondo oscuro semitransparente */
-.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;}
+.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA (tuerca, acerca de, themes) */
 .ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
 .ovl h3{font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;}
@@ -113,7 +113,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
-  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v6</div>
+  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v7</div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
@@ -591,13 +591,7 @@ function closePanel(){
   var el=document.getElementById(bgMap[id]||id);
   if(el)el.style.display='none';
 }
-document.addEventListener('pointerdown',function(e){
-  if(panelStack.length===0)return;
-  var topId=panelStack[panelStack.length-1];
-  var bgEl=document.getElementById(bgMap[topId]||topId);
-  var inner=document.getElementById(topId);
-  if(bgEl&&bgEl.contains(e.target)&&inner&&!inner.contains(e.target))closePanel();
-},{passive:true});
+// No document-level close listener - prevents accidental close on scroll
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib',scale:'pnl-scale'};
 var curPanel=null;
 function switchPanel(name){
@@ -639,7 +633,6 @@ document.getElementById('lib-close').addEventListener('pointerdown',function(e){
     document.getElementById('tuerca-panel').style.display='flex';
   }
 },{passive:false});
-safeTap(document.getElementById('bg-lib'),function(e){if(e.target===document.getElementById('bg-lib'))closePanel();});
 document.getElementById('lib-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 safeTap(document.getElementById('btn-libreria'),function(e){
   // Hide tuerca panel but keep bg overlay
