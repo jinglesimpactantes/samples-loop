@@ -54,7 +54,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 /* SCALE SELECTOR */
 .sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
-.sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-size:8px;font-weight:700;flex-shrink:0;}
+.sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-family:system-ui,sans-serif;font-size:8px;font-weight:700;flex-shrink:0;}
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
 /* OVERLAY - fondo oscuro semitransparente */
 .ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center;}
@@ -205,7 +205,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-libreria">
-      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FFD900"><path d="M12 3a2 2 0 0 0-2 2v8.27A4 4 0 1 0 14 17V7h3V5h-3V3h-2zm0 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></span>
+      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
       <span class="cfg-label">LIBRERÍAS DE SONIDO</span>
       <span class="cfg-arrow">›</span>
     </div>
@@ -641,7 +641,15 @@ function bnKb(){
   var wrap=document.getElementById('kbwrap');if(!wrap)return;
   if(wrap._pd){wrap.removeEventListener('pointerdown',wrap._pd);wrap.removeEventListener('pointermove',wrap._pm);wrap.removeEventListener('pointerup',wrap._pu);wrap.removeEventListener('pointercancel',wrap._pu);}
   wrap._pd=function(e){e.preventDefault();var kr=atP(e.clientX,e.clientY);if(!kr)return;try{wrap.setPointerCapture(e.pointerId);}catch(ex){}pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);if(snapped.mute)return;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),false);};
-  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);if(snapped.mute)return;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
+  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}
+    var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);
+    var snapped=snapToScale(rawN,rawO);
+    if(snapped.mute){
+      // Muted key - keep previous note playing, just update pointer tracking
+      pts[e.pointerId]={id:kr.id};
+      return;
+    }
+    var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
   wrap._pu=function(e){var pt=pts[e.pointerId];if(!pt)return;var pe=gE(pt.id);if(pe)setKeyOn(pe,false);stp(pt.id);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
