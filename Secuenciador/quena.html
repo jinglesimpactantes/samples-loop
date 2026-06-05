@@ -565,18 +565,25 @@ function switchPanel(name){
   }
 }
 
-// TUERCA
+// Scroll-safe tap handler for cfg-items
+function safeTap(el, fn) {
+  var moved=false, sx=0, sy=0;
+  el.addEventListener('pointerdown',function(e){moved=false;sx=e.clientX;sy=e.clientY;},{passive:true});
+  el.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)moved=true;},{passive:true});
+  el.addEventListener('pointerup',function(e){if(!moved)fn(e);});
+}
+
 document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('bg-tuerca').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
 document.getElementById('tuerca-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-document.getElementById('btn-proskins').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();switchPanel('skins');},{passive:false});
+safeTap(document.getElementById('btn-proskins'),function(e){e.stopPropagation&&e.stopPropagation();closePanel();switchPanel('skins');});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
-document.getElementById('btn-libreria').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('lib-panel');},{passive:false});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('bg-lib').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
 document.getElementById('lib-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-document.getElementById('btn-acerca').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('about-panel');},{passive:false});
+safeTap(document.getElementById('btn-libreria'),function(e){openPanel('lib-panel');});
+safeTap(document.getElementById('btn-acerca'),function(e){openPanel('about-panel');});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('bg-about').addEventListener('pointerdown',function(e){if(e.target===this)closePanel();},{passive:false});
 document.getElementById('about-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
@@ -645,11 +652,13 @@ function bnKb(){
     var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);
     var snapped=snapToScale(rawN,rawO);
     if(snapped.mute){
-      // Muted key - keep previous note playing, just update pointer tracking
+      // Muted key - keep previous note playing, just track position
       pts[e.pointerId]={id:kr.id};
       return;
     }
-    var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
+    // Valid note - stop previous and play new
+    var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);
+    pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
   wrap._pu=function(e){var pt=pts[e.pointerId];if(!pt)return;var pe=gE(pt.id);if(pe)setKeyOn(pe,false);stp(pt.id);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
