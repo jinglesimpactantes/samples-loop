@@ -200,17 +200,17 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   </div>
   <div class="cfg-menu">
     <div class="cfg-item" id="btn-proskins">
-      <span class="cfg-icon">◈</span>
+      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.1 0 2-.9 2-2 0-.53-.21-1.01-.54-1.36-.32-.34-.52-.81-.52-1.31 0-1.1.9-2 2-2h2.36c3.09 0 5.7-2.48 5.7-5.5C22.5 5.91 17.82 2 12 2z"/><circle cx="7" cy="12" r="1.5" fill="#FFD900" stroke="none"/><circle cx="9.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="14.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="17" cy="12" r="1.5" fill="#FFD900" stroke="none"/></svg></span>
       <span class="cfg-label">PRO SKINS</span>
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-libreria">
-      <span class="cfg-icon">♩</span>
+      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#FFD900"><path d="M12 3a2 2 0 0 0-2 2v8.27A4 4 0 1 0 14 17V7h3V5h-3V3h-2zm0 16a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg></span>
       <span class="cfg-label">LIBRERÍAS DE SONIDO</span>
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-acerca">
-      <span class="cfg-icon">⊙</span>
+      <span class="cfg-icon" style="font-family:Georgia,serif;font-size:18px;font-style:italic;color:#FFD900;font-weight:bold;">i</span>
       <span class="cfg-label">ACERCA DE WINDIQA</span>
       <span class="cfg-arrow">›</span>
     </div>
@@ -484,20 +484,21 @@ function getScaleNotes(){
   return SCALES[scaleType].map(function(i){return(root+i)%12;});
 }
 function snapToScale(n,o){
-  var notes=getScaleNotes();if(!notes)return{n:n,o:o};
+  var notes=getScaleNotes();if(!notes)return{n:n,o:o,mute:false};
   var SEM_N={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
   var m=SEM_N[n];
-  if(notes.indexOf(m)>=0)return{n:n,o:o};
-  // Go UP to next note in scale
+  if(notes.indexOf(m)>=0)return{n:n,o:o,mute:false};
+  // Pentatonic: mute notes not in scale
+  if(scaleType==='penta')return{n:n,o:o,mute:true};
+  // Major/Minor: go UP to next note in scale
   for(var i=1;i<=2;i++){
     var up=(m+i)%12;
     if(notes.indexOf(up)>=0){
-      // If we crossed from B to C, increment octave
       var newOct=(m+i>=12)?o+1:o;
-      return{n:ALL_SC[up],o:newOct};
+      return{n:ALL_SC[up],o:newOct,mute:false};
     }
   }
-  return{n:n,o:o};
+  return{n:n,o:o,mute:false};
 }
 ['C','D','E','F','G','A','B'].forEach(function(note){
   document.getElementById('scn-'+note).addEventListener('pointerdown',function(e){
@@ -639,9 +640,8 @@ function gE(id){return document.querySelector('[data-id="'+id+'"]');}
 function bnKb(){
   var wrap=document.getElementById('kbwrap');if(!wrap)return;
   if(wrap._pd){wrap.removeEventListener('pointerdown',wrap._pd);wrap.removeEventListener('pointermove',wrap._pm);wrap.removeEventListener('pointerup',wrap._pu);wrap.removeEventListener('pointercancel',wrap._pu);}
-  var lastSlideNote=null;
-  wrap._pd=function(e){e.preventDefault();var kr=atP(e.clientX,e.clientY);if(!kr)return;try{wrap.setPointerCapture(e.pointerId);}catch(ex){}pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);lastSlideNote=snapped.n+snapped.o;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),false);};
-  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);var noteKey=snapped.n+snapped.o;if(noteKey===lastSlideNote)return;lastSlideNote=noteKey;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
+  wrap._pd=function(e){e.preventDefault();var kr=atP(e.clientX,e.clientY);if(!kr)return;try{wrap.setPointerCapture(e.pointerId);}catch(ex){}pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);if(snapped.mute)return;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),false);};
+  wrap._pm=function(e){var pt=pts[e.pointerId];if(!pt)return;var kr=atP(e.clientX,e.clientY);if(!kr)return;var pr=pt.id;if(kr.id===pr){uV(pr,e.clientY,kr.t,kr.bo);return;}var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);var snapped=snapToScale(rawN,rawO);if(snapped.mute)return;var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
   wrap._pu=function(e){var pt=pts[e.pointerId];if(!pt)return;var pe=gE(pt.id);if(pe)setKeyOn(pe,false);stp(pt.id);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
