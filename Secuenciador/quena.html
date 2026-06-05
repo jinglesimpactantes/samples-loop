@@ -652,8 +652,7 @@ function bnKb(){
     var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);
     var snapped=snapToScale(rawN,rawO);
     if(snapped.mute){
-      // Muted key - keep previous note playing, just track position
-      pts[e.pointerId]={id:kr.id};
+      // Muted key - DON'T update pts, keep tracking last valid note
       return;
     }
     // Valid note - stop previous and play new
