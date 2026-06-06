@@ -114,7 +114,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
-  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v9</div>
+  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v10</div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
@@ -207,9 +207,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt="⚙"/></div>
 </div>
 
+<!-- SHARED OVERLAY -->
+<div id="ovl-shared" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;">
+
 <!-- TUERCA PANEL -->
-<div id="bg-tuerca" class="ovl-bg">
-<div id="tuerca-panel" class="ovl">
+<div id="tuerca-panel" class="ovl" style="display:none;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>CONFIGURACIÓN</h3>
     <div class="ovl-close" id="tuerca-close">✕</div>
@@ -221,8 +223,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-libreria">
-      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-      <span class="cfg-label">LIBRERÍAS DE SONIDO</span>
+      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="#FFD900"/><circle cx="12" cy="12" r="6" stroke-dasharray="2 3"/></svg></span>
+      <span class="cfg-label">LIBRERÍAS DE AUDIO</span>
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-acerca">
@@ -232,28 +234,23 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     </div>
   </div>
 </div>
-</div>
 
 <!-- PRO SKINS -->
-<div id="bg-thm" class="ovl-bg">
-<div id="thm" class="ovl">
+<div id="thm" class="ovl" style="display:none;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>PRO SKINS</h3>
     <div class="ovl-close" id="thm-close">✕</div>
   </div>
   <div class="trow" id="trow-themes"></div>
 </div>
-</div>
 
-<!-- LIBRERIA - tarjeta centrada con scroll -->
-<div id="bg-lib" class="ovl-bg">
-<div id="lib-panel" class="ovl" style="width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;display:flex;flex-direction:column;background:#111;border-color:rgba(255,217,0,0.3);">
+<!-- LIBRERÍA DE AUDIO -->
+<div id="lib-panel" class="ovl" style="display:none;width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;flex-direction:column;background:#111;border-color:rgba(255,217,0,0.3);">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
-    <h3>LIBRERÍAS DE SONIDO</h3>
+    <h3>LIBRERÍAS DE AUDIO</h3>
     <div class="ovl-close" id="lib-close">✕</div>
   </div>
-  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding-right:2px;">
-    <!-- Quena - activa -->
+  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
     <div class="kit-banner-item kit-banner-active" id="lib-quena">
       <div style="position:relative;">
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
@@ -261,7 +258,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
       <div class="kit-banner-label">Quena Andina</div>
     </div>
-    <!-- Zampoña -->
     <div class="kit-banner-item lib-locked" id="lib-zam">
       <div class="kit-banner-lock-wrap">
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
@@ -270,7 +266,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
       <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <!-- Ocarina -->
     <div class="kit-banner-item lib-locked" id="lib-ocarina">
       <div class="kit-banner-lock-wrap">
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
@@ -279,7 +274,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
       <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <!-- Flauta Cerámica -->
     <div class="kit-banner-item lib-locked" id="lib-flauta">
       <div class="kit-banner-lock-wrap">
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
@@ -288,7 +282,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       </div>
       <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
     </div>
-    <!-- Tarka -->
     <div class="kit-banner-item lib-locked" id="lib-tarka">
       <div class="kit-banner-lock-wrap">
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
@@ -299,11 +292,9 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     </div>
   </div>
 </div>
-</div>
 
 <!-- ACERCA DE -->
-<div id="bg-about" class="ovl-bg">
-<div id="about-panel" class="ovl" style="align-items:center;text-align:center;gap:8px;">
+<div id="about-panel" class="ovl" style="display:none;align-items:center;text-align:center;gap:8px;">
   <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
     <h3>ACERCA DE</h3>
     <div class="ovl-close" id="about-close">✕</div>
@@ -313,14 +304,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
     Instrumento virtual de vientos nativo-americanos<br>
     Con ruedas de expresión, reverb IR y delay.<br>
-    Pro Skins y librerías de sonido para inspirarte.
+    Pro Skins y librerías de audio para inspirarte.
   </div>
   <div style="width:65%;height:1px;background:rgba(255,255,255,0.12);margin:4px auto;"></div>
   <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;">Desarrollo por Mike Valderrama</div>
   <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:6px;">Arequipa, Perú</div>
   <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:9px 22px;border-radius:6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
 </div>
-</div>
+
+</div><!-- end ovl-shared -->
 
 <!-- PROXIMAMENTE -->
 <div id="prox-msg">
@@ -578,53 +570,44 @@ document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
 },{passive:false});
 document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
-// ═══ PANEL SYSTEM - clean rewrite ═══
+// ═══ PANEL SYSTEM - single shared overlay ═══
 var panelStack=[];
-var bgMap={'tuerca-panel':'bg-tuerca','thm':'bg-thm','lib-panel':'bg-lib','about-panel':'bg-about','prox-msg':'prox-msg'};
+var ovlShared=document.getElementById('ovl-shared');
+
+function showOverlay(){ovlShared.style.display='flex';}
+function hideOverlay(){ovlShared.style.display='none';}
 
 function openPanel(id){
+  // Hide all panels first
+  ['tuerca-panel','thm','lib-panel','about-panel'].forEach(function(p){
+    document.getElementById(p).style.display='none';
+  });
   panelStack.push(id);
-  var bg=document.getElementById(bgMap[id]||id);
-  if(bg)bg.style.display='flex';
+  showOverlay();
+  document.getElementById(id).style.display='flex';
 }
 
 function closePanel(){
   if(panelStack.length===0)return;
   var id=panelStack.pop();
-  var bg=document.getElementById(bgMap[id]||id);
-  if(bg)bg.style.display='none';
+  document.getElementById(id).style.display='none';
+  if(panelStack.length===0){
+    hideOverlay();
+  } else {
+    // Show previous panel
+    document.getElementById(panelStack[panelStack.length-1]).style.display='flex';
+  }
 }
 
 function closeAllPanels(){
-  while(panelStack.length>0)closePanel();
+  while(panelStack.length>0){
+    var id=panelStack.pop();
+    document.getElementById(id).style.display='none';
+  }
+  hideOverlay();
 }
 
-// Each bg overlay closes ONLY on tap (not scroll) on the dark area
-function addBgTap(bgId,panelId){
-  var bg=document.getElementById(bgId);
-  if(!bg)return;
-  var startX,startY,moved;
-  bg.addEventListener('pointerdown',function(e){
-    if(e.target!==bg)return;
-    startX=e.clientX;startY=e.clientY;moved=false;
-  },{passive:true});
-  bg.addEventListener('pointermove',function(e){
-    if(Math.abs(e.clientX-startX)>10||Math.abs(e.clientY-startY)>10)moved=true;
-  },{passive:true});
-  bg.addEventListener('pointerup',function(e){
-    if(e.target!==bg)return;
-    if(!moved)closePanel();
-  },{passive:true});
-}
-
-// Stop scroll events from bubbling out of panel
-function trapPanel(panelId){
-  var el=document.getElementById(panelId);
-  if(!el)return;
-  el.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-}
-
-// Safe tap - only fires if no scroll movement
+// Click on shared overlay bg closes top panel
 function safeTap(el,fn){
   if(!el)return;
   var sx,sy,moved;
@@ -633,11 +616,20 @@ function safeTap(el,fn){
   el.addEventListener('pointerup',function(e){if(!moved)fn(e);},{passive:true});
 }
 
-// Setup all panels
-addBgTap('bg-tuerca','tuerca-panel'); trapPanel('tuerca-panel');
-addBgTap('bg-thm','thm');             trapPanel('thm');
-addBgTap('bg-lib','lib-panel');       trapPanel('lib-panel');
-addBgTap('bg-about','about-panel');   trapPanel('about-panel');
+// Clicking the dark overlay background closes top panel
+safeTap(ovlShared,function(e){
+  if(e.target===ovlShared)closePanel();
+});
+
+// Stop events inside panels from reaching overlay
+['tuerca-panel','thm','lib-panel','about-panel'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el){
+    el.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+    // Allow scroll inside lib-panel without closing
+    el.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:true});
+  }
+});
 
 // TUERCA
 document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
@@ -648,17 +640,8 @@ safeTap(document.getElementById('btn-proskins'),function(){closePanel();switchPa
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 
 // LIBRERÍAS
-safeTap(document.getElementById('btn-libreria'),function(){
-  document.getElementById('tuerca-panel').style.display='none';
-  openPanel('lib-panel');
-});
-document.getElementById('lib-close').addEventListener('pointerdown',function(e){
-  e.stopPropagation();e.preventDefault();
-  closePanel();
-  if(panelStack.indexOf('tuerca-panel')>=0){
-    document.getElementById('tuerca-panel').style.display='flex';
-  }
-},{passive:false});
+safeTap(document.getElementById('btn-libreria'),function(){openPanel('lib-panel');});
+document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
 // ACERCA DE
 safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');});
@@ -668,7 +651,7 @@ document.getElementById('about-web').addEventListener('pointerdown',function(e){
 // PRÓXIMAMENTE
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
-// Quena activa - cierra todo
+// Quena activa
 var libQuena=document.getElementById('lib-quena');
 if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closeAllPanels();},{passive:false});
 
