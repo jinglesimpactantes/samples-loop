@@ -70,6 +70,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .cfg-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);margin-bottom:2px;}
 /* KIT BANNER ITEM */
 .kit-banner-item{border-radius:10px;overflow:hidden;border:1px solid rgba(255,217,0,0.2);margin-bottom:8px;cursor:pointer;background:#000;}
+.kit-banner-active{border:2px solid #FFD900;box-shadow:0 0 8px rgba(255,217,0,0.3);}
 .kit-banner-img{width:100%;height:auto;display:block;}
 .kit-banner-label{padding:8px 14px;font-family:'Michroma',monospace;font-size:11px;letter-spacing:1.5px;color:#FFD900;display:flex;align-items:center;gap:8px;background:#000;}
 .kit-banner-active .kit-banner-label{color:#FFD900;}
@@ -113,7 +114,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
-  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v8</div>
+  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v9</div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
@@ -577,21 +578,111 @@ document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
 },{passive:false});
 document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
-// OVERLAY PANELS - stack system
+// ═══ PANEL SYSTEM - clean rewrite ═══
 var panelStack=[];
 var bgMap={'tuerca-panel':'bg-tuerca','thm':'bg-thm','lib-panel':'bg-lib','about-panel':'bg-about','prox-msg':'prox-msg'};
+
 function openPanel(id){
   panelStack.push(id);
-  var el=document.getElementById(bgMap[id]||id);
-  if(el)el.style.display='flex';
+  var bg=document.getElementById(bgMap[id]||id);
+  if(bg)bg.style.display='flex';
 }
+
 function closePanel(){
   if(panelStack.length===0)return;
   var id=panelStack.pop();
-  var el=document.getElementById(bgMap[id]||id);
-  if(el)el.style.display='none';
+  var bg=document.getElementById(bgMap[id]||id);
+  if(bg)bg.style.display='none';
 }
-// No document-level close listener - prevents accidental close on scroll
+
+function closeAllPanels(){
+  while(panelStack.length>0)closePanel();
+}
+
+// Each bg overlay closes ONLY on tap (not scroll) on the dark area
+function addBgTap(bgId,panelId){
+  var bg=document.getElementById(bgId);
+  if(!bg)return;
+  var startX,startY,moved;
+  bg.addEventListener('pointerdown',function(e){
+    if(e.target!==bg)return;
+    startX=e.clientX;startY=e.clientY;moved=false;
+  },{passive:true});
+  bg.addEventListener('pointermove',function(e){
+    if(Math.abs(e.clientX-startX)>10||Math.abs(e.clientY-startY)>10)moved=true;
+  },{passive:true});
+  bg.addEventListener('pointerup',function(e){
+    if(e.target!==bg)return;
+    if(!moved)closePanel();
+  },{passive:true});
+}
+
+// Stop scroll events from bubbling out of panel
+function trapPanel(panelId){
+  var el=document.getElementById(panelId);
+  if(!el)return;
+  el.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+}
+
+// Safe tap - only fires if no scroll movement
+function safeTap(el,fn){
+  if(!el)return;
+  var sx,sy,moved;
+  el.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;moved=false;},{passive:true});
+  el.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)moved=true;},{passive:true});
+  el.addEventListener('pointerup',function(e){if(!moved)fn(e);},{passive:true});
+}
+
+// Setup all panels
+addBgTap('bg-tuerca','tuerca-panel'); trapPanel('tuerca-panel');
+addBgTap('bg-thm','thm');             trapPanel('thm');
+addBgTap('bg-lib','lib-panel');       trapPanel('lib-panel');
+addBgTap('bg-about','about-panel');   trapPanel('about-panel');
+
+// TUERCA
+document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
+document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+
+// PRO SKINS
+safeTap(document.getElementById('btn-proskins'),function(){closePanel();switchPanel('skins');});
+document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
+
+// LIBRERÍAS
+safeTap(document.getElementById('btn-libreria'),function(){
+  document.getElementById('tuerca-panel').style.display='none';
+  openPanel('lib-panel');
+});
+document.getElementById('lib-close').addEventListener('pointerdown',function(e){
+  e.stopPropagation();e.preventDefault();
+  closePanel();
+  if(panelStack.indexOf('tuerca-panel')>=0){
+    document.getElementById('tuerca-panel').style.display='flex';
+  }
+},{passive:false});
+
+// ACERCA DE
+safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');});
+document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
+
+// PRÓXIMAMENTE
+document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+
+// Quena activa - cierra todo
+var libQuena=document.getElementById('lib-quena');
+if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closeAllPanels();},{passive:false});
+
+// Kits bloqueados - sin acción
+['lib-zam','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();},{passive:false});
+});
+
+// Botones principales
+['ruedas','reverb','delay'].forEach(function(n){
+  document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
+});
+
 var panels={ruedas:'pnl-ruedas',reverb:'pnl-reverb',delay:'pnl-delay',skins:'pnl-skins',lib:'pnl-lib',scale:'pnl-scale'};
 var curPanel=null;
 function switchPanel(name){
@@ -611,49 +702,6 @@ function switchPanel(name){
     if(name==='skins')buildThemeButtonsInline();
   }
 }
-
-// Scroll-safe tap handler for cfg-items
-function safeTap(el, fn) {
-  var moved=false, sx=0, sy=0;
-  el.addEventListener('pointerdown',function(e){moved=false;sx=e.clientX;sy=e.clientY;},{passive:true});
-  el.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)moved=true;},{passive:true});
-  el.addEventListener('pointerup',function(e){if(!moved)fn(e);});
-}
-
-document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
-document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-document.getElementById('tuerca-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-safeTap(document.getElementById('btn-proskins'),function(e){e.stopPropagation&&e.stopPropagation();closePanel();switchPanel('skins');});
-document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
-document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();
-  closePanel();
-  // If tuerca was open before, show it again
-  if(panelStack.length>0&&panelStack[panelStack.length-1]==='tuerca-panel'){
-    document.getElementById('tuerca-panel').style.display='flex';
-  }
-},{passive:false});
-document.getElementById('lib-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-safeTap(document.getElementById('btn-libreria'),function(e){
-  // Hide tuerca panel but keep bg overlay
-  document.getElementById('tuerca-panel').style.display='none';
-  openPanel('lib-panel');
-});
-safeTap(document.getElementById('btn-acerca'),function(e){openPanel('about-panel');});
-document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-document.getElementById('about-panel').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
-document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
-// Quena - active, closes all panels
-var libQuena=document.getElementById('lib-quena');
-if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();while(panelStack.length)closePanel();},{passive:false});
-// Locked kits - no action
-['lib2-zam','lib2-toyo','lib2-tarka','lib2-ocarina','lib2-flauta'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('prox-msg');},{passive:false});
-});
-['ruedas','reverb','delay'].forEach(function(n){
-  document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
-});
 
 function buildThemeButtonsInline(){
   var tr=document.getElementById('trow-themes-inline');tr.innerHTML='';
