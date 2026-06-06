@@ -114,7 +114,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
-  <div id="ver" style="font-family:system-ui,sans-serif;font-size:9px;font-weight:700;color:#cc0000;flex-shrink:0;padding:0 4px;">v10</div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
@@ -651,14 +650,17 @@ document.getElementById('about-web').addEventListener('pointerdown',function(e){
 // PRÓXIMAMENTE
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
-// Quena activa
+// Quena activa - cierra solo en tap real (no scroll)
 var libQuena=document.getElementById('lib-quena');
-if(libQuena)libQuena.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closeAllPanels();},{passive:false});
+if(libQuena)safeTap(libQuena,function(){closeAllPanels();});
 
-// Kits bloqueados - sin acción
+// Kits bloqueados - mostrar PRÓXIMAMENTE
 ['lib-zam','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el)el.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();},{passive:false});
+  if(el)safeTap(el,function(){
+    var pm=document.getElementById('prox-msg');
+    if(pm)pm.style.display='flex';
+  });
 });
 
 // Botones principales
