@@ -101,13 +101,14 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .cfg-label{font-family:system-ui,sans-serif;font-size:12px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
 .cfg-arrow{font-size:16px;color:rgba(255,217,0,0.4);flex-shrink:0;}
 /* PROXIMAMENTE */
-#prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:400;display:none;align-items:center;justify-content:center;}
-#prox-inner{background:#0a0804;border:2px solid rgba(47,111,104,0.6);border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
+#prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;}
+#prox-inner{background:#0a0804;border:2px solid #FFD900;border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
 #prox-inner p{font-family:'Michroma',monospace;font-size:14px;color:#FFD900;letter-spacing:2px;}
 #prox-inner span{font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.55);}
 #prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;color:#0a0804;background:#FFD900;padding:10px 28px;border-radius:6px;cursor:pointer;touch-action:manipulation;}
 /* LOGO AREA */
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 </head>
 <body oncontextmenu="return false">
 <div id="minibar">
@@ -222,7 +223,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-libreria">
-      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="#FFD900"/><circle cx="12" cy="12" r="6" stroke-dasharray="2 3"/></svg></span>
+      <span class="cfg-icon"><i class="ti ti-piano" style="font-size:20px;color:#FFD900;" aria-hidden="true"></i></span>
       <span class="cfg-label">LIBRERÍAS DE AUDIO</span>
       <span class="cfg-arrow">›</span>
     </div>
@@ -647,8 +648,12 @@ safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel'
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
-// PRÓXIMAMENTE
-document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+// PRÓXIMAMENTE - direct show/hide, independent of panel stack
+var proxMsg=document.getElementById('prox-msg');
+var proxInner=document.getElementById('prox-inner');
+document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();proxMsg.style.display='none';},{passive:false});
+proxMsg.addEventListener('pointerdown',function(e){if(e.target===proxMsg)proxMsg.style.display='none';});
+proxInner.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 
 // Quena activa - cierra solo en tap real (no scroll)
 var libQuena=document.getElementById('lib-quena');
