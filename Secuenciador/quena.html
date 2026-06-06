@@ -8,7 +8,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
-body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;touch-action:none;overflow:hidden;}
+body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;touch-action:none;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);}
 #minibar{height:26px;flex-shrink:0;background:#0d0b06;border-bottom:1px solid rgba(255,217,0,0.15);display:flex;align-items:center;padding:0 8px;gap:6px;}
 .mmz{width:28px;height:22px;background:rgba(255,217,0,0.15);border:1.5px solid rgba(255,217,0,0.5);border-radius:4px;color:#FFD900;font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
 #mm-keys{flex:1;height:14px;position:relative;border-radius:3px;overflow:hidden;background:#1a1408;border:1px solid rgba(255,217,0,0.15);}
@@ -61,14 +61,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;}
 /* TARJETA CENTRADA (tuerca, acerca de, themes) */
 .ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
-.ovl h3{font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;}
-.ovl-close{font-family:system-ui,sans-serif;font-size:22px;font-weight:700;color:rgba(255,217,0,0.8);cursor:pointer;touch-action:manipulation;padding:0 6px;line-height:1;}
+.ovl h3{font-family:'Michroma',monospace;font-size:9px;color:#FFD900;letter-spacing:2px;}
+.ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:rgba(255,217,0,0.8);cursor:pointer;touch-action:manipulation;padding:0 4px;line-height:1;}
 /* BOTTOM SHEET (librerías) */
 .ovl-bottom{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:16px 16px 0 0;padding:18px 16px 32px;display:flex;flex-direction:column;gap:10px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 40px rgba(0,0,0,0.9);}
 .ovl-bg-bottom{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:flex-end;justify-content:center;}
 /* CFG menu items - more padding like Drunativa */
-.cfg-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);margin-bottom:2px;}
-/* KIT BANNER ITEM */
+/* BOTTOM SHEET */
+.ovl-bg-bottom{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:flex-end;justify-content:center;}
+.ovl-bottom{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:16px 16px 0 0;padding:18px 16px 32px;display:flex;flex-direction:column;gap:10px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 40px rgba(0,0,0,0.9);}
 .kit-banner-item{border-radius:10px;overflow:hidden;border:1px solid rgba(255,217,0,0.2);margin-bottom:8px;cursor:pointer;background:#000;}
 .kit-banner-active{border:2px solid #FFD900;box-shadow:0 0 8px rgba(255,217,0,0.3);}
 .kit-banner-img{width:100%;height:auto;display:block;}
@@ -95,11 +96,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .sw-circ-inner{width:22px;height:22px;border-radius:50%;background:#333;transition:all 0.15s;}
 .sw-circ.sw-circ-on .sw-circ-inner{background:#FFD900;box-shadow:0 0 8px rgba(255,217,0,0.8);}
 .cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
-.cfg-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);}
+.cfg-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);margin-bottom:2px;}
 .cfg-item:active{background:rgba(255,217,0,0.1);}
-.cfg-icon{font-size:16px;color:#FFD900;width:22px;text-align:center;flex-shrink:0;}
-.cfg-label{font-family:system-ui,sans-serif;font-size:12px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
-.cfg-arrow{font-size:16px;color:rgba(255,217,0,0.4);flex-shrink:0;}
+.cfg-icon{font-size:14px;color:#FFD900;width:20px;text-align:center;flex-shrink:0;}
+.cfg-label{font-family:system-ui,sans-serif;font-size:10px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
+.cfg-arrow{font-size:13px;color:rgba(255,217,0,0.4);flex-shrink:0;}
 /* PROXIMAMENTE */
 #prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;}
 #prox-inner{background:#0a0804;border:2px solid #FFD900;border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
@@ -256,7 +257,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
         <div style="position:absolute;top:6px;right:8px;background:#FFD900;color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
       </div>
-      <div class="kit-banner-label">Quena Andina</div>
+      <div class="kit-banner-label">Quena Pro</div>
     </div>
     <div class="kit-banner-item lib-locked" id="lib-zam">
       <div class="kit-banner-lock-wrap">
@@ -640,7 +641,7 @@ safeTap(document.getElementById('btn-proskins'),function(){closePanel();switchPa
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
 
 // LIBRERÍAS
-safeTap(document.getElementById('btn-libreria'),function(){openPanel('lib-panel');});
+safeTap(document.getElementById('btn-libreria'),function(){openPanel('lib-panel');startLibAutoScroll();});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
 // ACERCA DE
@@ -654,6 +655,34 @@ var proxInner=document.getElementById('prox-inner');
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();proxMsg.style.display='none';},{passive:false});
 proxMsg.addEventListener('pointerdown',function(e){if(e.target===proxMsg)proxMsg.style.display='none';});
 proxInner.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+
+// AUTO-SCROLL librerías
+function startLibAutoScroll(){
+  var container=document.querySelector('#lib-panel [style*="overflow-y"]');
+  if(!container)return;
+  container.scrollTop=0;
+  var scrolling=true;
+  var touching=false;
+  var rafId=null;
+  var speed=0.4; // px per frame - very slow
+
+  function step(){
+    if(!scrolling)return;
+    if(!touching){
+      container.scrollTop+=speed;
+      if(container.scrollTop>=container.scrollHeight-container.clientHeight){
+        scrolling=false;return;
+      }
+    }
+    rafId=requestAnimationFrame(step);
+  }
+
+  container.addEventListener('pointerdown',function(){touching=true;},{passive:true});
+  container.addEventListener('pointerup',function(){touching=false;},{passive:true});
+  container.addEventListener('pointercancel',function(){touching=false;},{passive:true});
+
+  setTimeout(function(){rafId=requestAnimationFrame(step);},2000);
+}
 
 // Quena activa - cierra solo en tap real (no scroll)
 var libQuena=document.getElementById('lib-quena');
