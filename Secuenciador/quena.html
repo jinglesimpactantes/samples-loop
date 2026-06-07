@@ -27,7 +27,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #bnr{flex:1;border-right:1px solid rgba(47,111,104,0.3);overflow:hidden;background:#000;}
 #wfcv{display:block;width:100%;height:100%;}
 #trc{width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;position:relative;z-index:10;}
-#trc img{width:24px;height:24px;object-fit:contain;opacity:0.85;}
+#trc img{width:24px;height:24px;object-fit:contain;opacity:0.9;filter:invert(52%) sepia(99%) saturate(400%) hue-rotate(148deg) brightness(95%);}
 /* RUEDAS */
 #pnl-ruedas{display:none;flex-direction:row;align-items:center;width:100%;height:100%;gap:6px;padding:2px 0;}
 .whl2{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
@@ -259,7 +259,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
         <div style="position:absolute;top:6px;right:8px;background:#FFD900;color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
       </div>
-      <div class="kit-banner-label">Quena Pro</div>
+      <div class="kit-banner-label">Quena Windiqa</div>
     </div>
     <div class="kit-banner-item lib-locked" id="lib-zam">
       <div class="kit-banner-lock-wrap">
@@ -350,12 +350,16 @@ wheelImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Sample
 var TBASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Teclas/';
 var TPNG={};
 ['blancaL:TeclaBlanca_Larga.png','blancaC:TeclaBlanca_Corta.png','negraL:TeclaNegra_Larga.png','negraC:TeclaNegra_Corta.png','rojaL:TeclaRoja_Larga.png','rojaC:TeclaRoja_Corta.png','caniaL:TeclaCania_Larga.png','caniaC:TeclaCania_Corta.png','grisL:TeclaGris_Larga.png'].forEach(function(s){var p=s.split(':');var img=new Image();img.src=TBASE+p[1];TPNG[p[0]]=img;});
+// Windiqa skin - turquoise keys
+var tqBase='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/';
+var tqL=new Image();tqL.src=tqBase+'TeclaTurquesa_Larga.png';TPNG['tqL']=tqL;
+var tqC=new Image();tqC.src=tqBase+'TeclaWindiqa_Corta.png';TPNG['tqC']=tqC;
 var THEME_LIST=[
   {id:'classic',name:'Classic',larga:'blancaL',corta:'negraC'},
   {id:'ivory',name:'Ivory',larga:'blancaL',corta:'caniaC'},
   {id:'classcana',name:'Classic Caña',larga:'caniaL',corta:'negraC'},
   {id:'purecana',name:'Pure Caña',larga:'caniaL',corta:'caniaC'},
-  {id:'allwhite',name:'All White',larga:'blancaL',corta:'blancaC'},
+  {id:'windiqa',name:'Windiqa',larga:'tqL',corta:'tqC'},
   {id:'shadow',name:'Shadow',larga:'grisL',corta:'negraC'},
   {id:'noir',name:'Noir',larga:'negraL',corta:'negraC'},
   {id:'inverted',name:'Inverted',larga:'negraL',corta:'blancaC'},
@@ -646,7 +650,12 @@ document.getElementById('skins-close').addEventListener('pointerdown',function(e
 
 // LIBRERÍAS
 safeTap(document.getElementById('btn-libreria'),function(){openPanel('lib-panel');startLibAutoScroll();});
-document.getElementById('lib-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
+document.getElementById('lib-close').addEventListener('pointerdown',function(e){
+  e.stopPropagation();e.preventDefault();
+  libScrollActive=false;cancelAnimationFrame(libScrollRAF);clearTimeout(libScrollTimer);
+  if(libScrollUpHandler){document.removeEventListener('pointerup',libScrollUpHandler);libScrollUpHandler=null;}
+  closePanel();
+},{passive:false});
 
 // ACERCA DE
 safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');});
@@ -660,41 +669,55 @@ document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.
 proxMsg.addEventListener('pointerdown',function(e){if(e.target===proxMsg)proxMsg.style.display='none';});
 proxInner.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 
-// AUTO-SCROLL librerías - always active
+// AUTO-SCROLL librerías - always active, cleanup on reopen
+var libScrollRAF=null,libScrollTimer=null,libScrollTouching=false,libScrollActive=false;
+var libScrollUpHandler=null;
+
 function startLibAutoScroll(){
   var container=document.querySelector('#lib-panel [style*="overflow-y"]');
   if(!container)return;
+
+  // Cleanup previous
+  cancelAnimationFrame(libScrollRAF);
+  clearTimeout(libScrollTimer);
+  if(libScrollUpHandler)document.removeEventListener('pointerup',libScrollUpHandler);
+  libScrollTouching=false;
+  libScrollActive=true;
   container.scrollTop=0;
-  var touching=false;
-  var resumeTimer=null;
-  var rafId=null;
-  var speed=0.4;
 
   function step(){
-    if(!touching){
-      container.scrollTop+=speed;
-      if(container.scrollTop>=container.scrollHeight-container.clientHeight)return;
+    if(!libScrollActive)return;
+    if(!libScrollTouching){
+      container.scrollTop+=0.4;
+      if(container.scrollTop>=container.scrollHeight-container.clientHeight){
+        libScrollActive=false;return;
+      }
     }
-    rafId=requestAnimationFrame(step);
+    libScrollRAF=requestAnimationFrame(step);
+  }
+
+  function resume(){
+    clearTimeout(libScrollTimer);
+    libScrollTimer=setTimeout(function(){
+      libScrollRAF=requestAnimationFrame(step);
+    },2000);
   }
 
   container.addEventListener('pointerdown',function(){
-    touching=true;
-    if(resumeTimer)clearTimeout(resumeTimer);
-    cancelAnimationFrame(rafId);
+    libScrollTouching=true;
+    cancelAnimationFrame(libScrollRAF);
+    clearTimeout(libScrollTimer);
   },{passive:true});
 
-  // Use document for pointerup so it fires even if finger leaves the container
-  document.addEventListener('pointerup',function(){
-    if(!touching)return;
-    touching=false;
-    if(resumeTimer)clearTimeout(resumeTimer);
-    resumeTimer=setTimeout(function(){
-      rafId=requestAnimationFrame(step);
-    },2000);
-  },{passive:true});
+  libScrollUpHandler=function(){
+    if(!libScrollTouching)return;
+    libScrollTouching=false;
+    resume();
+  };
+  document.addEventListener('pointerup',libScrollUpHandler,{passive:true});
 
-  setTimeout(function(){rafId=requestAnimationFrame(step);},2000);
+  // Start after 2s
+  libScrollTimer=setTimeout(function(){libScrollRAF=requestAnimationFrame(step);},2000);
 }
 
 // Quena activa - cierra solo en tap real (no scroll)
