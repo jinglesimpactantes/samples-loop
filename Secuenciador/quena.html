@@ -63,7 +63,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 /* CLOSE BUTTON - bigger touch area */
 .ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:8px 12px;line-height:1;margin:-8px -8px -8px 0;}
 /* PREMIUM OVERLAY */
-.prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.68);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;border-radius:inherit;}
+.prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.78);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;border-radius:inherit;}
 .prem-ovl svg{opacity:0.9;}
 .prem-ovl span{font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;text-align:center;}
 .sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
@@ -305,22 +305,26 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 
 <!-- ACERCA DE -->
-<div id="about-panel" class="ovl" style="display:none;align-items:center;text-align:center;gap:8px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+<div id="about-panel" class="ovl" style="display:none;align-items:center;text-align:center;gap:0;overflow:hidden;padding:14px 14px 8px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;flex-shrink:0;margin-bottom:6px;">
     <h3>ACERCA DE</h3>
     <div class="ovl-close" id="about-close">✕</div>
   </div>
-  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:58%;max-width:240px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
-  <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:3px;">Pro v1.0.0</div>
-  <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
-    Instrumento virtual de vientos nativo-americanos<br>
-    Con ruedas de expresión, reverb IR y delay.<br>
-    Pro Skins y librerías de audio para inspirarte.
+  <div id="about-scroll" style="overflow:hidden;width:100%;flex:1;">
+    <div id="about-inner" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:20px;">
+      <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:58%;max-width:240px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
+      <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:3px;">Pro v1.0.0</div>
+      <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
+        Instrumento virtual de vientos nativo-americanos<br>
+        Con ruedas de expresión, reverb IR y delay.<br>
+        Pro Skins y librerías de audio para inspirarte.
+      </div>
+      <div style="width:65%;height:1px;background:rgba(255,255,255,0.12);margin:4px auto;"></div>
+      <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;">Desarrollo por Mike Valderrama</div>
+      <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:6px;">Arequipa, Perú</div>
+      <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:9px 22px;border-radius:6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
+    </div>
   </div>
-  <div style="width:65%;height:1px;background:rgba(255,255,255,0.12);margin:4px auto;"></div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;">Desarrollo por Mike Valderrama</div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:6px;">Arequipa, Perú</div>
-  <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:9px 22px;border-radius:6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
 </div>
 
 </div><!-- end ovl-shared -->
@@ -665,8 +669,30 @@ document.getElementById('lib-close').addEventListener('pointerdown',function(e){
   closePanel();
 },{passive:false});
 
+// ACERCA DE auto-scroll
+function startAboutAutoScroll(){
+  var inner=document.getElementById('about-inner');
+  var container=document.getElementById('about-scroll');
+  if(!inner||!container)return;
+  inner.style.transform='translateY(0)';
+  var pos=0,rafId=null,touching=false;
+  var totalH=inner.scrollHeight,viewH=container.offsetHeight;
+
+  function step(){
+    if(!touching){
+      pos+=0.5;
+      if(pos>totalH-viewH)pos=totalH-viewH;
+      inner.style.transform='translateY(-'+pos+'px)';
+    }
+    rafId=requestAnimationFrame(step);
+  }
+  container.addEventListener('pointerdown',function(){touching=true;cancelAnimationFrame(rafId);},{passive:true});
+  document.addEventListener('pointerup',function(){touching=false;rafId=requestAnimationFrame(step);},{passive:true});
+  rafId=requestAnimationFrame(step);
+}
+
 // ACERCA DE
-safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');});
+safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');startAboutAutoScroll();});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
@@ -869,24 +895,11 @@ var isPro=false;
 
 function checkTrial(){
   if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
-  var inst=localStorage.getItem(TRIAL_KEY);
-  if(!inst){localStorage.setItem(TRIAL_KEY,Date.now().toString());isPro=true;}
-  else{
-    var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
-    var daysLeft=Math.ceil(TRIAL_DAYS-daysUsed);
-    if(daysLeft>0){
-      isPro=true;
-      // Show counter only first days
-      var ctr=document.getElementById('trial-counter');
-      if(ctr&&daysLeft<=TRIAL_DAYS){
-        ctr.style.display='block';
-        ctr.textContent=daysLeft+'d PRO';
-      }
-    } else {
-      isPro=false;
-      activateFreeMode();
-    }
-  }
+  isPro=false;
+  // Show 15 days counter for testing
+  var ctr=document.getElementById('trial-counter');
+  if(ctr){ctr.style.display='block';ctr.textContent='15d PRO';}
+  activateFreeMode();
 }
 
 function activateFreeMode(){
