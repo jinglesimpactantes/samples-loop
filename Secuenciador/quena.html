@@ -27,7 +27,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #bnr{flex:1;border-right:1px solid rgba(47,111,104,0.3);overflow:hidden;background:#000;}
 #wfcv{display:block;width:100%;height:100%;}
 #trc{width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;position:relative;z-index:10;}
-#trc img{width:24px;height:24px;object-fit:contain;opacity:0.9;filter:invert(52%) sepia(99%) saturate(400%) hue-rotate(148deg) brightness(95%);}
+#trc img{width:24px;height:24px;object-fit:contain;opacity:0.85;}
 /* RUEDAS */
 #pnl-ruedas{display:none;flex-direction:row;align-items:center;width:100%;height:100%;gap:6px;padding:2px 0;}
 .whl2{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
@@ -62,7 +62,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .lbtn.act{color:#000;background:var(--tq);border-color:var(--tq);box-shadow:0 0 8px var(--tq-glow);}
 /* CLOSE BUTTON - bigger touch area */
 .ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:8px 12px;line-height:1;margin:-8px -8px -8px 0;}
-/* SCALE SELECTOR */
+/* PREMIUM OVERLAY */
+.prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.68);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;border-radius:inherit;}
+.prem-ovl svg{opacity:0.9;}
+.prem-ovl span{font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;text-align:center;}
 .sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 .sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-family:system-ui,sans-serif;font-size:8px;font-weight:700;flex-shrink:0;}
@@ -118,17 +121,19 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div style="display:flex;gap:3px;flex-shrink:0;"><div class="mmz" id="mzo">−</div><div class="mmz" id="mzi">+</div></div>
   <div id="mm-keys"><div id="mm-view"></div></div>
   <div id="mm-oct">C4</div>
+  <div id="trial-counter" style="font-family:'Michroma',monospace;font-size:7px;color:var(--tq);flex-shrink:0;display:none;"></div>
 </div>
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
   <div id="caja">
     <!-- RUEDAS -->
-    <div id="pnl-ruedas" class="pnl">
+    <div id="pnl-ruedas" class="pnl" style="position:relative;">
       <div class="whl2"><div class="wl2">MOD</div><div class="wb2" id="mw"><canvas id="mwc"></canvas></div><div class="wv2" id="mwv">0</div></div>
       <div class="whl2"><div class="wl2">PITCH</div><div class="wb2" id="pw"><canvas id="pwc"></canvas></div><div class="wv2" id="pwv">0</div></div>
+      <div class="prem-ovl" id="ovl-ruedas"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span>FUNCIÓN PREMIUM</span></div>
     </div>
     <!-- REVERB -->
-    <div id="pnl-reverb" class="pnl">
+    <div id="pnl-reverb" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="12"/>
@@ -141,9 +146,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn act" data-ir="plate" id="irbtn-plate">PLATE</div>
         <div class="ir-btn" data-ir="cathedral" id="irbtn-cathedral">CATHEDRAL</div>
       </div>
+      <div class="prem-ovl" id="ovl-reverb"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span>FUNCIÓN PREMIUM</span></div>
     </div>
     <!-- DELAY -->
-    <div id="pnl-delay" class="pnl">
+    <div id="pnl-delay" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="0"/>
@@ -158,9 +164,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
         <div class="ir-btn act" data-sub="8" id="subbtn-8">1/8</div>
       </div>
+      <div class="prem-ovl" id="ovl-delay"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span>FUNCIÓN PREMIUM</span></div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
-    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);">
+    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);position:relative;">
       <div style="font-family:'Michroma',monospace;font-size:7px;color:rgba(255,217,0,0.6);letter-spacing:1px;text-align:center;">MODO ESCALA</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <div class="sc-btn" data-note="C" id="scn-C">C</div>
@@ -178,6 +185,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
         <div class="sc-bypass" id="sc-bypass">OFF</div>
       </div>
+      <div class="prem-ovl" id="ovl-scale"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span>FUNCIÓN PREMIUM</span></div>
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
       <div id="trow-themes-inline" style="flex:1;"></div>
@@ -317,6 +325,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 </div><!-- end ovl-shared -->
 
+
 <!-- PROXIMAMENTE -->
 <div id="prox-msg">
   <div id="prox-inner">
@@ -351,9 +360,8 @@ var TBASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/T
 var TPNG={};
 ['blancaL:TeclaBlanca_Larga.png','blancaC:TeclaBlanca_Corta.png','negraL:TeclaNegra_Larga.png','negraC:TeclaNegra_Corta.png','rojaL:TeclaRoja_Larga.png','rojaC:TeclaRoja_Corta.png','caniaL:TeclaCania_Larga.png','caniaC:TeclaCania_Corta.png','grisL:TeclaGris_Larga.png'].forEach(function(s){var p=s.split(':');var img=new Image();img.src=TBASE+p[1];TPNG[p[0]]=img;});
 // Windiqa skin - turquoise keys
-var tqBase='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/';
-var tqL=new Image();tqL.src=tqBase+'TeclaTurquesa_Larga.png';TPNG['tqL']=tqL;
-var tqC=new Image();tqC.src=tqBase+'TeclaWindiqa_Corta.png';TPNG['tqC']=tqC;
+var tqL=new Image();tqL.src='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/TeclaTurquesa_Larga.png';TPNG['tqL']=tqL;
+var tqC=new Image();tqC.src='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/TeclaWindiqa_Corta.png';TPNG['tqC']=tqC;
 var THEME_LIST=[
   {id:'classic',name:'Classic',larga:'blancaL',corta:'negraC'},
   {id:'ivory',name:'Ivory',larga:'blancaL',corta:'caniaC'},
@@ -853,10 +861,63 @@ function init(){
     setTimeout(function(){dW('mwc',0,false);dW('pwc',0,true);},200);
   }else{setTimeout(init,50);}
 }
-document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
-// Default scale UI state
-document.getElementById('scn-C').classList.add('act');
-document.getElementById('scs-penta').classList.add('act');
+// ═══ TRIAL SYSTEM - 15 days (2 for testing) ═══
+var TRIAL_DAYS=0;
+var TRIAL_KEY='windiqa_install_date';
+var TRIAL_UNLOCKED='windiqa_pro_unlocked';
+var isPro=false;
+
+function checkTrial(){
+  if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
+  var inst=localStorage.getItem(TRIAL_KEY);
+  if(!inst){localStorage.setItem(TRIAL_KEY,Date.now().toString());isPro=true;}
+  else{
+    var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
+    var daysLeft=Math.ceil(TRIAL_DAYS-daysUsed);
+    if(daysLeft>0){
+      isPro=true;
+      // Show counter only first days
+      var ctr=document.getElementById('trial-counter');
+      if(ctr&&daysLeft<=TRIAL_DAYS){
+        ctr.style.display='block';
+        ctr.textContent=daysLeft+'d PRO';
+      }
+    } else {
+      isPro=false;
+      activateFreeMode();
+    }
+  }
+}
+
+function activateFreeMode(){
+  // Bypass reverb
+  rvOn=false;
+  if(wG&&actx)wG.gain.setTargetAtTime(0,actx.currentTime,0.04);
+
+  // Show overlays on all premium panels
+  ['ovl-ruedas','ovl-reverb','ovl-delay','ovl-scale'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){
+      el.style.display='flex';
+      el.addEventListener('pointerdown',function(e){
+        e.stopPropagation();e.preventDefault();
+        window.open('https://www.looptopus.com','_blank');
+      },{passive:false});
+    }
+  });
+
+  // Gray out Pro Skins in menu
+  var ps=document.getElementById('btn-proskins');
+  if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
+}
+
+document.body.addEventListener('pointerdown',function initAudio(){
+  loadS();startWF();checkTrial();
+  // Default scale UI state
+  document.getElementById('scn-C').classList.add('act');
+  document.getElementById('scs-penta').classList.add('act');
+  document.body.removeEventListener('pointerdown',initAudio);
+},{once:true});
 init();
 </script>
 </body>
