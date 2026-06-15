@@ -42,7 +42,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .rvsel{font-family:system-ui,sans-serif;font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;padding:3px 6px;max-width:50%;}
 .rvsi{-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:rgba(255,217,0,0.5);outline:none;touch-action:manipulation;}
 /* TURQUOISE */
-:root{--tq:#00a4b3;--tq-glow:rgba(0,164,179,0.5);}
+:root{--tq:#00a4b3;--tq-glow:rgba(0,164,179,0.5);--bg-card:#1c1c1e;--cyan-main:#00e5ff;--text-muted:#8e8e93;}
 /* SLIDER */
 .rvsi{-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:#FFD900;outline:none;touch-action:manipulation;}
 .rvsi::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--tq);cursor:pointer;border:2px solid #000;box-shadow:0 0 6px var(--tq-glow);}
@@ -60,8 +60,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 /* PANEL BUTTONS (lbtn - RUEDAS/REVERB/DELAY) */
 .lbtn{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:5px 2px;border-radius:4px;border:1px solid #FFD900;width:100%;text-align:center;}
 .lbtn.act{color:#000;background:var(--tq);border-color:var(--tq);box-shadow:0 0 8px var(--tq-glow);}
-/* CLOSE BUTTON - bigger touch area */
-.ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:8px 12px;line-height:1;margin:-8px -8px -8px 0;}
+/* CLOSE BUTTON */
+.btn-close{position:absolute;top:12px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#8e8e93;font-size:12px;cursor:pointer;touch-action:manipulation;z-index:10;}
 /* PREMIUM OVERLAY */
 .prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.78);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;border-radius:inherit;}
 .prem-ovl svg{opacity:0.9;}
@@ -70,16 +70,17 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 .sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-family:system-ui,sans-serif;font-size:8px;font-weight:700;flex-shrink:0;}
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
-/* OVERLAY - fondo oscuro semitransparente */
+/* OVERLAY BG */
 .ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;}
-/* TARJETA CENTRADA (tuerca, acerca de, themes) */
-.ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
-.ovl h3{font-family:'Michroma',monospace;font-size:9px;color:#FFD900;letter-spacing:2px;}
-.kit-banner-item{border-radius:10px;overflow:hidden;border:1px solid rgba(255,217,0,0.2);margin-bottom:8px;cursor:pointer;background:#000;}
-.kit-banner-active{border:2px solid #FFD900;box-shadow:0 0 8px rgba(255,217,0,0.3);}
+/* CARD (paneles principales) */
+.ovl{background:#1c1c1e;border-radius:20px;padding:20px;width:88%;max-width:380px;max-height:85vh;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,0.5);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.05);-webkit-overflow-scrolling:touch;}
+.ovl::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FFD900,transparent);}
+.ovl h3{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:1.5px;margin:6px 0 18px;padding-right:36px;}
+/* KIT BANNERS */
+.kit-banner-item{border-radius:12px;overflow:hidden;border:1px solid rgba(255,217,0,0.15);margin-bottom:10px;cursor:pointer;background:#000;position:relative;}
+.kit-banner-active{border-color:#FFD900;box-shadow:0 0 8px rgba(255,217,0,0.2);}
 .kit-banner-img{width:100%;height:auto;display:block;}
-.kit-banner-label{padding:8px 14px;font-family:'Michroma',monospace;font-size:11px;letter-spacing:1.5px;color:#FFD900;display:flex;align-items:center;gap:8px;background:#000;}
-.kit-banner-active .kit-banner-label{color:#FFD900;}
+.kit-banner-label{padding:8px 14px;font-family:'Michroma',monospace;font-size:10px;letter-spacing:1.5px;color:#FFD900;display:flex;align-items:center;gap:8px;background:#000;}
 .kit-banner-lock-wrap{position:relative;}
 .kit-banner-lock-wrap .kit-corner{position:absolute;top:0;right:0;width:0;height:0;border-top:52px solid rgba(255,255,255,0.95);border-left:52px solid transparent;pointer-events:none;}
 .kit-banner-lock-wrap .kit-lock{position:absolute;top:4px;right:4px;pointer-events:none;}
@@ -87,12 +88,36 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .trow{display:flex;gap:6px;flex-wrap:wrap;}
 .tbtn{font-family:system-ui,sans-serif;font-size:9px;padding:6px 4px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;text-align:center;}
 .tbtn.sel{background:#FFD900;color:#000;}
-/* LIBRERIA */
-.lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;display:flex;justify-content:space-between;align-items:center;}
-.lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
-.lib-item.lib-locked{opacity:0.7;cursor:default;}
 #trow-themes-inline{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%;}
 #trow-themes-inline .tbtn{flex:none;}
+/* CFG ITEMS */
+.cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
+.cfg-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.05);cursor:pointer;touch-action:manipulation;margin-bottom:0;}
+.cfg-item:active{background:rgba(255,255,255,0.08);}
+.cfg-icon{font-size:16px;color:#FFD900;width:22px;text-align:center;flex-shrink:0;}
+.cfg-label{font-family:'Michroma',monospace;font-size:10px;color:#eee;flex:1;letter-spacing:0.5px;}
+.cfg-arrow{font-size:14px;color:rgba(255,255,255,0.3);flex-shrink:0;}
+/* PROXIMAMENTE */
+#prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;}
+#prox-inner{background:#1c1c1e;border-radius:20px;padding:24px;max-width:320px;width:88%;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.05);}
+#prox-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FFD900,transparent);}
+#prox-inner p{font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:2px;margin:8px 0 0;}
+#prox-inner span{font-family:system-ui,sans-serif;font-size:12px;color:#8e8e93;}
+#prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:800;color:#000;background:#FFD900;padding:12px 32px;border-radius:12px;cursor:pointer;touch-action:manipulation;margin-top:4px;}
+/* TRIAL BANNERS */
+.trial-banner{background:#1c1c1e;border-radius:20px;padding:20px;max-width:380px;width:88%;box-sizing:border-box;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.5);overflow:hidden;border:1px solid rgba(255,255,255,0.05);display:none;align-items:center;gap:16px;}
+.trial-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.trial-banner.active-trial::before{background:linear-gradient(90deg,#00e5ff,transparent);}
+.trial-banner.expired-trial::before{background:linear-gradient(90deg,#FFD900,transparent);}
+.trial-icon-box{width:62px;height:62px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.trial-banner.active-trial .trial-icon-box{background:rgba(0,229,255,0.15);}
+.trial-banner.expired-trial .trial-icon-box{background:rgba(255,217,0,0.15);}
+.trial-content{flex:1;padding-right:28px;}
+.trial-title{font-family:'Michroma',monospace;font-size:10px;letter-spacing:0.5px;margin:0 0 6px;line-height:1.3;}
+.trial-banner.active-trial .trial-title{color:#00e5ff;}
+.trial-banner.expired-trial .trial-title{color:#FFD900;}
+.trial-desc{font-size:12px;color:#8e8e93;line-height:1.4;margin:0;}
+.trial-btn{width:100%;background:#FFD900;color:#000;font-family:system-ui,sans-serif;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:14px 0;border-radius:12px;border:none;cursor:pointer;touch-action:manipulation;margin-top:16px;}
 /* CIRCULAR SWITCHES */
 .sw-circ-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
 .sw-circ-lbl{font-family:system-ui,sans-serif;font-size:8px;font-weight:700;color:rgba(255,217,0,0.5);letter-spacing:1px;text-transform:uppercase;}
@@ -100,18 +125,6 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .sw-circ.sw-circ-on{background:rgba(255,217,0,0.15);border-color:#FFD900;box-shadow:0 0 12px rgba(255,217,0,0.4);}
 .sw-circ-inner{width:22px;height:22px;border-radius:50%;background:#333;transition:all 0.15s;}
 .sw-circ.sw-circ-on .sw-circ-inner{background:#FFD900;box-shadow:0 0 8px rgba(255,217,0,0.8);}
-.cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
-.cfg-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);margin-bottom:2px;}
-.cfg-item:active{background:rgba(255,217,0,0.1);}
-.cfg-icon{font-size:14px;color:#FFD900;width:20px;text-align:center;flex-shrink:0;}
-.cfg-label{font-family:system-ui,sans-serif;font-size:10px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
-.cfg-arrow{font-size:13px;color:rgba(255,217,0,0.4);flex-shrink:0;}
-/* PROXIMAMENTE */
-#prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;}
-#prox-inner{background:#0a0804;border:2px solid #FFD900;border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
-#prox-inner p{font-family:'Michroma',monospace;font-size:14px;color:#FFD900;letter-spacing:2px;}
-#prox-inner span{font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.55);}
-#prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;color:#0a0804;background:#FFD900;padding:10px 28px;border-radius:6px;cursor:pointer;touch-action:manipulation;}
 /* LOGO AREA */
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
@@ -225,22 +238,22 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="tuerca-panel" class="ovl" style="display:none;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>CONFIGURACIÓN</h3>
-    <div class="ovl-close" id="tuerca-close">✕</div>
+    <div class="btn-close" id="tuerca-close">✕</div>
   </div>
   <div class="cfg-menu">
     <div class="cfg-item" id="btn-proskins">
       <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.1 0 2-.9 2-2 0-.53-.21-1.01-.54-1.36-.32-.34-.52-.81-.52-1.31 0-1.1.9-2 2-2h2.36c3.09 0 5.7-2.48 5.7-5.5C22.5 5.91 17.82 2 12 2z"/><circle cx="7" cy="12" r="1.5" fill="#FFD900" stroke="none"/><circle cx="9.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="14.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="17" cy="12" r="1.5" fill="#FFD900" stroke="none"/></svg></span>
-      <span class="cfg-label">PRO SKINS</span>
+      <span class="cfg-label" style="font-family:'Michroma',monospace;">PRO SKINS</span>
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-libreria">
       <span class="cfg-icon"><i class="ti ti-piano" style="font-size:20px;color:#FFD900;" aria-hidden="true"></i></span>
-      <span class="cfg-label">LIBRERÍAS DE AUDIO</span>
+      <span class="cfg-label" style="font-family:'Michroma',monospace;">LIBRERÍAS DE AUDIO</span>
       <span class="cfg-arrow">›</span>
     </div>
     <div class="cfg-item" id="btn-acerca">
       <span class="cfg-icon" style="font-family:Georgia,serif;font-size:18px;font-style:italic;color:#FFD900;font-weight:bold;">i</span>
-      <span class="cfg-label">ACERCA DE WINDIQA</span>
+      <span class="cfg-label" style="font-family:'Michroma',monospace;">ACERCA DE WINDIQA</span>
       <span class="cfg-arrow">›</span>
     </div>
   </div>
@@ -250,7 +263,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="thm" class="ovl" style="display:none;">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h3>PRO SKINS</h3>
-    <div class="ovl-close" id="thm-close">✕</div>
+    <div class="btn-close" id="thm-close">✕</div>
   </div>
   <div class="trow" id="trow-themes"></div>
 </div>
@@ -259,7 +272,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="lib-panel" class="ovl" style="display:none;width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;flex-direction:column;background:#111;border-color:rgba(255,217,0,0.3);">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
     <h3>LIBRERÍAS DE AUDIO</h3>
-    <div class="ovl-close" id="lib-close">✕</div>
+    <div class="btn-close" id="lib-close">✕</div>
   </div>
   <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
     <div class="kit-banner-item kit-banner-active" id="lib-quena">
@@ -308,7 +321,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="about-panel" class="ovl" style="display:none;align-items:center;text-align:center;gap:0;overflow:hidden;padding:14px 14px 8px;">
   <div style="display:flex;justify-content:space-between;align-items:center;width:100%;flex-shrink:0;margin-bottom:6px;">
     <h3>ACERCA DE</h3>
-    <div class="ovl-close" id="about-close">✕</div>
+    <div class="btn-close" id="about-close">✕</div>
   </div>
   <div id="about-scroll" style="overflow:hidden;width:100%;flex:1;">
     <div id="about-inner" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:20px;">
@@ -329,6 +342,24 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 </div><!-- end ovl-shared -->
 
+
+<!-- TRIAL BANNER - EXPIRED -->
+<div id="trial-banner-expired" class="trial-banner expired-trial" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99998;flex-direction:column;">
+  <div class="btn-close" id="trial-close" style="position:absolute;top:12px;right:14px;">✕</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="trial-icon-box">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <div class="trial-content">
+      <div class="trial-title">PRUEBA FINALIZADA</div>
+      <div class="trial-desc">Tu versión básica sigue activa.<br>Desbloquea el acceso total.</div>
+    </div>
+  </div>
+  <button class="trial-btn" id="trial-buy-btn">COMPRAR</button>
+</div>
 
 <!-- PROXIMAMENTE -->
 <div id="prox-msg">
@@ -696,6 +727,12 @@ safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel'
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
+// Trial banner listeners
+var trialClose=document.getElementById('trial-close');
+var trialBuy=document.getElementById('trial-buy-btn');
+if(trialClose)trialClose.addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();document.getElementById('trial-banner-expired').style.display='none';},{passive:false});
+if(trialBuy)trialBuy.addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
+
 // PRÓXIMAMENTE - direct show/hide, independent of panel stack
 var proxMsg=document.getElementById('prox-msg');
 var proxInner=document.getElementById('prox-inner');
@@ -903,10 +940,8 @@ function checkTrial(){
 }
 
 function activateFreeMode(){
-  // Bypass reverb
   rvOn=false;
   if(wG&&actx)wG.gain.setTargetAtTime(0,actx.currentTime,0.04);
-
   // Show overlays on all premium panels
   ['ovl-ruedas','ovl-reverb','ovl-delay','ovl-scale'].forEach(function(id){
     var el=document.getElementById(id);
@@ -918,10 +953,15 @@ function activateFreeMode(){
       },{passive:false});
     }
   });
-
-  // Gray out Pro Skins in menu
+  // Gray out Pro Skins
   var ps=document.getElementById('btn-proskins');
   if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
+  // Show expired banner once per session
+  if(!window._trialBannerShown){
+    window._trialBannerShown=true;
+    var tb=document.getElementById('trial-banner-expired');
+    if(tb)tb.style.display='flex';
+  }
 }
 
 document.body.addEventListener('pointerdown',function initAudio(){
