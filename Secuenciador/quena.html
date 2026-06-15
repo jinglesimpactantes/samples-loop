@@ -7,8 +7,25 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+
+/* === VARIABLES PRO === */
+:root {
+  --tq: #00a4b3;
+  --tq-glow: rgba(0,164,179,0.5);
+  --bg-dark: #121212;
+  --bg-card: #1c1c1e;
+  --cyan-main: #00e5ff;
+  --cyan-dim: rgba(0, 229, 255, 0.15);
+  --gold-main: #FFD900;
+  --gold-dim: rgba(255, 217, 0, 0.15);
+  --text-main: #ffffff;
+  --text-muted: #8e8e93;
+}
+
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
-body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;touch-action:none;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);}
+
+/* ESTILOS ORIGINALES DE LA APP (NO TOCAR PARA NO ROMPER EL TECLADO/INTERFAZ PRINCIPAL) */
+body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;touch-action:none;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
 #minibar{height:26px;flex-shrink:0;background:#0d0b06;border-bottom:1px solid rgba(255,217,0,0.15);display:flex;align-items:center;padding:0 8px;gap:6px;}
 #mm-keys{flex:1;height:14px;position:relative;border-radius:3px;overflow:hidden;background:#1a1408;border:1px solid rgba(255,217,0,0.15);}
 .mk-w{position:absolute;top:0;bottom:0;background:rgba(220,210,180,0.5);}
@@ -21,98 +38,156 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .b{top:4px;z-index:2;height:48%;}
 #bot{height:108px;flex-shrink:0;display:flex;align-items:stretch;border-top:1px solid rgba(47,111,104,0.4);background:#080604;padding-bottom:8px;}
 #caja{flex:2;min-width:0;border-right:1px solid rgba(47,111,104,0.3);padding:4px 8px;display:flex;flex-direction:column;justify-content:center;gap:4px;position:relative;}
-#logo-area{position:absolute;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:#000;}
-#logo-area img{max-height:80%;max-width:90%;object-fit:contain;}
 #lista{width:68px;flex-shrink:0;border-right:1px solid rgba(47,111,104,0.3);display:flex;flex-direction:column;justify-content:space-around;align-items:center;padding:4px 4px;}
 #bnr{flex:1;border-right:1px solid rgba(47,111,104,0.3);overflow:hidden;background:#000;}
 #wfcv{display:block;width:100%;height:100%;}
 #trc{width:40px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;position:relative;z-index:10;}
 #trc img{width:24px;height:24px;object-fit:contain;opacity:0.85;}
-/* RUEDAS */
 #pnl-ruedas{display:none;flex-direction:row;align-items:center;width:100%;height:100%;gap:6px;padding:2px 0;}
 .whl2{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;}
 .wl2{font-family:'Michroma',monospace;font-size:6px;color:#FFD900;letter-spacing:1px;}
 .wb2{width:100%;height:58px;border-radius:8px;overflow:hidden;position:relative;touch-action:none;background:#111;border:1px solid rgba(255,217,0,0.15);}
 .wb2 canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
 .wv2{font-family:'Michroma',monospace;font-size:7px;color:#FFD900;}
-/* PANELS */
 .pnl{display:none;flex-direction:column;gap:5px;width:100%;}
 .rvrow{display:flex;align-items:center;gap:8px;}
 .rvlbl{font-family:'Michroma',monospace;font-size:7px;color:rgba(255,217,0,0.65);flex-shrink:0;width:28px;}
-.rvsel{font-family:system-ui,sans-serif;font-size:9px;background:#000;color:#FFD900;border:1px solid rgba(255,217,0,0.25);border-radius:4px;padding:3px 6px;max-width:50%;}
-.rvsi{-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:rgba(255,217,0,0.5);outline:none;touch-action:manipulation;}
-/* TURQUOISE */
-:root{--tq:#00a4b3;--tq-glow:rgba(0,164,179,0.5);}
-/* SLIDER */
 .rvsi{-webkit-appearance:none;flex:1;height:5px;border-radius:3px;background:#FFD900;outline:none;touch-action:manipulation;}
 .rvsi::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--tq);cursor:pointer;border:2px solid #000;box-shadow:0 0 6px var(--tq-glow);}
 .rvsv{font-family:system-ui,sans-serif;font-size:10px;color:#FFD900;width:34px;text-align:right;flex-shrink:0;}
-/* BYPASS BUTTON */
 .byp{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;padding:5px 10px;border-radius:4px;border:1px solid #FFD900;color:#FFD900;background:transparent;cursor:pointer;touch-action:manipulation;flex-shrink:0;}
 .byp.act{background:var(--tq);color:#000;border-color:var(--tq);box-shadow:0 0 8px var(--tq-glow);}
-/* IR AND SUBDIVISION BUTTONS */
 .ir-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:5px 0;border-radius:5px;border:1px solid #FFD900;color:#FFD900;background:transparent;cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .ir-btn.act{background:var(--tq);color:#000;border-color:var(--tq);box-shadow:0 0 8px var(--tq-glow);}
-/* ZOOM BUTTONS */
 .mmz{width:28px;height:22px;background:transparent;border:1.5px solid var(--tq);border-radius:4px;color:var(--tq);font-size:15px;font-weight:bold;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
-/* NOTE INDICATOR */
 #mm-oct{font-family:'Michroma',monospace;font-size:8px;color:var(--tq);flex-shrink:0;}
-/* PANEL BUTTONS (lbtn - RUEDAS/REVERB/DELAY) */
 .lbtn{font-family:system-ui,sans-serif;font-size:10px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:5px 2px;border-radius:4px;border:1px solid #FFD900;width:100%;text-align:center;}
 .lbtn.act{color:#000;background:var(--tq);border-color:var(--tq);box-shadow:0 0 8px var(--tq-glow);}
-/* CLOSE BUTTON - bigger touch area */
-.ovl-close{font-family:system-ui,sans-serif;font-size:16px;font-weight:700;color:#FFD900;cursor:pointer;touch-action:manipulation;padding:8px 12px;line-height:1;margin:-8px -8px -8px 0;}
-/* SCALE SELECTOR */
 .sc-btn{font-family:system-ui,sans-serif;font-size:9px;font-weight:600;padding:6px 0;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:rgba(255,217,0,0.5);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;flex:1;text-align:center;}
 .sc-btn.act{background:#FFD900;color:#000;border-color:#FFD900;}
 .sc-bypass{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,0,0,0.5);background:rgba(180,0,0,0.05);color:rgba(180,0,0,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;font-family:system-ui,sans-serif;font-size:8px;font-weight:700;flex-shrink:0;}
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
-/* OVERLAY - fondo oscuro semitransparente */
-.ovl-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;}
-/* TARJETA CENTRADA (tuerca, acerca de, themes) */
-.ovl{background:#0d0b06;border:1px solid rgba(255,217,0,0.25);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;width:88%;max-width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px rgba(0,0,0,0.9);}
-.ovl h3{font-family:'Michroma',monospace;font-size:9px;color:#FFD900;letter-spacing:2px;}
-.kit-banner-item{border-radius:10px;overflow:hidden;border:1px solid rgba(255,217,0,0.2);margin-bottom:8px;cursor:pointer;background:#000;}
-.kit-banner-active{border:2px solid #FFD900;box-shadow:0 0 8px rgba(255,217,0,0.3);}
-.kit-banner-img{width:100%;height:auto;display:block;}
-.kit-banner-label{padding:8px 14px;font-family:'Michroma',monospace;font-size:11px;letter-spacing:1.5px;color:#FFD900;display:flex;align-items:center;gap:8px;background:#000;}
-.kit-banner-active .kit-banner-label{color:#FFD900;}
-.kit-banner-lock-wrap{position:relative;}
-.kit-banner-lock-wrap .kit-corner{position:absolute;top:0;right:0;width:0;height:0;border-top:52px solid rgba(255,255,255,0.95);border-left:52px solid transparent;pointer-events:none;}
-.kit-banner-lock-wrap .kit-lock{position:absolute;top:4px;right:4px;pointer-events:none;}
-/* THEME */
-.trow{display:flex;gap:6px;flex-wrap:wrap;}
-.tbtn{font-family:system-ui,sans-serif;font-size:9px;padding:6px 4px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;text-align:center;}
-.tbtn.sel{background:#FFD900;color:#000;}
-/* LIBRERIA */
 .lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;display:flex;justify-content:space-between;align-items:center;}
 .lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
 .lib-item.lib-locked{opacity:0.7;cursor:default;}
+.trow{display:flex;gap:6px;flex-wrap:wrap;}
+.tbtn{font-family:system-ui,sans-serif;font-size:9px;padding:6px 4px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;text-align:center;}
+.tbtn.sel{background:#FFD900;color:#000;}
 #trow-themes-inline{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%;}
 #trow-themes-inline .tbtn{flex:none;}
-/* CIRCULAR SWITCHES */
-.sw-circ-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
-.sw-circ-lbl{font-family:system-ui,sans-serif;font-size:8px;font-weight:700;color:rgba(255,217,0,0.5);letter-spacing:1px;text-transform:uppercase;}
-.sw-circ{width:44px;height:44px;border-radius:50%;background:#1a1a1a;border:2px solid rgba(255,217,0,0.2);cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
-.sw-circ.sw-circ-on{background:rgba(255,217,0,0.15);border-color:#FFD900;box-shadow:0 0 12px rgba(255,217,0,0.4);}
-.sw-circ-inner{width:22px;height:22px;border-radius:50%;background:#333;transition:all 0.15s;}
-.sw-circ.sw-circ-on .sw-circ-inner{background:#FFD900;box-shadow:0 0 8px rgba(255,217,0,0.8);}
-.cfg-menu{display:flex;flex-direction:column;gap:8px;width:100%;}
-.cfg-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,217,0,0.18);background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;box-shadow:0 0 8px rgba(255,217,0,0.06);margin-bottom:2px;}
-.cfg-item:active{background:rgba(255,217,0,0.1);}
-.cfg-icon{font-size:14px;color:#FFD900;width:20px;text-align:center;flex-shrink:0;}
-.cfg-label{font-family:system-ui,sans-serif;font-size:10px;font-weight:600;color:#FFD900;flex:1;letter-spacing:0.3px;}
-.cfg-arrow{font-size:13px;color:rgba(255,217,0,0.4);flex-shrink:0;}
-/* PROXIMAMENTE */
-#prox-msg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99999;display:none;align-items:center;justify-content:center;}
-#prox-inner{background:#0a0804;border:2px solid #FFD900;border-radius:14px;padding:30px 36px;display:flex;flex-direction:column;align-items:center;gap:14px;}
-#prox-inner p{font-family:'Michroma',monospace;font-size:14px;color:#FFD900;letter-spacing:2px;}
-#prox-inner span{font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.55);}
-#prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;color:#0a0804;background:#FFD900;padding:10px 28px;border-radius:6px;cursor:pointer;touch-action:manipulation;}
-/* PREMIUM OVERLAY */
-.prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;}
-.prem-ovl::before{content:'FUNCIÓN PREMIUM';font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;display:block;order:2;}
-.prem-ovl-icon{width:22px;height:22px;order:1;}
+
+/* === SISTEMA DE DISEÑO DE PANELES PRO (MÁSTER CODE) === */
+.card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 365px; 
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold-main), transparent);
+}
+.card.active::before { background: linear-gradient(90deg, var(--cyan-main), transparent); }
+
+/* BOTÓN CERRAR SEGURO */
+.btn-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+}
+
+/* TEXTOS Y TÍTULOS */
+.card-title {
+  font-family: 'Michroma', monospace;
+  font-size: 10px;
+  color: var(--gold-main);
+  letter-spacing: 0.5px;
+  margin: 0 0 16px 0;
+  line-height: 1.3;
+  padding-right: 32px; /* Muro de seguridad para la X */
+}
+.card-title.cyan { color: var(--cyan-main); }
+.card-title.center { text-align: center; padding-right: 0; margin-top: 12px; }
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* BOTONES DE ACCIÓN */
+.btn-primary {
+  width: 100%;
+  background: var(--gold-main);
+  color: #000;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 14px 0;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-small { width: auto; padding: 12px 32px; margin-top: 12px; }
+
+/* LISTAS DE CONFIGURACIÓN */
+.p-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.p-item-label { font-family: 'Michroma', monospace; font-size: 10px; color: #eee; flex: 1; letter-spacing: 0.5px; }
+.p-item-arrow { color: rgba(255, 255, 255, 0.3); font-size: 14px; }
+
+/* LIBRERÍAS DE AUDIO (BANNERS) */
+.kit-item { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 217, 0, 0.15); margin-bottom: 10px; background: #000; position: relative; cursor: pointer; }
+.kit-item.active-kit { border-color: var(--gold-main); box-shadow: 0 0 8px rgba(255, 217, 0, 0.2); }
+.kit-item.lib-locked { opacity: 0.8; }
+.kit-img { width: 100%; height: 60px; object-fit: cover; display: block; }
+.kit-label { padding: 8px 12px; font-family: 'Michroma', monospace; font-size: 10px; color: var(--gold-main); display: flex; align-items: center; gap: 6px; }
+
+/* PANÉLES DE TRIAL (Composición con Iconos) */
+.card-header { display: flex; align-items: center; gap: 16px; }
+.icon-box { width: 62px; height: 62px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.active .icon-box { background: var(--cyan-dim); }
+.expired .icon-box { background: var(--gold-dim); }
+.card-content { flex: 1; padding-right: 28px; }
+.card-content .card-title { margin-bottom: 6px; padding-right: 0; }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 </head>
@@ -125,17 +200,16 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
   <div id="caja">
-    <!-- PREMIUM OVERLAY - covers entire controls section -->
     <div id="ovl-premium" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:100;cursor:pointer;touch-action:manipulation;">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg>
       <span style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;">FUNCIÓN PREMIUM</span>
     </div>
+    
     <div id="pnl-ruedas" class="pnl" style="position:relative;">
       <div class="whl2"><div class="wl2">MOD</div><div class="wb2" id="mw"><canvas id="mwc"></canvas></div><div class="wv2" id="mwv">0</div></div>
       <div class="whl2"><div class="wl2">PITCH</div><div class="wb2" id="pw"><canvas id="pwc"></canvas></div><div class="wv2" id="pwv">0</div></div>
-      
     </div>
-    <!-- REVERB -->
+    
     <div id="pnl-reverb" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
@@ -149,9 +223,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn act" data-ir="plate" id="irbtn-plate">PLATE</div>
         <div class="ir-btn" data-ir="cathedral" id="irbtn-cathedral">CATHEDRAL</div>
       </div>
-      
     </div>
-    <!-- DELAY -->
+    
     <div id="pnl-delay" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
@@ -167,9 +240,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
         <div class="ir-btn act" data-sub="8" id="subbtn-8">1/8</div>
       </div>
-      
     </div>
-    <!-- SELECTOR DE ESCALAS -->
+    
     <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);position:relative;">
       <div style="font-family:'Michroma',monospace;font-size:7px;color:rgba(255,217,0,0.6);letter-spacing:1px;text-align:center;">MODO ESCALA</div>
       <div style="display:flex;gap:4px;align-items:center;">
@@ -188,15 +260,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
         <div class="sc-bypass" id="sc-bypass">OFF</div>
       </div>
-      
     </div>
+    
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
       <div id="trow-themes-inline" style="flex:1;"></div>
       <div id="skins-close" style="width:30px;background:#FFD900;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;flex-shrink:0;">
         <svg width="14" height="14" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
       </div>
     </div>
-    <!-- LIBRERIA inline -->
+    
     <div id="pnl-lib" class="pnl" style="flex-direction:column;gap:4px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1px;">LIBRERÍAS DE SONIDO</span>
@@ -221,130 +293,117 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt="⚙"/></div>
 </div>
 
-<!-- SHARED OVERLAY -->
-<div id="ovl-shared" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:9999;display:none;align-items:center;justify-content:center;">
+<div id="ovl-shared" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;">
 
-<!-- TUERCA PANEL -->
-<div id="tuerca-panel" class="ovl" style="display:none;">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-    <h3>CONFIGURACIÓN</h3>
-    <div class="ovl-close" id="tuerca-close">✕</div>
+  <div id="tuerca-panel" class="card" style="display:none; max-width:340px;">
+    <div class="btn-close" id="tuerca-close">✕</div>
+    <div class="card-title" style="margin-top: 6px; margin-bottom: 24px;">CONFIGURACIÓN</div>
+    <div class="p-item" id="btn-proskins">
+      <span style="font-size:16px;">🎨</span>
+      <span class="p-item-label">PRO SKINS</span>
+      <span class="p-item-arrow">›</span>
+    </div>
+    <div class="p-item" id="btn-libreria">
+      <span style="font-size:16px;">🎹</span>
+      <span class="p-item-label">LIBRERÍAS DE AUDIO</span>
+      <span class="p-item-arrow">›</span>
+    </div>
+    <div class="p-item" id="btn-acerca">
+      <span style="font-family:Georgia;font-style:italic;font-size:16px;color:var(--gold-main);">i</span>
+      <span class="p-item-label">ACERCA DE WINDIQA</span>
+      <span class="p-item-arrow">›</span>
+    </div>
   </div>
-  <div class="cfg-menu">
-    <div class="cfg-item" id="btn-proskins">
-      <span class="cfg-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.1 0 2-.9 2-2 0-.53-.21-1.01-.54-1.36-.32-.34-.52-.81-.52-1.31 0-1.1.9-2 2-2h2.36c3.09 0 5.7-2.48 5.7-5.5C22.5 5.91 17.82 2 12 2z"/><circle cx="7" cy="12" r="1.5" fill="#FFD900" stroke="none"/><circle cx="9.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="14.5" cy="7.5" r="1.5" fill="#FFD900" stroke="none"/><circle cx="17" cy="12" r="1.5" fill="#FFD900" stroke="none"/></svg></span>
-      <span class="cfg-label">PRO SKINS</span>
-      <span class="cfg-arrow">›</span>
+
+  <div id="thm" class="card" style="display:none; max-width:340px;">
+    <div class="btn-close" id="thm-close">✕</div>
+    <div class="card-title" style="margin-top: 6px; margin-bottom: 24px;">PRO SKINS</div>
+    <div class="trow" id="trow-themes"></div>
+  </div>
+
+  <div id="lib-panel" class="card" style="display:none;max-height:82vh;display:flex;flex-direction:column;padding:20px 14px; max-width:340px;">
+    <div class="btn-close" id="lib-close" style="z-index:20;">✕</div>
+    <div class="card-title" style="margin-top: 6px; margin-bottom: 16px; flex-shrink:0;">LIBRERÍAS DE AUDIO</div>
+    
+    <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:6px;padding-bottom:10px;">
+      
+      <div class="kit-item active-kit" id="lib-quena">
+        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg') center/cover;"></div>
+        <div class="kit-label">Quena Windiqa <span style="background:var(--gold-main);color:#000;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:auto;">ACTIVO</span></div>
+      </div>
+      
+      <div class="kit-item lib-locked" id="lib-zam">
+        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg') center/cover;"></div>
+        <div style="position:absolute;top:8px;right:8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        </div>
+        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Zampoña <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+      </div>
+      
+      <div class="kit-item lib-locked" id="lib-ocarina">
+        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg') center/cover;"></div>
+        <div style="position:absolute;top:8px;right:8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        </div>
+        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Ocarina <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+      </div>
+
+      <div class="kit-item lib-locked" id="lib-flauta">
+        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg') center/cover;"></div>
+        <div style="position:absolute;top:8px;right:8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        </div>
+        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Flauta Cerámica <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+      </div>
+
+      <div class="kit-item lib-locked" id="lib-tarka">
+        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg') center/cover;"></div>
+        <div style="position:absolute;top:8px;right:8px;">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        </div>
+        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Tarka <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+      </div>
+      
     </div>
-    <div class="cfg-item" id="btn-libreria">
-      <span class="cfg-icon"><i class="ti ti-piano" style="font-size:20px;color:#FFD900;" aria-hidden="true"></i></span>
-      <span class="cfg-label">LIBRERÍAS DE AUDIO</span>
-      <span class="cfg-arrow">›</span>
+    <p style="font-size:10px;color:var(--text-muted);text-align:center;margin:8px 0 0;flex-shrink:0;">↓ scroll para ver más</p>
+  </div>
+
+  <div id="about-panel" class="card" style="display:none;text-align:center; max-width:340px;">
+    <div class="btn-close" id="about-close">✕</div>
+    <div class="card-title center">ACERCA DE</div>
+    <div style="width:60%;margin:0 auto 12px;height:50px;background:linear-gradient(135deg,var(--cyan-main),var(--gold-main));border-radius:10px;opacity:0.3;"></div>
+    <div style="font-family:'Michroma',monospace;font-size:8px;color:var(--gold-main);letter-spacing:2px;margin-bottom:8px;">Pro v1.0.0</div>
+    <p class="card-desc">Instrumento virtual de vientos<br>nativo-americanos para Android.</p>
+    <div style="height:1px;background:rgba(255,255,255,0.08);margin:16px 0 20px;"></div>
+    <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;">Mike Valderrama</p>
+    <p style="font-size:12px;color:var(--text-muted);margin:0 0 8px;">Arequipa, Perú</p>
+    <button class="btn-primary btn-small" id="about-web">www.looptopus.com</button>
+  </div>
+
+</div><div id="trial-ended-bg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:99998;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div id="trial-ended-card" class="card expired" style="max-width:365px;">
+    <div class="btn-close" id="trial-ended-close">✕</div>
+    <div class="card-header">
+      <div class="icon-box">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gold-main)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform: translateY(-2px);">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3 class="card-title">PRUEBA FINALIZADA</h3>
+        <p class="card-desc">Tu versión básica sigue activa. Desbloquea el acceso total.</p>
+      </div>
     </div>
-    <div class="cfg-item" id="btn-acerca">
-      <span class="cfg-icon" style="font-family:Georgia,serif;font-size:18px;font-style:italic;color:#FFD900;font-weight:bold;">i</span>
-      <span class="cfg-label">ACERCA DE WINDIQA</span>
-      <span class="cfg-arrow">›</span>
-    </div>
+    <button class="btn-primary" id="trial-ended-buy">DESBLOQUEAR POR $2.99</button>
   </div>
 </div>
 
-<!-- PRO SKINS -->
-<div id="thm" class="ovl" style="display:none;">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-    <h3>PRO SKINS</h3>
-    <div class="ovl-close" id="thm-close">✕</div>
-  </div>
-  <div class="trow" id="trow-themes"></div>
-</div>
-
-<!-- LIBRERÍA DE AUDIO -->
-<div id="lib-panel" class="ovl" style="display:none;width:55%;max-width:340px;max-height:82vh;padding:14px 14px 18px;overflow:hidden;flex-direction:column;background:#111;border-color:rgba(255,217,0,0.3);">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-shrink:0;">
-    <h3>LIBRERÍAS DE AUDIO</h3>
-    <div class="ovl-close" id="lib-close">✕</div>
-  </div>
-  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
-    <div class="kit-banner-item kit-banner-active" id="lib-quena">
-      <div style="position:relative;">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
-        <div style="position:absolute;top:6px;right:8px;background:#FFD900;color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
-      </div>
-      <div class="kit-banner-label">Quena Windiqa</div>
-    </div>
-    <div class="kit-banner-item lib-locked" id="lib-zam">
-      <div class="kit-banner-lock-wrap">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
-        <div class="kit-corner"></div>
-        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
-      </div>
-      <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-    </div>
-    <div class="kit-banner-item lib-locked" id="lib-ocarina">
-      <div class="kit-banner-lock-wrap">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
-        <div class="kit-corner"></div>
-        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
-      </div>
-      <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-    </div>
-    <div class="kit-banner-item lib-locked" id="lib-flauta">
-      <div class="kit-banner-lock-wrap">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
-        <div class="kit-corner"></div>
-        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
-      </div>
-      <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-    </div>
-    <div class="kit-banner-item lib-locked" id="lib-tarka">
-      <div class="kit-banner-lock-wrap">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
-        <div class="kit-corner"></div>
-        <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
-      </div>
-      <div class="kit-banner-label">Tarka <span style="font-size:8px;color:#FFD900;letter-spacing:2px;opacity:0.85;">· PRO</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ACERCA DE -->
-<div id="about-panel" class="ovl" style="display:none;align-items:center;text-align:center;gap:8px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
-    <h3>ACERCA DE</h3>
-    <div class="ovl-close" id="about-close">✕</div>
-  </div>
-  <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:58%;max-width:240px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
-  <div style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:3px;">Pro v1.0.0</div>
-  <div style="font-family:system-ui,sans-serif;font-size:11px;color:#ffffff;line-height:1.9;margin:6px 12px;max-width:340px;">
-    Instrumento virtual de vientos nativo-americanos<br>
-    Con ruedas de expresión, reverb IR y delay.<br>
-    Pro Skins y librerías de audio para inspirarte.
-  </div>
-  <div style="width:65%;height:1px;background:rgba(255,255,255,0.12);margin:4px auto;"></div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;">Desarrollo por Mike Valderrama</div>
-  <div style="font-family:system-ui,sans-serif;font-size:10px;color:#ffffff;margin-bottom:6px;">Arequipa, Perú</div>
-  <div id="about-web" style="font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#000;background:#FFD900;padding:9px 22px;border-radius:6px;cursor:pointer;touch-action:manipulation;letter-spacing:0.5px;">www.looptopus.com</div>
-</div>
-
-</div><!-- end ovl-shared -->
-
-
-<!-- TRIAL ENDED PANEL -->
-<div id="trial-ended-bg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99998;display:none;align-items:center;justify-content:center;">
-  <div id="trial-ended-card" style="background:#0a0804;border:1px solid rgba(255,217,0,0.3);border-radius:16px;padding:24px 22px;max-width:300px;width:85%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;">
-    <div id="trial-ended-close" style="position:absolute;top:10px;right:14px;font-size:20px;color:rgba(255,217,0,0.6);font-weight:700;cursor:pointer;touch-action:manipulation;padding:4px;">✕</div>
-    <div style="font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:2px;line-height:1.7;">PRUEBA FINALIZADA</div>
-    <div style="font-family:system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;">Tu versión básica sigue activa.<br>Desbloquea el acceso total.</div>
-    <div id="trial-ended-buy" style="background:#FFD900;color:#000;font-family:'Michroma',monospace;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:11px 20px;border-radius:8px;cursor:pointer;touch-action:manipulation;">COMPRAR</div>
-  </div>
-</div>
-
-<!-- PROXIMAMENTE -->
-<div id="prox-msg">
-  <div id="prox-inner">
-    <p>PRÓXIMAMENTE</p>
-    <span>Este kit estará disponible pronto</span>
-    <div id="prox-ok">OK</div>
+<div id="prox-msg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div id="prox-inner" class="card" style="text-align:center; max-width:300px;">
+    <div class="card-title center">PRÓXIMAMENTE</div>
+    <p class="card-desc">Este kit estará disponible pronto.</p>
+    <button class="btn-primary btn-small" id="prox-ok" style="padding: 12px 64px;">OK</button>
   </div>
 </div>
 
@@ -391,8 +450,6 @@ var curThemeData=THEME_LIST[0];
 function applyTheme(td){curThemeData=td;document.querySelectorAll('.tbtn').forEach(function(b){b.classList.toggle('sel',b.dataset.tid===td.id);});bKb();}
 function buildThemeButtons(){var tr=document.getElementById('trow-themes');tr.innerHTML='';THEME_LIST.forEach(function(td){var b=document.createElement('div');b.className='tbtn'+(td.id===curThemeData.id?' sel':'');b.textContent=td.name;b.dataset.tid=td.id;b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(td);},{passive:false});tr.appendChild(b);});}
 
-// PANEL TOGGLE
-
 // AUDIO
 function n2m(n,o){return(o+1)*12+SEM[n];}
 function bst(n,o){var m=n2m(n,o),b=null,bd=999;Object.keys(SMIDI).forEach(function(s){var d=Math.abs(SMIDI[s]-m);if(d<bd){bd=d;b=s;}});return{s:b,d:m-SMIDI[b]};}
@@ -416,10 +473,8 @@ function loadS(){var c=gac();Object.keys(FILES).forEach(function(n){var nL=n;fet
 function play(id,n,o,vel,gl){
   var c=gac();if(nds[id])stp(id);
   var atk=gl?0.005:0.008,m=bst(n,o);
-  // Max 4 notes
   var activeKeys=Object.keys(nds);
   if(activeKeys.length>=4){stp(activeKeys[0]);}
-  // Show note being played
   document.getElementById('mm-oct').textContent=n+o;
   var g=c.createGain();g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(vel,c.currentTime+atk);
   var lfo=c.createOscillator(),lf=c.createGain(),la=c.createGain();
@@ -512,7 +567,6 @@ function loadPreset(ir){
   document.getElementById('rvmix').value=p.mix;document.getElementById('rvmixv').textContent=p.mix+'%';
   setTimeout(applyIR,100);
 }
-// IR buttons
 var cIR_btn='room';
 ['room','hall','plate','cathedral'].forEach(function(ir){
   document.getElementById('irbtn-'+ir).addEventListener('pointerdown',function(e){
@@ -537,7 +591,6 @@ function initDelay(){
 }
 document.getElementById('dlmix').addEventListener('input',function(){document.getElementById('dlmixv').textContent=this.value+'%';initDelay();if(dlWet&&actx&&dlOn)dlWet.gain.setTargetAtTime(Math.min(parseFloat(this.value)*0.004,1),actx.currentTime,0.04);});
 document.getElementById('dlbpm').addEventListener('input',function(){if(dlNode&&actx)dlNode.delayTime.setTargetAtTime(getDlTime(),actx.currentTime,0.05);});
-// Subdivision buttons
 var curDlSub='8';
 function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)||120,sub=curDlSub,beat=60/bpm;if(sub==='4')return Math.min(beat,2);if(sub==='8d')return Math.min(beat*0.75,2);if(sub==='6')return Math.min(beat*2/3,2);return Math.min(beat*0.5,2);}
 ['4','8d','6','8'].forEach(function(sub){
@@ -564,9 +617,7 @@ function snapToScale(n,o){
   var SEM_N={C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
   var m=SEM_N[n];
   if(notes.indexOf(m)>=0)return{n:n,o:o,mute:false};
-  // Pentatonic: mute notes not in scale
   if(scaleType==='penta')return{n:n,o:o,mute:true};
-  // Major/Minor: go UP to next note in scale
   for(var i=1;i<=2;i++){
     var up=(m+i)%12;
     if(notes.indexOf(up)>=0){
@@ -608,13 +659,12 @@ function showOverlay(){ovlShared.style.display='flex';}
 function hideOverlay(){ovlShared.style.display='none';}
 
 function openPanel(id){
-  // Hide all panels first
   ['tuerca-panel','thm','lib-panel','about-panel'].forEach(function(p){
     document.getElementById(p).style.display='none';
   });
   panelStack.push(id);
   showOverlay();
-  document.getElementById(id).style.display='flex';
+  document.getElementById(id).style.display='block'; /* Ahora usan display:block para encajar con el layout .card */
 }
 
 function closePanel(){
@@ -624,8 +674,7 @@ function closePanel(){
   if(panelStack.length===0){
     hideOverlay();
   } else {
-    // Show previous panel
-    document.getElementById(panelStack[panelStack.length-1]).style.display='flex';
+    document.getElementById(panelStack[panelStack.length-1]).style.display='block';
   }
 }
 
@@ -637,7 +686,6 @@ function closeAllPanels(){
   hideOverlay();
 }
 
-// Click on shared overlay bg closes top panel
 function safeTap(el,fn){
   if(!el)return;
   var sx,sy,moved;
@@ -646,30 +694,25 @@ function safeTap(el,fn){
   el.addEventListener('pointerup',function(e){if(!moved)fn(e);},{passive:true});
 }
 
-// Clicking the dark overlay background closes top panel
 safeTap(ovlShared,function(e){
   if(e.target===ovlShared)closePanel();
 });
 
-// Stop events inside panels from reaching overlay
 ['tuerca-panel','thm','lib-panel','about-panel'].forEach(function(id){
   var el=document.getElementById(id);
   if(el){
     el.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
-    // Allow scroll inside lib-panel without closing
     el.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:true});
   }
 });
 
-// TUERCA - use safeTap so it doesn't close on release
 safeTap(document.getElementById('trc'),function(e){e.stopPropagation&&e.stopPropagation();openPanel('tuerca-panel');});
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
-// PRO SKINS
 safeTap(document.getElementById('btn-proskins'),function(){closePanel();switchPanel('skins');});
 document.getElementById('skins-close').addEventListener('pointerdown',function(e){e.preventDefault();switchPanel('ruedas');},{passive:false});
+document.getElementById('thm-close').addEventListener('pointerdown',function(e){e.preventDefault();closePanel();},{passive:false});
 
-// LIBRERÍAS
 safeTap(document.getElementById('btn-libreria'),function(){openPanel('lib-panel');startLibAutoScroll();});
 document.getElementById('lib-close').addEventListener('pointerdown',function(e){
   e.stopPropagation();e.preventDefault();
@@ -678,8 +721,6 @@ document.getElementById('lib-close').addEventListener('pointerdown',function(e){
   closePanel();
 },{passive:false});
 
-// ACERCA DE
-// ACERCA DE auto-scroll
 function startAboutScroll(){
   var panel=document.getElementById('about-panel');
   if(!panel)return;
@@ -700,14 +741,12 @@ safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel'
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
-// PRÓXIMAMENTE - direct show/hide, independent of panel stack
 var proxMsg=document.getElementById('prox-msg');
 var proxInner=document.getElementById('prox-inner');
 document.getElementById('prox-ok').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();proxMsg.style.display='none';},{passive:false});
 proxMsg.addEventListener('pointerdown',function(e){if(e.target===proxMsg)proxMsg.style.display='none';});
 proxInner.addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
 
-// AUTO-SCROLL librerías - always active, cleanup on reopen
 var libScrollRAF=null,libScrollTimer=null,libScrollTouching=false,libScrollActive=false;
 var libScrollUpHandler=null;
 
@@ -715,7 +754,6 @@ function startLibAutoScroll(){
   var container=document.querySelector('#lib-panel [style*="overflow-y"]');
   if(!container)return;
 
-  // Cleanup previous
   cancelAnimationFrame(libScrollRAF);
   clearTimeout(libScrollTimer);
   if(libScrollUpHandler)document.removeEventListener('pointerup',libScrollUpHandler);
@@ -754,15 +792,12 @@ function startLibAutoScroll(){
   };
   document.addEventListener('pointerup',libScrollUpHandler,{passive:true});
 
-  // Start after 2s
   libScrollTimer=setTimeout(function(){libScrollRAF=requestAnimationFrame(step);},2000);
 }
 
-// Quena activa - cierra solo en tap real (no scroll)
 var libQuena=document.getElementById('lib-quena');
 if(libQuena)safeTap(libQuena,function(){closeAllPanels();});
 
-// Kits bloqueados - mostrar PRÓXIMAMENTE
 ['lib-zam','lib-tarka','lib-ocarina','lib-flauta'].forEach(function(id){
   var el=document.getElementById(id);
   if(el)safeTap(el,function(){
@@ -771,7 +806,6 @@ if(libQuena)safeTap(libQuena,function(){closeAllPanels();});
   });
 });
 
-// Botones principales
 ['ruedas','reverb','delay'].forEach(function(n){
   document.getElementById('btn-'+n).addEventListener('pointerdown',function(e){e.preventDefault();switchPanel(n);},{passive:false});
 });
@@ -805,13 +839,22 @@ function buildThemeButtonsInline(){
     (function(theme){b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});})(td);
     tr.appendChild(b);
   });
+  var trCard=document.getElementById('trow-themes');
+  if(trCard){
+    trCard.innerHTML='';
+    THEME_LIST.forEach(function(td){
+      var b=document.createElement('div');
+      b.className='tbtn'+(td.id===curThemeData.id?' sel':'');
+      b.textContent=td.name;b.dataset.tid=td.id;
+      (function(theme){b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(theme);},{passive:false});})(td);
+      trCard.appendChild(b);
+    });
+  }
 }
 
-// MINIMAP
 document.getElementById('mzi').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi<KWS.length-1){kwi++;bKb();}},{passive:false});
 document.getElementById('mzo').addEventListener('pointerdown',function(e){e.preventDefault();if(kwi>0){kwi--;bKb();}},{passive:false});
 
-// KEYBOARD
 function bKb(){
   var wrap=document.getElementById('kbwrap'),kb=document.getElementById('kb');if(!wrap||!kb)return;
   var H=wrap.offsetHeight;if(!H||H<10){setTimeout(bKb,50);return;}
@@ -847,17 +890,14 @@ function bnKb(){
     var rawN=kr.id.replace(/[0-9]/g,''),rawO=parseInt(kr.id.match(/[0-9]+/)[0]);
     var snapped=snapToScale(rawN,rawO);
     if(snapped.mute){
-      // Muted key - DON'T update pts, keep tracking last valid note
       return;
     }
-    // Valid note - stop previous and play new
     var pe=gE(pr);if(pe)setKeyOn(pe,false);stp(pr);
     pts[e.pointerId]={id:kr.id};var el=gE(kr.id);if(el)setKeyOn(el,true);var p=(e.clientY-kr.t)/(kr.bo-kr.t);play(kr.id,snapped.n,snapped.o,Math.max(0.1,Math.min(0.95,0.1+p*0.85)),true);};
   wrap._pu=function(e){var pt=pts[e.pointerId];if(!pt)return;var pe=gE(pt.id);if(pe)setKeyOn(pe,false);stp(pt.id);delete pts[e.pointerId];};
   wrap.addEventListener('pointerdown',wrap._pd,{passive:false});wrap.addEventListener('pointermove',wrap._pm,{passive:false});wrap.addEventListener('pointerup',wrap._pu,{passive:false});wrap.addEventListener('pointercancel',wrap._pu,{passive:false});
 }
 
-// WAVEFORM
 function initWF(){var c=document.getElementById('wfcv'),p=c.parentElement;c.width=p.offsetWidth;c.height=p.offsetHeight;if(!window._quenaImg){window._quenaImg=new Image();window._quenaImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Quena_Pantalla.jpg';}}
 function startWF(){if(!actx||analyser)return;analyser=actx.createAnalyser();analyser.fftSize=256;wfBuf=new Uint8Array(analyser.fftSize);dG.connect(analyser);drawWF();}
 function drawWF(){
@@ -889,8 +929,10 @@ function init(){
     bKb();initWF();
     switchPanel('ruedas');
     setTimeout(function(){dW('mwc',0,false);dW('pwc',0,true);},200);
+    buildThemeButtonsInline();
   }else{setTimeout(init,50);}
 }
+
 // ═══ TRIAL SYSTEM - 4 days ═══
 var TRIAL_DAYS=0;
 var TRIAL_KEY='windiqa_install_date';
@@ -904,7 +946,6 @@ function showTrialEnded(onClose){
 }
 
 function lockAllPanels(){
-  // Lock ALL panels permanently for this session
   ['pnl-ruedas','pnl-reverb','pnl-delay','pnl-scale'].forEach(function(panelId){
     var panel=document.getElementById(panelId);
     if(!panel||document.getElementById('ovl-'+panelId))return;
@@ -914,13 +955,11 @@ function lockAllPanels(){
     ovl.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span style="font-family:\'Michroma\',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;">FUNCIÓN PREMIUM</span>';
     panel.style.position='relative';
     panel.appendChild(ovl);
-    // Clicking overlay just shows the trial ended panel again
     ovl.addEventListener('pointerdown',function(e){
       e.stopPropagation();e.preventDefault();
       showTrialEnded();
     },{passive:false});
   });
-  // Gray out Pro Skins
   var ps=document.getElementById('btn-proskins');
   if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
 }
@@ -929,20 +968,17 @@ function lockPremiumFeatures(){
   lockAllPanels();
 }
 
-// Intercept touches INSIDE each panel - first touch shows message, close locks all
 ['pnl-ruedas','pnl-reverb','pnl-delay','pnl-scale'].forEach(function(panelId){
   var panel=document.getElementById(panelId);
   if(!panel)return;
   panel.addEventListener('pointerdown',function(e){
     if(isPro)return;
-    // If panel already locked, don't intercept again
     if(document.getElementById('ovl-'+panelId))return;
     e.stopPropagation();e.preventDefault();
     showTrialEnded(function(){lockAllPanels();});
   },{passive:false,capture:true});
 });
 
-// Trial ended panel listeners
 function closeTrialEnded(){
   document.getElementById('trial-ended-bg').style.display='none';
   if(window._trialOnClose){window._trialOnClose();window._trialOnClose=null;}
@@ -958,12 +994,11 @@ function checkTrial(){
 
 document.body.addEventListener('pointerdown',function initAudio(){
   loadS();startWF();
-  // Gray Pro Skins immediately on first touch
   var ps=document.getElementById('btn-proskins');
   if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
   document.body.removeEventListener('pointerdown',initAudio);
 },{once:true});
-// Default scale UI state
+
 document.getElementById('scn-C').classList.add('act');
 document.getElementById('scs-penta').classList.add('act');
 init();
