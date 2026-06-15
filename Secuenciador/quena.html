@@ -109,7 +109,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #prox-inner p{font-family:'Michroma',monospace;font-size:14px;color:#FFD900;letter-spacing:2px;}
 #prox-inner span{font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.55);}
 #prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;color:#0a0804;background:#FFD900;padding:10px 28px;border-radius:6px;cursor:pointer;touch-action:manipulation;}
-/* LOGO AREA */
+/* PREMIUM OVERLAY */
+.prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;}
+.prem-ovl::after{content:'🔒';font-size:22px;display:block;}
+.prem-ovl::before{content:'FUNCIÓN PREMIUM';font-family:"Michroma",monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;display:block;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 </head>
@@ -123,12 +126,13 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="bot">
   <div id="caja">
     <!-- RUEDAS -->
-    <div id="pnl-ruedas" class="pnl">
+    <div id="pnl-ruedas" class="pnl" style="position:relative;">
       <div class="whl2"><div class="wl2">MOD</div><div class="wb2" id="mw"><canvas id="mwc"></canvas></div><div class="wv2" id="mwv">0</div></div>
       <div class="whl2"><div class="wl2">PITCH</div><div class="wb2" id="pw"><canvas id="pwc"></canvas></div><div class="wv2" id="pwv">0</div></div>
+      <div class="prem-ovl" id="ovl-ruedas"></div>
     </div>
     <!-- REVERB -->
-    <div id="pnl-reverb" class="pnl">
+    <div id="pnl-reverb" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="rvmix" type="range" min="0" max="100" step="1" value="12"/>
@@ -141,9 +145,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn act" data-ir="plate" id="irbtn-plate">PLATE</div>
         <div class="ir-btn" data-ir="cathedral" id="irbtn-cathedral">CATHEDRAL</div>
       </div>
+      <div class="prem-ovl" id="ovl-reverb"></div>
     </div>
     <!-- DELAY -->
-    <div id="pnl-delay" class="pnl">
+    <div id="pnl-delay" class="pnl" style="position:relative;">
       <div class="rvrow">
         <span class="rvlbl">MIX</span>
         <input class="rvsi" id="dlmix" type="range" min="0" max="100" step="1" value="0"/>
@@ -158,9 +163,10 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
         <div class="ir-btn act" data-sub="8" id="subbtn-8">1/8</div>
       </div>
+      <div class="prem-ovl" id="ovl-delay"></div>
     </div>
     <!-- SELECTOR DE ESCALAS -->
-    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);">
+    <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);position:relative;">
       <div style="font-family:'Michroma',monospace;font-size:7px;color:rgba(255,217,0,0.6);letter-spacing:1px;text-align:center;">MODO ESCALA</div>
       <div style="display:flex;gap:4px;align-items:center;">
         <div class="sc-btn" data-note="C" id="scn-C">C</div>
@@ -178,6 +184,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
         <div class="sc-bypass" id="sc-bypass">OFF</div>
       </div>
+      <div class="prem-ovl" id="ovl-scale"></div>
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
       <div id="trow-themes-inline" style="flex:1;"></div>
@@ -317,14 +324,14 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 
 </div><!-- end ovl-shared -->
 
-<!-- TRIAL LOCKOUT PANEL -->
-<div id="trial-panel" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:99998;display:none;align-items:center;justify-content:center;flex-direction:column;gap:0;">
-  <div style="background:#0a0804;border:1px solid rgba(255,217,0,0.3);border-radius:16px;padding:24px 28px;max-width:340px;width:88%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;">
-    <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:50%;object-fit:contain;filter:drop-shadow(0 0 12px rgba(255,217,0,0.4));"/>
-    <div style="font-family:'Michroma',monospace;font-size:11px;color:#FFD900;letter-spacing:2px;">PERÍODO DE PRUEBA FINALIZADO</div>
-    <div style="font-family:system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6;">Tu prueba gratuita de 4 días ha terminado. Adquiere <strong style="color:#FFD900;">Windiqa Pro</strong> para seguir usando todas las funciones premium.</div>
-    <div id="trial-buy" style="width:100%;padding:12px;border-radius:8px;background:#FFD900;color:#000;font-family:'Michroma',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;touch-action:manipulation;">ADQUIRIR WINDIQA PRO</div>
-    <div id="trial-free" style="font-family:system-ui,sans-serif;font-size:11px;color:rgba(255,217,0,0.5);cursor:pointer;touch-action:manipulation;padding:6px;">Continuar gratis (sin funciones premium)</div>
+
+<!-- TRIAL ENDED PANEL -->
+<div id="trial-ended-bg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:99998;display:none;align-items:center;justify-content:center;">
+  <div id="trial-ended-card" style="background:#0a0804;border:1px solid rgba(255,217,0,0.3);border-radius:16px;padding:24px 22px;max-width:300px;width:85%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;">
+    <div id="trial-ended-close" style="position:absolute;top:10px;right:14px;font-size:20px;color:rgba(255,217,0,0.6);font-weight:700;cursor:pointer;touch-action:manipulation;padding:4px;">✕</div>
+    <div style="font-family:'Michroma',monospace;font-size:10px;color:#FFD900;letter-spacing:2px;line-height:1.7;">PRUEBA FINALIZADA</div>
+    <div style="font-family:system-ui,sans-serif;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;">Tu versión básica sigue activa.<br>Desbloquea el acceso total.</div>
+    <div id="trial-ended-buy" style="background:#FFD900;color:#000;font-family:'Michroma',monospace;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:11px 20px;border-radius:8px;cursor:pointer;touch-action:manipulation;">COMPRAR</div>
   </div>
 </div>
 
@@ -668,7 +675,24 @@ document.getElementById('lib-close').addEventListener('pointerdown',function(e){
 },{passive:false});
 
 // ACERCA DE
-safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');});
+// ACERCA DE auto-scroll
+function startAboutScroll(){
+  var panel=document.getElementById('about-panel');
+  if(!panel)return;
+  var pos=0,touching=false,rafId=null;
+  function step(){
+    if(!touching){
+      pos+=0.12;
+      if(pos>panel.scrollHeight-panel.clientHeight){pos=panel.scrollHeight-panel.clientHeight;return;}
+      panel.scrollTop=pos;
+    }
+    rafId=requestAnimationFrame(step);
+  }
+  panel.addEventListener('pointerdown',function(){touching=true;cancelAnimationFrame(rafId);},{passive:true});
+  document.addEventListener('pointerup',function(){touching=false;rafId=requestAnimationFrame(step);},{passive:true});
+  rafId=requestAnimationFrame(step);
+}
+safeTap(document.getElementById('btn-acerca'),function(){openPanel('about-panel');startAboutScroll();});
 document.getElementById('about-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 document.getElementById('about-web').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
@@ -869,49 +893,58 @@ var TRIAL_KEY='windiqa_install_date';
 var TRIAL_UNLOCKED='windiqa_pro_unlocked';
 var isPro=false;
 
-function checkTrial(){
-  if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
-  var inst=localStorage.getItem(TRIAL_KEY);
-  if(!inst){localStorage.setItem(TRIAL_KEY,Date.now().toString());isPro=true;return;}
-  var days=(Date.now()-parseInt(inst))/(1000*60*60*24);
-  if(days<TRIAL_DAYS){isPro=true;return;}
-  isPro=false;
-  // Show lockout panel once per session
-  if(!window._trialShown){
-    window._trialShown=true;
-    document.getElementById('trial-panel').style.display='flex';
-    lockPremiumFeatures();
-  }
+function showTrialEnded(onClose){
+  var bg=document.getElementById('trial-ended-bg');
+  if(bg)bg.style.display='flex';
+  window._trialOnClose=onClose||null;
 }
 
 function lockPremiumFeatures(){
-  // Lock panel buttons - RUEDAS stays, REVERB/DELAY/SCALE locked
-  ['btn-reverb','btn-delay'].forEach(function(id){
+  rvOn=false;
+  if(wG&&actx)wG.gain.setTargetAtTime(0,actx.currentTime,0.04);
+  ['ovl-ruedas','ovl-reverb','ovl-delay','ovl-scale'].forEach(function(id){
     var el=document.getElementById(id);
-    if(el){el.style.opacity='0.35';el.style.pointerEvents='none';}
+    if(el){
+      el.style.display='flex';
+      el.addEventListener('pointerdown',function(e){
+        e.stopPropagation();e.preventDefault();
+        showTrialEnded();
+      },{passive:false});
+    }
   });
-  // Lock pitch/mod wheels
-  var pnlR=document.getElementById('pnl-ruedas');
-  if(pnlR)pnlR.style.pointerEvents='none';
-  // Lock PRO SKINS
   var ps=document.getElementById('btn-proskins');
   if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
 }
 
-document.getElementById('trial-buy').addEventListener('pointerdown',function(e){
-  e.preventDefault();
-  window.open('https://www.looptopus.com','_blank');
-},{passive:false});
+// Intercept wheel touch BEFORE locking - show trial panel first
+var mwEl=document.getElementById('mw');
+var pwEl=document.getElementById('pw');
+function interceptWheel(el){
+  if(!el)return;
+  el.addEventListener('pointerdown',function(e){
+    if(isPro)return;
+    e.stopPropagation();e.preventDefault();
+    showTrialEnded(function(){lockPremiumFeatures();});
+  },{passive:false,capture:true});
+}
+interceptWheel(mwEl);
+interceptWheel(pwEl);
 
-document.getElementById('trial-free').addEventListener('pointerdown',function(e){
-  e.preventDefault();
-  document.getElementById('trial-panel').style.display='none';
-  lockPremiumFeatures();
-  // Switch to RUEDAS (the only free panel)
-  switchPanel('ruedas');
-},{passive:false});
+// Trial ended panel listeners
+function closeTrialEnded(){
+  document.getElementById('trial-ended-bg').style.display='none';
+  if(window._trialOnClose){window._trialOnClose();window._trialOnClose=null;}
+}
+document.getElementById('trial-ended-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closeTrialEnded();},{passive:false});
+document.getElementById('trial-ended-bg').addEventListener('pointerdown',function(e){if(e.target===this)closeTrialEnded();});
+document.getElementById('trial-ended-card').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+document.getElementById('trial-ended-buy').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
-document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();checkTrial();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
+function checkTrial(){
+  isPro=false;
+}
+
+document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
 // Default scale UI state
 document.getElementById('scn-C').classList.add('act');
 document.getElementById('scs-penta').classList.add('act');
