@@ -111,8 +111,8 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 #prox-ok{font-family:system-ui,sans-serif;font-size:13px;font-weight:700;color:#0a0804;background:#FFD900;padding:10px 28px;border-radius:6px;cursor:pointer;touch-action:manipulation;}
 /* PREMIUM OVERLAY */
 .prem-ovl{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:10;cursor:pointer;touch-action:manipulation;}
-.prem-ovl::after{content:'🔒';font-size:22px;display:block;}
-.prem-ovl::before{content:'FUNCIÓN PREMIUM';font-family:"Michroma",monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;display:block;}
+.prem-ovl::before{content:'FUNCIÓN PREMIUM';font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;display:block;order:2;}
+.prem-ovl-icon{width:22px;height:22px;order:1;}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 </head>
@@ -125,11 +125,15 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 <div id="kbwrap"><div id="kb"></div></div>
 <div id="bot">
   <div id="caja">
-    <!-- RUEDAS -->
+    <!-- PREMIUM OVERLAY - covers entire controls section -->
+    <div id="ovl-premium" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:100;cursor:pointer;touch-action:manipulation;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg>
+      <span style="font-family:'Michroma',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;">FUNCIÓN PREMIUM</span>
+    </div>
     <div id="pnl-ruedas" class="pnl" style="position:relative;">
       <div class="whl2"><div class="wl2">MOD</div><div class="wb2" id="mw"><canvas id="mwc"></canvas></div><div class="wv2" id="mwv">0</div></div>
       <div class="whl2"><div class="wl2">PITCH</div><div class="wb2" id="pw"><canvas id="pwc"></canvas></div><div class="wv2" id="pwv">0</div></div>
-      <div class="prem-ovl" id="ovl-ruedas"></div>
+      
     </div>
     <!-- REVERB -->
     <div id="pnl-reverb" class="pnl" style="position:relative;">
@@ -145,7 +149,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn act" data-ir="plate" id="irbtn-plate">PLATE</div>
         <div class="ir-btn" data-ir="cathedral" id="irbtn-cathedral">CATHEDRAL</div>
       </div>
-      <div class="prem-ovl" id="ovl-reverb"></div>
+      
     </div>
     <!-- DELAY -->
     <div id="pnl-delay" class="pnl" style="position:relative;">
@@ -163,7 +167,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="ir-btn" data-sub="6" id="subbtn-6">1/6</div>
         <div class="ir-btn act" data-sub="8" id="subbtn-8">1/8</div>
       </div>
-      <div class="prem-ovl" id="ovl-delay"></div>
+      
     </div>
     <!-- SELECTOR DE ESCALAS -->
     <div id="pnl-scale" class="pnl" style="flex-direction:column;gap:5px;width:100%;background:#0a0804;border-radius:6px;padding:4px 6px;border:1px solid rgba(255,217,0,0.5);box-shadow:0 0 8px rgba(255,217,0,0.2);position:relative;">
@@ -184,7 +188,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         <div class="sc-btn" data-scale="penta" id="scs-penta">Pentatónica</div>
         <div class="sc-bypass" id="sc-bypass">OFF</div>
       </div>
-      <div class="prem-ovl" id="ovl-scale"></div>
+      
     </div>
     <div id="pnl-skins" class="pnl" style="flex-direction:row;align-items:stretch;gap:6px;width:100%;">
       <div id="trow-themes-inline" style="flex:1;"></div>
@@ -657,8 +661,8 @@ safeTap(ovlShared,function(e){
   }
 });
 
-// TUERCA
-document.getElementById('trc').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();openPanel('tuerca-panel');},{passive:false});
+// TUERCA - use safeTap so it doesn't close on release
+safeTap(document.getElementById('trc'),function(e){e.stopPropagation&&e.stopPropagation();openPanel('tuerca-panel');});
 document.getElementById('tuerca-close').addEventListener('pointerdown',function(e){e.stopPropagation();e.preventDefault();closePanel();},{passive:false});
 
 // PRO SKINS
@@ -899,36 +903,44 @@ function showTrialEnded(onClose){
   window._trialOnClose=onClose||null;
 }
 
-function lockPremiumFeatures(){
-  rvOn=false;
-  if(wG&&actx)wG.gain.setTargetAtTime(0,actx.currentTime,0.04);
-  ['ovl-ruedas','ovl-reverb','ovl-delay','ovl-scale'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){
-      el.style.display='flex';
-      el.addEventListener('pointerdown',function(e){
-        e.stopPropagation();e.preventDefault();
-        showTrialEnded();
-      },{passive:false});
-    }
+function lockAllPanels(){
+  // Lock ALL panels permanently for this session
+  ['pnl-ruedas','pnl-reverb','pnl-delay','pnl-scale'].forEach(function(panelId){
+    var panel=document.getElementById(panelId);
+    if(!panel||document.getElementById('ovl-'+panelId))return;
+    var ovl=document.createElement('div');
+    ovl.id='ovl-'+panelId;
+    ovl.style.cssText='position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:100;cursor:pointer;touch-action:manipulation;pointer-events:all;';
+    ovl.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD900" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="#FFD900"/></svg><span style="font-family:\'Michroma\',monospace;font-size:8px;color:#FFD900;letter-spacing:1.5px;">FUNCIÓN PREMIUM</span>';
+    panel.style.position='relative';
+    panel.appendChild(ovl);
+    // Clicking overlay just shows the trial ended panel again
+    ovl.addEventListener('pointerdown',function(e){
+      e.stopPropagation();e.preventDefault();
+      showTrialEnded();
+    },{passive:false});
   });
+  // Gray out Pro Skins
   var ps=document.getElementById('btn-proskins');
   if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
 }
 
-// Intercept wheel touch BEFORE locking - show trial panel first
-var mwEl=document.getElementById('mw');
-var pwEl=document.getElementById('pw');
-function interceptWheel(el){
-  if(!el)return;
-  el.addEventListener('pointerdown',function(e){
-    if(isPro)return;
-    e.stopPropagation();e.preventDefault();
-    showTrialEnded(function(){lockPremiumFeatures();});
-  },{passive:false,capture:true});
+function lockPremiumFeatures(){
+  lockAllPanels();
 }
-interceptWheel(mwEl);
-interceptWheel(pwEl);
+
+// Intercept touches INSIDE each panel - first touch shows message, close locks all
+['pnl-ruedas','pnl-reverb','pnl-delay','pnl-scale'].forEach(function(panelId){
+  var panel=document.getElementById(panelId);
+  if(!panel)return;
+  panel.addEventListener('pointerdown',function(e){
+    if(isPro)return;
+    // If panel already locked, don't intercept again
+    if(document.getElementById('ovl-'+panelId))return;
+    e.stopPropagation();e.preventDefault();
+    showTrialEnded(function(){lockAllPanels();});
+  },{passive:false,capture:true});
+});
 
 // Trial ended panel listeners
 function closeTrialEnded(){
@@ -944,7 +956,13 @@ function checkTrial(){
   isPro=false;
 }
 
-document.body.addEventListener('pointerdown',function initAudio(){loadS();startWF();document.body.removeEventListener('pointerdown',initAudio);},{once:true});
+document.body.addEventListener('pointerdown',function initAudio(){
+  loadS();startWF();
+  // Gray Pro Skins immediately on first touch
+  var ps=document.getElementById('btn-proskins');
+  if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
+  document.body.removeEventListener('pointerdown',initAudio);
+},{once:true});
 // Default scale UI state
 document.getElementById('scn-C').classList.add('act');
 document.getElementById('scs-penta').classList.add('act');
