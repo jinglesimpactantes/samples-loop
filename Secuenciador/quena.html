@@ -947,7 +947,28 @@ function init(){
 var TRIAL_DAYS=0;
 var TRIAL_KEY='windiqa_install_date';
 var TRIAL_UNLOCKED='windiqa_pro_unlocked';
-var isPro=false;
+// ═══ TRIAL 15 DÍAS ═══
+var TRIAL_DAYS=15;
+var TRIAL_KEY='windiqa_install_date';
+var TRIAL_UNLOCKED='windiqa_pro_unlocked';
+var isPro=true; // empieza PRO
+
+// Verificar trial al primer toque
+function checkTrial(){
+  if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
+  var inst=localStorage.getItem(TRIAL_KEY);
+  if(!inst){
+    localStorage.setItem(TRIAL_KEY,Date.now().toString());
+    isPro=true;
+    return;
+  }
+  var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
+  if(daysUsed<TRIAL_DAYS){
+    isPro=true;
+  } else {
+    isPro=false;
+  }
+}
 
 function showTrialEnded(onClose){
   var bg=document.getElementById('trial-ended-bg');
@@ -1003,9 +1024,11 @@ function checkTrial(){
 }
 
 document.body.addEventListener('pointerdown',function initAudio(){
-  loadS();startWF();
-  var ps=document.getElementById('btn-proskins');
-  if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
+  loadS();startWF();checkTrial();
+  if(!isPro){
+    var ps=document.getElementById('btn-proskins');
+    if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
+  }
   document.body.removeEventListener('pointerdown',initAudio);
 },{once:true});
 
