@@ -24,7 +24,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
 
-/* ESTILOS ORIGINALES DE LA APP (NO TOCAR PARA NO ROMPER EL TECLADO/INTERFAZ PRINCIPAL) */
+/* ESTILOS ORIGINALES DE LA APP (NO TOCAR PARA NO ROMPER EL TECLADO) */
 body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;touch-action:none;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
 #minibar{height:26px;flex-shrink:0;background:#0d0b06;border-bottom:1px solid rgba(255,217,0,0.15);display:flex;align-items:center;padding:0 8px;gap:6px;}
 #mm-keys{flex:1;height:14px;position:relative;border-radius:3px;overflow:hidden;background:#1a1408;border:1px solid rgba(255,217,0,0.15);}
@@ -69,34 +69,61 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .sc-bypass.act{background:#cc0000;color:#fff;border-color:#cc0000;box-shadow:0 0 8px rgba(200,0,0,0.5);}
 .lib-item{font-family:system-ui,sans-serif;font-size:13px;font-weight:500;padding:11px 14px;border-radius:6px;border:1px solid rgba(47,111,104,0.4);color:#FFD900;background:rgba(47,111,104,0.06);cursor:pointer;touch-action:manipulation;display:flex;justify-content:space-between;align-items:center;}
 .lib-item.active{background:#FFD900;color:#000;border-color:#FFD900;}
-.lib-item.lib-locked{opacity:0.7;cursor:default;}
 .trow{display:flex;gap:6px;flex-wrap:wrap;}
 .tbtn{font-family:system-ui,sans-serif;font-size:9px;padding:6px 4px;border-radius:5px;border:1px solid rgba(255,217,0,0.3);color:#FFD900;background:rgba(255,217,0,0.04);cursor:pointer;touch-action:manipulation;text-align:center;}
 .tbtn.sel{background:#FFD900;color:#000;}
 #trow-themes-inline{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:100%;}
 #trow-themes-inline .tbtn{flex:none;}
 
+
+/* ========================================================================= */
 /* === SISTEMA DE DISEÑO DE PANELES PRO (MÁSTER CODE) === */
-.card {
+/* ========================================================================= */
+
+.ovl-bg {
+  position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;
+}
+
+.ovl {
   background: var(--bg-card);
   border-radius: 20px;
   padding: 20px;
-  max-width: 365px; 
+  max-width: 365px;
   width: 100%;
   box-sizing: border-box;
   position: relative;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh; /* Respeta los scrolls */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-.card::before {
+/* El biselado dorado respetando la esquina redondeada (Fix #1) */
+.ovl::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, var(--gold-main), transparent);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 5;
 }
-.card.active::before { background: linear-gradient(90deg, var(--cyan-main), transparent); }
+
+.ovl h3 {
+  font-family: 'Michroma', monospace;
+  font-size: 10px;
+  color: var(--gold-main);
+  letter-spacing: 0.5px;
+  margin: 0 0 16px 0;
+  line-height: 1.3;
+  padding-right: 32px; 
+}
+.ovl h3.center { text-align: center; padding-right: 0; margin-top: 12px; }
+.card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.4; margin: 0; }
 
 /* BOTÓN CERRAR SEGURO */
-.btn-close {
+.ovl-close {
   position: absolute;
   top: 12px;
   right: 14px;
@@ -113,81 +140,46 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   transition: all 0.2s ease;
   z-index: 20;
 }
-.btn-close:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-main);
-}
-
-/* TEXTOS Y TÍTULOS */
-.card-title {
-  font-family: 'Michroma', monospace;
-  font-size: 10px;
-  color: var(--gold-main);
-  letter-spacing: 0.5px;
-  margin: 0 0 16px 0;
-  line-height: 1.3;
-  padding-right: 32px; /* Muro de seguridad para la X */
-}
-.card-title.cyan { color: var(--cyan-main); }
-.card-title.center { text-align: center; padding-right: 0; margin-top: 12px; }
-
-.card-desc {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin: 0;
-}
+.ovl-close:hover { background: rgba(255, 255, 255, 0.15); color: var(--text-main); }
 
 /* BOTONES DE ACCIÓN */
 .btn-primary {
-  width: 100%;
-  background: var(--gold-main);
-  color: #000;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 14px 0;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: transform 0.1s ease, filter 0.2s ease;
+  width: 100%; background: var(--gold-main); color: #000;
+  font-family: system-ui, sans-serif; font-size: 13px; font-weight: 800;
+  letter-spacing: 1px; text-transform: uppercase; padding: 14px 0;
+  border-radius: 12px; border: none; cursor: pointer; margin-top: 20px;
+  transition: transform 0.1s ease, filter 0.2s ease; text-align: center;
 }
 .btn-primary:active { transform: scale(0.97); }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-small { width: auto; padding: 12px 32px; margin-top: 12px; }
+.btn-small { width: auto; padding: 12px 32px; margin-top: 12px; display: inline-block;}
 
 /* LISTAS DE CONFIGURACIÓN */
-.p-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 8px;
-  cursor: pointer;
+.cfg-menu { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.cfg-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border-radius: 12px; background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 2px;
+  cursor: pointer; touch-action: manipulation;
 }
-.p-item-label { font-family: 'Michroma', monospace; font-size: 10px; color: #eee; flex: 1; letter-spacing: 0.5px; }
-.p-item-arrow { color: rgba(255, 255, 255, 0.3); font-size: 14px; }
+.cfg-item:active { background: rgba(255, 255, 255, 0.08); }
+.cfg-icon { font-size: 16px; color: var(--gold-main); width: 20px; text-align: center; flex-shrink: 0; }
+.cfg-label { font-family: 'Michroma', monospace; font-size: 10px; color: #eee; flex: 1; letter-spacing: 0.5px; }
+.cfg-arrow { color: rgba(255, 255, 255, 0.3); font-size: 14px; flex-shrink: 0; }
 
-/* LIBRERÍAS DE AUDIO (BANNERS) */
-.kit-item { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 217, 0, 0.15); margin-bottom: 10px; background: #000; position: relative; cursor: pointer; }
-.kit-item.active-kit { border-color: var(--gold-main); box-shadow: 0 0 8px rgba(255, 217, 0, 0.2); }
-.kit-item.lib-locked { opacity: 0.8; }
-.kit-img { width: 100%; height: 60px; object-fit: cover; display: block; }
-.kit-label { padding: 8px 12px; font-family: 'Michroma', monospace; font-size: 10px; color: var(--gold-main); display: flex; align-items: center; gap: 6px; }
+/* BANNERS LIBRERIA */
+.kit-banner-item { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 217, 0, 0.15); margin-bottom: 10px; background: #000; position: relative; cursor: pointer; flex-shrink: 0; }
+.kit-banner-active { border-color: var(--gold-main); box-shadow: 0 0 8px rgba(255, 217, 0, 0.2); }
+.kit-banner-img { width: 100%; height: auto; display: block; }
+.kit-banner-label { padding: 8px 12px; font-family: 'Michroma', monospace; font-size: 10px; color: var(--gold-main); display: flex; align-items: center; gap: 6px; background: #000; }
+.lib-locked { opacity: 0.8; cursor: default; }
 
-/* PANÉLES DE TRIAL (Composición con Iconos) */
-.card-header { display: flex; align-items: center; gap: 16px; }
+/* Icon boxes for Trial */
+.card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
 .icon-box { width: 62px; height: 62px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.active .icon-box { background: var(--cyan-dim); }
 .expired .icon-box { background: var(--gold-dim); }
 .card-content { flex: 1; padding-right: 28px; }
-.card-content .card-title { margin-bottom: 6px; padding-right: 0; }
+.card-content h3 { margin-bottom: 6px; padding-right: 0; }
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 </head>
@@ -293,96 +285,110 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   <div id="trc"><img src="https://jinglesimpactantes.github.io/samples-loop/Secuenciador/TuercaIcono.png" alt="⚙"/></div>
 </div>
 
-<div id="ovl-shared" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;">
+<div id="ovl-shared" class="ovl-bg">
 
-  <div id="tuerca-panel" class="card" style="display:none; max-width:340px;">
-    <div class="btn-close" id="tuerca-close">✕</div>
-    <div class="card-title" style="margin-top: 6px; margin-bottom: 24px;">CONFIGURACIÓN</div>
-    <div class="p-item" id="btn-proskins">
-      <span style="font-size:16px;">🎨</span>
-      <span class="p-item-label">PRO SKINS</span>
-      <span class="p-item-arrow">›</span>
-    </div>
-    <div class="p-item" id="btn-libreria">
-      <span style="font-size:16px;">🎹</span>
-      <span class="p-item-label">LIBRERÍAS DE AUDIO</span>
-      <span class="p-item-arrow">›</span>
-    </div>
-    <div class="p-item" id="btn-acerca">
-      <span style="font-family:Georgia;font-style:italic;font-size:16px;color:var(--gold-main);">i</span>
-      <span class="p-item-label">ACERCA DE WINDIQA</span>
-      <span class="p-item-arrow">›</span>
+  <div id="tuerca-panel" class="ovl" style="display:none; max-width:340px;">
+    <div class="ovl-close" id="tuerca-close">✕</div>
+    <h3 style="margin-top: 6px; margin-bottom: 24px;">CONFIGURACIÓN</h3>
+    <div class="cfg-menu">
+      <div class="cfg-item" id="btn-proskins">
+        <span class="cfg-icon">🎨</span>
+        <span class="cfg-label">PRO SKINS</span>
+        <span class="cfg-arrow">›</span>
+      </div>
+      <div class="cfg-item" id="btn-libreria">
+        <span class="cfg-icon">🎹</span>
+        <span class="cfg-label">LIBRERÍAS DE AUDIO</span>
+        <span class="cfg-arrow">›</span>
+      </div>
+      <div class="cfg-item" id="btn-acerca">
+        <span class="cfg-icon" style="font-family:Georgia,serif;font-style:italic;">i</span>
+        <span class="cfg-label">ACERCA DE WINDIQA</span>
+        <span class="cfg-arrow">›</span>
+      </div>
     </div>
   </div>
 
-  <div id="thm" class="card" style="display:none; max-width:340px;">
-    <div class="btn-close" id="thm-close">✕</div>
-    <div class="card-title" style="margin-top: 6px; margin-bottom: 24px;">PRO SKINS</div>
+  <div id="thm" class="ovl" style="display:none; max-width:340px;">
+    <div class="ovl-close" id="thm-close">✕</div>
+    <h3 style="margin-top: 6px; margin-bottom: 24px;">PRO SKINS</h3>
     <div class="trow" id="trow-themes"></div>
   </div>
 
-  <div id="lib-panel" class="card" style="display:none;max-height:82vh;display:flex;flex-direction:column;padding:20px 14px; max-width:340px;">
-    <div class="btn-close" id="lib-close" style="z-index:20;">✕</div>
-    <div class="card-title" style="margin-top: 6px; margin-bottom: 16px; flex-shrink:0;">LIBRERÍAS DE AUDIO</div>
+  <div id="lib-panel" class="ovl" style="display:none; max-width:340px; padding:20px 14px;">
+    <div class="ovl-close" id="lib-close" style="z-index:20;">✕</div>
+    <h3 style="margin-top: 6px; margin-bottom: 16px; flex-shrink:0;">LIBRERÍAS DE AUDIO</h3>
     
-    <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:6px;padding-bottom:10px;">
+    <div style="overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; padding-right:6px; padding-bottom:10px;">
       
-      <div class="kit-item active-kit" id="lib-quena">
-        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg') center/cover;"></div>
-        <div class="kit-label">Quena Windiqa <span style="background:var(--gold-main);color:#000;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:auto;">ACTIVO</span></div>
+      <div class="kit-banner-item kit-banner-active" id="lib-quena">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
+        <div style="position:absolute;top:6px;right:8px;background:var(--gold-main);color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
+        <div class="kit-banner-label">Quena Windiqa</div>
       </div>
       
-      <div class="kit-item lib-locked" id="lib-zam">
-        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg') center/cover;"></div>
+      <div class="kit-banner-item lib-locked" id="lib-zam">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
         <div style="position:absolute;top:8px;right:8px;">
           <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
         </div>
-        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Zampoña <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+        <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
       
-      <div class="kit-item lib-locked" id="lib-ocarina">
-        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg') center/cover;"></div>
+      <div class="kit-banner-item lib-locked" id="lib-ocarina">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
         <div style="position:absolute;top:8px;right:8px;">
           <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
         </div>
-        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Ocarina <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+        <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
 
-      <div class="kit-item lib-locked" id="lib-flauta">
-        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg') center/cover;"></div>
+      <div class="kit-banner-item lib-locked" id="lib-flauta">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
         <div style="position:absolute;top:8px;right:8px;">
           <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
         </div>
-        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Flauta Cerámica <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+        <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
 
-      <div class="kit-item lib-locked" id="lib-tarka">
-        <div class="kit-img" style="background:url('https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg') center/cover;"></div>
+      <div class="kit-banner-item lib-locked" id="lib-tarka">
+        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
         <div style="position:absolute;top:8px;right:8px;">
           <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
         </div>
-        <div class="kit-label" style="color:rgba(255,255,255,0.5);">Tarka <span style="font-size:8px;color:var(--gold-main);">· PRO</span></div>
+        <div class="kit-banner-label">Tarka <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
       
     </div>
     <p style="font-size:10px;color:var(--text-muted);text-align:center;margin:8px 0 0;flex-shrink:0;">↓ scroll para ver más</p>
   </div>
 
-  <div id="about-panel" class="card" style="display:none;text-align:center; max-width:340px;">
-    <div class="btn-close" id="about-close">✕</div>
-    <div class="card-title center">ACERCA DE</div>
+  <div id="about-panel" class="ovl" style="display:none; align-items:center; text-align:center; max-width:340px;">
+    <div class="ovl-close" id="about-close">✕</div>
+    <h3 class="center">ACERCA DE</h3>
     <div style="width:60%;margin:0 auto 12px;height:50px;background:linear-gradient(135deg,var(--cyan-main),var(--gold-main));border-radius:10px;opacity:0.3;"></div>
+    
+    <img src="https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Windiqa_Logo_tiny.png" style="width:58%;max-width:240px;object-fit:contain;margin:6px auto;display:block;filter:drop-shadow(0 0 20px rgba(255,217,0,0.55));"/>
+    
     <div style="font-family:'Michroma',monospace;font-size:8px;color:var(--gold-main);letter-spacing:2px;margin-bottom:8px;">Pro v1.0.0</div>
-    <p class="card-desc">Instrumento virtual de vientos<br>nativo-americanos para Android.</p>
-    <div style="height:1px;background:rgba(255,255,255,0.08);margin:16px 0 20px;"></div>
-    <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;">Mike Valderrama</p>
-    <p style="font-size:12px;color:var(--text-muted);margin:0 0 8px;">Arequipa, Perú</p>
-    <button class="btn-primary btn-small" id="about-web">www.looptopus.com</button>
+    <p class="card-desc" style="margin-bottom:16px;">Instrumento virtual de vientos nativo-americanos<br>Con ruedas de expresión, reverb IR y delay.<br>Pro Skins y librerías de audio para inspirarte.</p>
+    <div style="height:1px;width:100%;background:rgba(255,255,255,0.08);margin:0 0 16px;"></div>
+    <p style="font-size:12px;color:var(--text-muted);margin:0 0 4px;">Desarrollo por Mike Valderrama</p>
+    <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;">Arequipa, Perú</p>
+    <div id="about-web" class="btn-primary btn-small">www.looptopus.com</div>
   </div>
 
-</div><div id="trial-ended-bg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:99998;display:none;align-items:center;justify-content:center;padding:16px;">
-  <div id="trial-ended-card" class="card expired" style="max-width:365px;">
-    <div class="btn-close" id="trial-ended-close">✕</div>
+</div><div id="prox-msg" class="ovl-bg" style="z-index:99999;">
+  <div id="prox-inner" class="ovl" style="align-items:center; text-align:center; max-width:300px; padding:30px 24px;">
+    <h3 class="center" style="margin-bottom:12px; margin-top:0;">PRÓXIMAMENTE</h3>
+    <p class="card-desc" style="margin-bottom:20px;">Este kit estará disponible pronto.</p>
+    <div id="prox-ok" class="btn-primary btn-small" style="padding: 12px 64px; margin-top:0;">OK</div>
+  </div>
+</div>
+
+<div id="trial-ended-bg" class="ovl-bg" style="z-index:99998;">
+  <div id="trial-ended-card" class="ovl expired">
+    <div class="ovl-close" id="trial-ended-close">✕</div>
     <div class="card-header">
       <div class="icon-box">
         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gold-main)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform: translateY(-2px);">
@@ -391,19 +397,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
         </svg>
       </div>
       <div class="card-content">
-        <h3 class="card-title">PRUEBA FINALIZADA</h3>
+        <h3>PRUEBA FINALIZADA</h3>
         <p class="card-desc">Tu versión básica sigue activa. Desbloquea el acceso total.</p>
       </div>
     </div>
-    <button class="btn-primary" id="trial-ended-buy">DESBLOQUEAR POR $2.99</button>
-  </div>
-</div>
-
-<div id="prox-msg" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;">
-  <div id="prox-inner" class="card" style="text-align:center; max-width:300px;">
-    <div class="card-title center">PRÓXIMAMENTE</div>
-    <p class="card-desc">Este kit estará disponible pronto.</p>
-    <button class="btn-primary btn-small" id="prox-ok" style="padding: 12px 64px;">OK</button>
+    <div id="trial-ended-buy" class="btn-primary">DESBLOQUEAR POR $2.99</div>
   </div>
 </div>
 
@@ -431,7 +429,6 @@ wheelImg.src='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Sample
 var TBASE='https://jinglesimpactantes.github.io/samples-loop/Quena_App_Samples/Teclas/';
 var TPNG={};
 ['blancaL:TeclaBlanca_Larga.png','blancaC:TeclaBlanca_Corta.png','negraL:TeclaNegra_Larga.png','negraC:TeclaNegra_Corta.png','rojaL:TeclaRoja_Larga.png','rojaC:TeclaRoja_Corta.png','caniaL:TeclaCania_Larga.png','caniaC:TeclaCania_Corta.png','grisL:TeclaGris_Larga.png'].forEach(function(s){var p=s.split(':');var img=new Image();img.src=TBASE+p[1];TPNG[p[0]]=img;});
-// Windiqa skin - turquoise keys
 var tqL=new Image();tqL.src='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/TeclaTurquesa_Larga.png';TPNG['tqL']=tqL;
 var tqC=new Image();tqC.src='https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/bda57a71828d551d33b43e320de663b3a0929780/Quena_App_Samples/Teclas/TeclaWindiqa_Corta.png';TPNG['tqC']=tqC;
 var THEME_LIST=[
@@ -450,7 +447,6 @@ var curThemeData=THEME_LIST[0];
 function applyTheme(td){curThemeData=td;document.querySelectorAll('.tbtn').forEach(function(b){b.classList.toggle('sel',b.dataset.tid===td.id);});bKb();}
 function buildThemeButtons(){var tr=document.getElementById('trow-themes');tr.innerHTML='';THEME_LIST.forEach(function(td){var b=document.createElement('div');b.className='tbtn'+(td.id===curThemeData.id?' sel':'');b.textContent=td.name;b.dataset.tid=td.id;b.addEventListener('pointerdown',function(e){e.preventDefault();applyTheme(td);},{passive:false});tr.appendChild(b);});}
 
-// AUDIO
 function n2m(n,o){return(o+1)*12+SEM[n];}
 function bst(n,o){var m=n2m(n,o),b=null,bd=999;Object.keys(SMIDI).forEach(function(s){var d=Math.abs(SMIDI[s]-m);if(d<bd){bd=d;b=s;}});return{s:b,d:m-SMIDI[b]};}
 function gac(){
@@ -503,7 +499,6 @@ function stp(id){
 }
 function uV(id,y,t,b){var nd=nds[id];if(!nd||!actx)return;var p=(y-t)/(b-t),v=Math.max(0.1,Math.min(0.95,0.1+p*0.85));nd.v=v;nd.g.gain.setTargetAtTime(v,actx.currentTime,0.015);}
 
-// WHEELS
 function dW(cid,val,isPitch){
   var c2=document.getElementById(cid);if(!c2)return;
   var par=c2.parentElement,w=par.offsetWidth,h=par.offsetHeight;if(!w||!h)return;
@@ -539,7 +534,6 @@ function mkW(wid,cid,vid,mn,mx,onM,onR){
 mkW('mw','mwc','mwv',0,1,function(v){md=v;if(actx)Object.keys(nds).forEach(function(id){var nd=nds[id];if(nd.lf)nd.lf.gain.setTargetAtTime(md*0.022,actx.currentTime,0.04);if(nd.la)nd.la.gain.setTargetAtTime(md*nd.v*vibDepthMul,actx.currentTime,0.04);});},null);
 mkW('pw','pwc','pwv',-1,1,function(v){pb=v;if(actx)Object.keys(nds).forEach(function(id){var nd=nds[id];if(!nd.s)return;var m=bst(nd.n,nd.o),r=Math.pow(2,(m.d+pb*pbRange)/12);nd.src.playbackRate.setTargetAtTime(r,actx.currentTime,0.005);nd.r=r;});},function(){pb=0;dW('pwc',0,true);document.getElementById('pwv').textContent='0';if(actx)Object.keys(nds).forEach(function(id){var nd=nds[id];if(!nd.s)return;nd.src.playbackRate.setTargetAtTime(Math.pow(2,bst(nd.n,nd.o).d/12),actx.currentTime,0.005);});});
 
-// REVERB
 var PRESETS={
   plate:{predly:40,decay:33,size:70,damp:40,diff:45,gain:-2,mix:12},
   hall:{predly:0,decay:33,size:50,damp:20,diff:50,gain:1,mix:40},
@@ -580,7 +574,6 @@ var cIR_btn='room';
 document.getElementById('rvmix').addEventListener('input',function(){rv=parseFloat(this.value)/100;document.getElementById('rvmixv').textContent=this.value+'%';var irScale=(cIR==='cathedral')?0.2:1.0;if(wG&&actx&&rvOn){var gL=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rv*IRM[cIR]*gL*irScale,actx.currentTime,0.04);}});
 document.getElementById('rvbyp').addEventListener('pointerdown',function(e){e.preventDefault();rvOn=!rvOn;this.textContent=rvOn?'ON':'OFF';this.classList.toggle('act',rvOn);if(wG&&actx){var irScale=(cIR==='cathedral')?0.2:1.0;var gL=Math.pow(10,RP.gain/20);wG.gain.setTargetAtTime(rvOn?rv*IRM[cIR]*gL*irScale:0,actx.currentTime,0.04);}},{passive:false});
 
-// DELAY
 function initDelay(){
   if(dlNode||!actx)return;
   dlNode=actx.createDelay(2.0);dlFbNode=actx.createGain();dlFbNode.gain.value=0.28;
@@ -602,7 +595,6 @@ function getDlTime(){var bpm=parseFloat(document.getElementById('dlbpm').value)|
   },{passive:false});
 });
 
-// SELECTOR DE ESCALAS
 var scaleRoot='C',scaleSharp=false,scaleType='penta',scaleActive=false;
 var SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],penta:[0,2,4,7,9]};
 var SEM_SC={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
@@ -651,7 +643,6 @@ document.getElementById('sc-bypass').addEventListener('pointerdown',function(e){
 },{passive:false});
 document.getElementById('dlbyp').addEventListener('pointerdown',function(e){e.preventDefault();dlOn=!dlOn;this.textContent=dlOn?'ON':'OFF';this.classList.toggle('act',dlOn);if(dlWet&&actx)dlWet.gain.setTargetAtTime(dlOn?Math.min(parseFloat(document.getElementById('dlmix').value)*0.004,1):0,actx.currentTime,0.04);},{passive:false});
 
-// ═══ PANEL SYSTEM - single shared overlay ═══
 var panelStack=[];
 var ovlShared=document.getElementById('ovl-shared');
 
@@ -664,7 +655,7 @@ function openPanel(id){
   });
   panelStack.push(id);
   showOverlay();
-  document.getElementById(id).style.display='block'; /* Ahora usan display:block para encajar con el layout .card */
+  document.getElementById(id).style.display='flex';
 }
 
 function closePanel(){
@@ -674,7 +665,7 @@ function closePanel(){
   if(panelStack.length===0){
     hideOverlay();
   } else {
-    document.getElementById(panelStack[panelStack.length-1]).style.display='block';
+    document.getElementById(panelStack[panelStack.length-1]).style.display='flex';
   }
 }
 
@@ -933,7 +924,6 @@ function init(){
   }else{setTimeout(init,50);}
 }
 
-// ═══ TRIAL SYSTEM - 4 days ═══
 var TRIAL_DAYS=0;
 var TRIAL_KEY='windiqa_install_date';
 var TRIAL_UNLOCKED='windiqa_pro_unlocked';
