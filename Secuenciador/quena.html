@@ -21,6 +21,9 @@
   --text-main: #ffffff;
   --text-muted: #8e8e93;
 }
+.ovl.active::before{background:linear-gradient(90deg,var(--cyan-main),transparent)!important;}
+.icon-box{width:62px;height:62px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--cyan-dim);}
+.card-header{display:flex;align-items:center;gap:16px;}
 
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
 
@@ -398,7 +401,26 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div id="about-web" class="btn-primary btn-small">www.looptopus.com</div>
   </div>
 
-</div><div id="prox-msg" class="ovl-bg" style="z-index:99999;">
+</div><!-- BANNER DIARIO TRIAL -->
+<div id="trial-daily-bg" class="ovl-bg" style="z-index:99997;align-items:flex-start;justify-content:center;padding-top:60px;">
+  <div id="trial-daily-card" class="ovl active" style="max-width:365px;">
+    <div class="ovl-close" id="trial-daily-close">✕</div>
+    <div class="card-header">
+      <div class="icon-box">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-main)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3 id="trial-daily-title" style="color:var(--cyan-main);margin-bottom:6px;padding-right:0;">TE QUEDAN 14 DÍAS</h3>
+        <p class="card-desc">Disfruta Windiqa al máximo. Luego algunas funciones se bloquearán.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="prox-msg" class="ovl-bg" style="z-index:99999;">
   <div id="prox-inner" class="ovl" style="align-items:center; text-align:center; max-width:300px; padding:30px 24px;">
     <h3 class="center" style="margin-bottom:12px; margin-top:0;">PRÓXIMAMENTE</h3>
     <p class="card-desc" style="margin-bottom:20px;">Este kit estará disponible pronto.</p>
@@ -989,6 +1011,27 @@ function lockPremiumFeatures(){
   },{passive:false,capture:true});
 });
 
+// ═══ BANNER DIARIO TRIAL ═══
+function checkDailyBanner(daysLeft){
+  if(daysLeft<=0||daysLeft>TRIAL_DAYS)return;
+  var today=new Date().toDateString();
+  var lastShown=localStorage.getItem('windiqa_banner_date');
+  if(lastShown===today)return; // ya se mostró hoy
+  localStorage.setItem('windiqa_banner_date',today);
+  var title=document.getElementById('trial-daily-title');
+  if(title)title.textContent='TE QUEDAN '+daysLeft+' DÍA'+(daysLeft===1?'':'S');
+  var bg=document.getElementById('trial-daily-bg');
+  if(bg)bg.style.display='flex';
+}
+document.getElementById('trial-daily-close').addEventListener('pointerdown',function(e){
+  e.stopPropagation();e.preventDefault();
+  document.getElementById('trial-daily-bg').style.display='none';
+},{passive:false});
+document.getElementById('trial-daily-bg').addEventListener('pointerdown',function(e){
+  if(e.target===this)this.style.display='none';
+});
+document.getElementById('trial-daily-card').addEventListener('pointerdown',function(e){e.stopPropagation();},{passive:false});
+
 function closeTrialEnded(){
   document.getElementById('trial-ended-bg').style.display='none';
   if(window._trialOnClose){window._trialOnClose();window._trialOnClose=null;}
@@ -1001,13 +1044,26 @@ document.getElementById('trial-ended-buy').addEventListener('pointerdown',functi
 function checkTrial(){
   if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
   var inst=localStorage.getItem(TRIAL_KEY);
-  if(!inst){localStorage.setItem(TRIAL_KEY,Date.now().toString());isPro=true;return;}
+  if(!inst){
+    // Dia 1: instala, guarda fecha, todo PRO, sin mensaje
+    localStorage.setItem(TRIAL_KEY,Date.now().toString());
+    isPro=true;
+    return;
+  }
   var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
+  var daysLeft=Math.ceil(TRIAL_DAYS-daysUsed);
   isPro=(daysUsed<TRIAL_DAYS);
+  // Dia 2 en adelante: mostrar banner una vez al dia
+  if(isPro && daysUsed>=1){
+    checkDailyBanner(daysLeft);
+  }
 }
 
+// checkTrial corre al cargar - no espera toque
+checkTrial();
+
 document.body.addEventListener('pointerdown',function initAudio(){
-  loadS();startWF();checkTrial();
+  loadS();startWF();
   if(!isPro){
     var ps=document.getElementById('btn-proskins');
     if(ps){ps.style.opacity='0.35';ps.style.pointerEvents='none';}
