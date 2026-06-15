@@ -96,12 +96,22 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
   border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  max-height: 85vh; /* Respeta los scrolls */
+  max-height: 85vh;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-/* El biselado dorado respetando la esquina redondeada (Fix #1) */
+/* Ocultar barra de scroll (Windows XP style) */
+.ovl::-webkit-scrollbar,
+.ovl [style*="overflow-y"]::-webkit-scrollbar {
+  display: none;
+}
+.ovl, .ovl [style*="overflow-y"] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* El biselado dorado respetando la esquina redondeada */
 .ovl::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, var(--gold-main), transparent);
@@ -172,6 +182,11 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 .kit-banner-img { width: 100%; height: auto; display: block; }
 .kit-banner-label { padding: 8px 12px; font-family: 'Michroma', monospace; font-size: 10px; color: var(--gold-main); display: flex; align-items: center; gap: 6px; background: #000; }
 .lib-locked { opacity: 0.8; cursor: default; }
+
+/* TRIÁNGULO BLANCO Y CANDADO (ORIGINAL) */
+.kit-banner-lock-wrap { position: relative; }
+.kit-banner-lock-wrap .kit-corner { position: absolute; top: 0; right: 0; width: 0; height: 0; border-top: 52px solid rgba(255,255,255,0.95); border-left: 52px solid transparent; pointer-events: none; }
+.kit-banner-lock-wrap .kit-lock { position: absolute; top: 4px; right: 4px; pointer-events: none; }
 
 /* Icon boxes for Trial */
 .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
@@ -322,45 +337,50 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
     <div style="overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; padding-right:6px; padding-bottom:10px;">
       
       <div class="kit-banner-item kit-banner-active" id="lib-quena">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
-        <div style="position:absolute;top:6px;right:8px;background:var(--gold-main);color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
+        <div style="position:relative;">
+          <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Quena.jpg" alt="Quena Andina"/>
+          <div style="position:absolute;top:6px;right:8px;background:var(--gold-main);color:#000;font-size:8px;font-weight:700;letter-spacing:1.5px;padding:3px 7px;border-radius:4px;font-family:'Michroma',monospace;">ACTIVO</div>
+        </div>
         <div class="kit-banner-label">Quena Windiqa</div>
       </div>
       
       <div class="kit-banner-item lib-locked" id="lib-zam">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
-        <div style="position:absolute;top:8px;right:8px;">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        <div class="kit-banner-lock-wrap">
+          <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Zampona.jpg" alt="Zampoña"/>
+          <div class="kit-corner"></div>
+          <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
         </div>
-        <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
+        <div class="kit-banner-label">Zampoña <span style="font-size:8px;color:var(--gold-main);letter-spacing:2px;opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
       
       <div class="kit-banner-item lib-locked" id="lib-ocarina">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
-        <div style="position:absolute;top:8px;right:8px;">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        <div class="kit-banner-lock-wrap">
+          <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ocarina.jpg" alt="Ocarina"/>
+          <div class="kit-corner"></div>
+          <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
         </div>
-        <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
+        <div class="kit-banner-label">Ocarina <span style="font-size:8px;color:var(--gold-main);letter-spacing:2px;opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
 
       <div class="kit-banner-item lib-locked" id="lib-flauta">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
-        <div style="position:absolute;top:8px;right:8px;">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        <div class="kit-banner-lock-wrap">
+          <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Ceramica.jpg" alt="Flauta Cerámica"/>
+          <div class="kit-corner"></div>
+          <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
         </div>
-        <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
+        <div class="kit-banner-label">Flauta Cerámica <span style="font-size:8px;color:var(--gold-main);letter-spacing:2px;opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
 
       <div class="kit-banner-item lib-locked" id="lib-tarka">
-        <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
-        <div style="position:absolute;top:8px;right:8px;">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg>
+        <div class="kit-banner-lock-wrap">
+          <img class="kit-banner-img" src="https://raw.githubusercontent.com/jinglesimpactantes/samples-loop/057df0e5b6d65886102b3d9ac96d4936c7778b9d/Quena_App_Samples/Banners_Windiqa/Banner_Tarka.jpg" alt="Tarka"/>
+          <div class="kit-corner"></div>
+          <div class="kit-lock"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10.5" rx="1.5" fill="#000"/><rect x="11" y="14" width="2" height="4.5" rx="0.8" fill="#fff"/><circle cx="12" cy="14.5" r="1.3" fill="#fff"/></svg></div>
         </div>
-        <div class="kit-banner-label">Tarka <span style="font-size:8px;color:var(--gold-main);opacity:0.85;margin-left:auto;">· PRO</span></div>
+        <div class="kit-banner-label">Tarka <span style="font-size:8px;color:var(--gold-main);letter-spacing:2px;opacity:0.85;margin-left:auto;">· PRO</span></div>
       </div>
       
     </div>
-    <p style="font-size:10px;color:var(--text-muted);text-align:center;margin:8px 0 0;flex-shrink:0;">↓ scroll para ver más</p>
   </div>
 
   <div id="about-panel" class="ovl" style="display:none; align-items:center; text-align:center; max-width:340px;">
@@ -387,7 +407,7 @@ body{margin:0;background:#0a0804;display:flex;flex-direction:column;position:fix
 </div>
 
 <div id="trial-ended-bg" class="ovl-bg" style="z-index:99998;">
-  <div id="trial-ended-card" class="ovl expired">
+  <div id="trial-ended-card" class="ovl expired" style="max-width:365px;">
     <div class="ovl-close" id="trial-ended-close">✕</div>
     <div class="card-header">
       <div class="icon-box">
