@@ -944,31 +944,10 @@ function init(){
   }else{setTimeout(init,50);}
 }
 
-var TRIAL_DAYS=0;
-var TRIAL_KEY='windiqa_install_date';
-var TRIAL_UNLOCKED='windiqa_pro_unlocked';
-// ═══ TRIAL 15 DÍAS ═══
 var TRIAL_DAYS=15;
 var TRIAL_KEY='windiqa_install_date';
 var TRIAL_UNLOCKED='windiqa_pro_unlocked';
-var isPro=true; // empieza PRO
-
-// Verificar trial al primer toque
-function checkTrial(){
-  if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
-  var inst=localStorage.getItem(TRIAL_KEY);
-  if(!inst){
-    localStorage.setItem(TRIAL_KEY,Date.now().toString());
-    isPro=true;
-    return;
-  }
-  var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
-  if(daysUsed<TRIAL_DAYS){
-    isPro=true;
-  } else {
-    isPro=false;
-  }
-}
+var isPro=true;
 
 function showTrialEnded(onClose){
   var bg=document.getElementById('trial-ended-bg');
@@ -1020,7 +999,11 @@ document.getElementById('trial-ended-card').addEventListener('pointerdown',funct
 document.getElementById('trial-ended-buy').addEventListener('pointerdown',function(e){e.preventDefault();window.open('https://www.looptopus.com','_blank');},{passive:false});
 
 function checkTrial(){
-  isPro=false;
+  if(localStorage.getItem(TRIAL_UNLOCKED)==='1'){isPro=true;return;}
+  var inst=localStorage.getItem(TRIAL_KEY);
+  if(!inst){localStorage.setItem(TRIAL_KEY,Date.now().toString());isPro=true;return;}
+  var daysUsed=(Date.now()-parseInt(inst))/(1000*60*60*24);
+  isPro=(daysUsed<TRIAL_DAYS);
 }
 
 document.body.addEventListener('pointerdown',function initAudio(){
