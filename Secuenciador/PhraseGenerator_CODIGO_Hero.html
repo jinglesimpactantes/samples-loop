@@ -108,11 +108,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .favs-section{flex:1;display:flex;flex-direction:column;gap:4px;min-height:0;overflow:hidden;}
 .favs-list{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:4px;padding-right:2px;}
 .fav-card{background:linear-gradient(180deg,#2a1b12 0%,#150c07 100%);border:1px solid var(--border);border-radius:6px;padding:0;flex-shrink:0;display:flex;align-items:stretch;overflow:hidden;}
-.fav-card-left{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-width:0;}
-.fav-card-right{width:45px;background:#d7c1ab;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-radius:0 6px 6px 0;padding:5px;padding-top:10px;gap:5px;}
-.fav-card-right .fav-btn-del{width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1008;border:none;border-radius:5px;color:#d7c1ab;font-size:16px;font-weight:900;flex-shrink:0;margin-top:5px;}
+.fav-card-left{flex:1;padding:1px 10px;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;}
+.fav-card-right{width:45px;background:#d7c1ab;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-radius:0 6px 6px 0;padding:4px;gap:5px;}
+.fav-card-right .fav-btn-del{width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1008;border:none;border-radius:5px;color:#d7c1ab;font-size:16px;font-weight:900;flex-shrink:0;margin-top:6px;}
 .fav-card-right .fav-btn-del:hover{background:#2a1a0e;}
-.fav-card-right .fav-btn-midi-dl{width:55px;height:55px;margin-top:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;flex-shrink:0;}
+.fav-card-right .fav-btn-midi-dl{width:55px;height:55px;margin-top:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;flex-shrink:0;}
 .fav-card-right .fav-btn-midi-dl svg{width:30px;height:30px;fill:#1e1008;}
 .fav-card-right .fav-btn-midi-dl:hover{opacity:0.8;}
 .fav-card.empty{border:1px dashed rgba(178,127,66,0.35);background:transparent;opacity:0.55;text-align:center;padding:12px 8px;font-size:10px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);border-radius:6px;}
@@ -940,7 +940,7 @@ function renderFavs(){
         <div class="fav-name">${fav.name.toUpperCase()}</div>
         <div class="fav-meta">${fav.mood} ${noteLabel} | ${fav.compas}</div>
         <div class="fav-btns">
-          <button class="fav-btn fav-btn-play" data-play="${i}"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg></button>
+          <button class="fav-btn fav-btn-play" data-play="${i}"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg></button>
           <button class="fav-btn fav-btn-loop" data-loop="${i}" title="Loop">&#8734;</button>
           <div class="fav-octava">
             <span class="fav-octava-label">OCTAVA</span>
@@ -963,9 +963,9 @@ function renderFavs(){
   // Play/Stop toggle
   list.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.play;
-    if(isPlaying){stopAll();isPlaying=false;list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');}
+    if(isPlaying){stopAll();isPlaying=false;list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');}
     else{stopFavLoop();currentPhrase=[...favorites[idx].phrase];
-      list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
+      list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');
       b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';execPlay(currentPhrase);}
   }));
 
