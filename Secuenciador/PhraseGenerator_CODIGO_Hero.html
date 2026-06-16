@@ -109,8 +109,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .favs-list{flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:4px;padding-right:2px;}
 .fav-card{background:linear-gradient(180deg,#2a1b12 0%,#150c07 100%);border:1px solid var(--border);border-radius:6px;padding:0;flex-shrink:0;display:flex;align-items:stretch;overflow:hidden;}
 .fav-card-left{flex:1;padding:1px 10px;display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;}
-.fav-card-right{width:45px;background:#d7c1ab;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-radius:0 6px 6px 0;padding:4px;gap:5px;}
-.fav-card-right .fav-btn-del{width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1008;border:none;border-radius:5px;color:#d7c1ab;font-size:16px;font-weight:900;flex-shrink:0;margin-top:6px;}
+.fav-card-right{width:45px;background:linear-gradient(90deg,#94785c 0%,#d7c1ab 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-radius:0 6px 6px 0;padding:4px;gap:5px;}
+.fav-card-right .fav-btn-del{width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#1e1008;border:none;border-radius:5px;color:#d7c1ab;font-size:16px;font-weight:900;flex-shrink:0;margin-top:9px;}
 .fav-card-right .fav-btn-del:hover{background:#2a1a0e;}
 .fav-card-right .fav-btn-midi-dl{width:55px;height:55px;margin-top:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none;flex-shrink:0;}
 .fav-card-right .fav-btn-midi-dl svg{width:30px;height:30px;fill:#1e1008;}
@@ -128,8 +128,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .fav-btns{display:flex;align-items:center;gap:5px;}
 .fav-octava{display:flex;align-items:center;gap:3px;margin-left:2px;}
 .fav-octava-label{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--gold-dim);}
-.fav-oct-btn{background:none;border:none;cursor:pointer;color:var(--gold);font-size:10px;line-height:1;padding:0 1px;display:flex;}
+.fav-oct-btn{background:none;border:none;cursor:pointer;color:var(--gold);font-size:10px;line-height:1;padding:0 1px;display:flex;transition:color 0.2s;}
 .fav-oct-btn:hover{color:var(--gold-hover);}
+.fav-oct-btn.oct-active{color:#c0392b;}
 .fav-btn.loop-active{border-color:var(--gold);color:var(--gold);background:rgba(223,185,111,0.2);}
 .fav-btn-dl:hover{opacity:1;color:var(--gold-hover);}
 .fav-btn-dl svg{width:36px;height:36px;fill:currentColor;}
@@ -981,27 +982,31 @@ function renderFavs(){
   }));
 
   // Octava arriba
-  list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{
+  list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
     const idx=+b.dataset.octUp;
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
       const note=p.note.replace(/[0-9]/g,'');
       const oct=parseInt(p.note.match(/[0-9]+/)[0]);
-      // Puro shift de octava — como Logic Shift+Alt+↑
       return{...p,note:note+(oct+1)};
     });
+    // Marcar flecha arriba en rojo, quitar rojo de abajo
+    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.add('oct-active'));
+    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.remove('oct-active'));
   }));
 
   // Octava abajo
-  list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{
+  list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
     const idx=+b.dataset.octDn;
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
       const note=p.note.replace(/[0-9]/g,'');
       const oct=parseInt(p.note.match(/[0-9]+/)[0]);
-      // Puro shift de octava — como Logic Shift+Alt+↓
       return{...p,note:note+(oct-1)};
     });
+    // Marcar flecha abajo en rojo, quitar rojo de arriba
+    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.add('oct-active'));
+    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.remove('oct-active'));
   }));
 
   // Descarga MIDI
