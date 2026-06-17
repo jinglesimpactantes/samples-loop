@@ -144,6 +144,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .fav-octava-label{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--gold-dim);}
 .fav-oct-btn{background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;line-height:1;padding:0 1px;display:flex;transition:color 0.2s;}
 .fav-oct-btn:hover{color:var(--gold-hover);}
+.fav-oct-btn.oct-p1{color:#e67e22;}
+.fav-oct-btn.oct-p2{color:#e74c3c;}
+.fav-oct-btn.oct-m1{color:#3498db;}
+.fav-oct-btn.oct-m2{color:#aaff00;}
 .fav-oct-btn.oct-active{color:#c0392b;}
 .fav-btn.loop-active{border-color:var(--gold);color:var(--gold);background:rgba(223,185,111,0.2);}
 .fav-btn-dl:hover{opacity:1;color:var(--gold-hover);}
@@ -294,12 +298,15 @@ canvas#spectrum{width:100%;height:100%;display:block;}
 // ── DATOS ─────────────────────────────────────────────────────────────────
 const CHR=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const NOTE_FREQS={
-  // G3=Logic G2 (MIDI55) → A5=Logic A4 (MIDI81)
+  // G3=Logic G2 (MIDI55) → A5=Logic A4 (MIDI81) + extensión aguda
   'G3':196.00,'G#3':207.65,'A3':220.00,'A#3':233.08,'B3':246.94,
   'C4':261.63,'C#4':277.18,'D4':293.66,'D#4':311.13,'E4':329.63,
   'F4':349.23,'F#4':369.99,'G4':392.00,'G#4':415.30,'A4':440.00,'A#4':466.16,'B4':493.88,
   'C5':523.25,'C#5':554.37,'D5':587.33,'D#5':622.25,'E5':659.25,
-  'F5':698.46,'F#5':739.99,'G5':783.99,'G#5':830.61,'A5':880.00
+  'F5':698.46,'F#5':739.99,'G5':783.99,'G#5':830.61,'A5':880.00,'A#5':932.33,'B5':987.77,
+  'C6':1046.50,'C#6':1108.73,'D6':1174.66,'D#6':1244.51,'E6':1318.51,
+  'F6':1396.91,'F#6':1479.98,'G6':1567.98,'G#6':1661.22,'A6':1760.00,'A#6':1864.66,'B6':1975.53,
+  'C7':2093.00,'D7':2349.32,'E7':2637.02,'G7':3135.96,'A7':3520.00
 };
 const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],penta_minor:[0,3,5,7,10],penta_major:[0,2,4,7,9],penta_minor_add2:[0,2,3,5,7,10],penta_major_add7:[0,2,4,7,9,11]};
 
@@ -1160,6 +1167,13 @@ function renderFavs(){
   }));
 
   // OCTAVA
+  function updateOctColors(card,shift){
+    const up=card.querySelector('[data-oct-up]');
+    const dn=card.querySelector('[data-oct-dn]');
+    if(!up||!dn)return;
+    up.className='fav-oct-btn'+(shift===1?' oct-p1':shift===2?' oct-p2':'');
+    dn.className='fav-oct-btn'+(shift===-1?' oct-m1':shift===-2?' oct-m2':'');
+  }
   list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.octUp;if(favOctShift[idx]>=2)return;
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
@@ -1167,9 +1181,7 @@ function renderFavs(){
       return{...p,note:p.note.replace(/[0-9]+/,n=>+n+1)};
     });
     favOctShift[idx]++;
-    const card=b.closest('.fav-card');
-    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.toggle('oct-active',favOctShift[idx]>0));
-    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.remove('oct-active'));
+    updateOctColors(b.closest('.fav-card'),favOctShift[idx]);
   }));
   list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.octDn;if(favOctShift[idx]<=-2)return;
@@ -1178,9 +1190,7 @@ function renderFavs(){
       return{...p,note:p.note.replace(/[0-9]+/,n=>+n-1)};
     });
     favOctShift[idx]--;
-    const card=b.closest('.fav-card');
-    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.toggle('oct-active',favOctShift[idx]<0));
-    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.remove('oct-active'));
+    updateOctColors(b.closest('.fav-card'),favOctShift[idx]);
   }));
 
   // MIDI
@@ -1206,5 +1216,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v63</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v68</div></body>
 </html>
