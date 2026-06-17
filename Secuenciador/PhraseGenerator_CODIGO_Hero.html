@@ -108,6 +108,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .loop-svg{position:absolute;width:40px;height:40px;}
 .play-loop-btn{width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,#2a1b12 0%,#150d08 100%);border:1.5px solid var(--gold-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
 .play-loop-btn.playing{border-color:var(--gold);box-shadow:0 0 10px rgba(223,185,111,0.5);}
+#favStarBtn{box-shadow:0 0 8px rgba(148,120,92,0.4);}
+#favStarBtn:hover{box-shadow:0 0 12px rgba(148,120,92,0.7);border-color:var(--gold);}
 .pi{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:11px solid var(--gold);margin-left:2px;}
 .si{width:9px;height:9px;background:var(--gold);border-radius:1px;}
 .gen-col{display:flex;justify-content:center;}
@@ -158,9 +160,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .favs-list::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:2px;}
 
 /* WAVEFORM con estrella integrada */
-.spectrum-wrap{position:relative;background:rgba(0,0,0,0.55);border:1px solid var(--border-light);border-radius:4px;height:70px;flex-shrink:0;overflow:hidden;}
+.spectrum-wrap{position:relative;background:rgba(0,0,0,0.55);border:1px solid var(--border-light);border-radius:4px;height:79px;flex-shrink:0;overflow:hidden;margin-top:3px;}
 canvas#spectrum{width:100%;height:100%;display:block;}
-.wave-star-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:28px;height:28px;background:rgba(0,0,0,0.65);border:1px solid var(--border-light);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+
 .wave-star-btn:hover:not(:disabled){border-color:var(--gold);background:rgba(223,185,111,0.15);}
 .wave-star-btn:disabled{opacity:0.25;cursor:default;}
 .wave-star-btn svg{width:13px;height:13px;fill:var(--gold-dim);}
@@ -265,16 +267,16 @@ canvas#spectrum{width:100%;height:100%;display:block;}
           <button class="generate-btn" id="generateBtn">GENERAR</button>
         </div>
         <div class="metro-col">
-          <button class="metro-btn" id="metroBtn" title="Metrónomo">
-            <svg viewBox="0 0 100 110" fill="none" stroke="var(--gold)" stroke-linejoin="round">
-              <path d="M38 14 L12 96 L88 96 L62 14 Z" stroke-width="6"/>
-              <circle cx="50" cy="91" r="8" fill="var(--gold)" stroke="none"/>
-              <g id="metroNeedleGroup" style="transform-origin:50px 91px;">
-                <line x1="50" y1="22" x2="50" y2="89" stroke="var(--gold)" stroke-width="5" stroke-linecap="round"/>
-                <circle cx="50" cy="42" r="5" fill="var(--gold)" stroke="none"/>
-              </g>
-            </svg>
-          </button>
+          <div class="play-col">
+            <div class="play-loop-wrap">
+              <button class="play-loop-btn" id="favStarBtn" title="Guardar favorito">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--gold)">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                </svg>
+              </button>
+            </div>
+            <div class="sec-label" style="font-size:7px;margin-top:2px">FAVORITO</div>
+          </div>
         </div>
       </div>
     </div>
@@ -288,9 +290,8 @@ canvas#spectrum{width:100%;height:100%;display:block;}
       </div>
       <div class="spectrum-wrap">
         <canvas id="spectrum"></canvas>
-        <button class="wave-star-btn" id="pinBtn" disabled title="Guardar en favoritos">
-          <svg viewBox="0 0 576 512"><path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
-        </button>
+        <button id="pinBtn" disabled style="display:none"></button>
+        
     </div>
 
   </div>
@@ -1011,6 +1012,8 @@ document.getElementById('playBtn').addEventListener('click',()=>{
     playingCardIdx=-1;resetAllPlayBtns();clearActivePlay();
     document.getElementById('playBtn').classList.remove('playing');
     document.getElementById('playIcon').className='pi';
+    // Asegurar triángulo en todos los plays
+    document.querySelectorAll('[data-play]').forEach(x=>{x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';});
     return;
   }
   stopFavLoop();
@@ -1037,8 +1040,12 @@ document.getElementById('midiBtn')&&document.getElementById('midiBtn').addEventL
 document.getElementById('humanizeBtn')&&document.getElementById('humanizeBtn').addEventListener('click',()=>{
   humanizeOn=!humanizeOn;document.getElementById('humanizeBtn').classList.toggle('active',humanizeOn);
 });
-document.getElementById('metroBtn').addEventListener('click',()=>{
-  metroOn=!metroOn;document.getElementById('metroBtn').classList.toggle('active',metroOn);
+document.getElementById('favStarBtn').addEventListener('click',()=>{
+  document.getElementById('pinBtn').click();
+  // Animación de confirmación
+  const btn=document.getElementById('favStarBtn');
+  btn.style.borderColor='var(--gold)';btn.style.boxShadow='0 0 10px rgba(148,120,92,0.8)';
+  setTimeout(()=>{btn.style.borderColor='';btn.style.boxShadow='';},600);
   if(!metroOn&&metroInterval){clearInterval(metroInterval);metroInterval=null;document.getElementById('metroNeedleGroup').style.transform='rotate(0deg)';}
 });
 document.getElementById('sharpBtn').addEventListener('click',()=>{
@@ -1253,27 +1260,17 @@ document.addEventListener('keydown',e=>{
   }
 
   // Tecla M: toggle metrónomo con click
-  if(e.code==='KeyM'){
-    metroOn=!metroOn;
-    // Click sonoro
-    const actx=new(window.AudioContext||window.webkitAudioContext)();
-    const buf=actx.createBuffer(1,actx.sampleRate*0.02,actx.sampleRate);
-    const d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.15*Math.exp(-i/(actx.sampleRate*0.005));
-    const src=actx.createBufferSource();src.buffer=buf;
-    src.connect(actx.destination);src.start();
-    setTimeout(()=>actx.close(),100);
-  }
+
 });
 
 
 // ── PLAY ACTIVO VISUAL ───────────────────────────────────────────────────
 function setActivePlay(id){
-  // Resetear todos
+  // Quitar turquesa de todos los plays
   document.getElementById('playBtn').style.borderColor='';
   document.getElementById('playBtn').style.color='';
   document.querySelectorAll('[data-play]').forEach(b=>{b.style.borderColor='';b.style.color='';});
-  // Activar el seleccionado
+  // Poner turquesa al tocado
   if(id==='main'){
     document.getElementById('playBtn').style.borderColor='#00c49a';
     document.getElementById('playBtn').style.color='#00c49a';
@@ -1282,11 +1279,7 @@ function setActivePlay(id){
     if(btn){btn.style.borderColor='#00c49a';btn.style.color='#00c49a';}
   }
 }
-function clearActivePlay(){
-  document.getElementById('playBtn').style.borderColor='';
-  document.getElementById('playBtn').style.color='';
-  document.querySelectorAll('[data-play]').forEach(b=>{b.style.borderColor='';b.style.color='';});
-}
+function clearActivePlay(){/* color se preserva — no limpiar */}
 
 window.addEventListener('load',()=>{
   const cv=document.getElementById('spectrum');
@@ -1296,5 +1289,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v77</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v94</div></body>
 </html>
