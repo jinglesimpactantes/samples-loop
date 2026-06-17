@@ -150,6 +150,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .fav-oct-btn.oct-m2{color:#aaff00;}
 .fav-oct-btn.oct-active{color:#c0392b;}
 .fav-btn.loop-active{border-color:var(--gold);color:var(--gold);background:rgba(223,185,111,0.2);}
+.fav-btn.last-played{border-color:#e74c3c !important;color:#e74c3c !important;}
 .fav-btn-dl:hover{opacity:1;color:var(--gold-hover);}
 .fav-btn-dl svg{width:36px;height:36px;fill:currentColor;}
 .favs-list::-webkit-scrollbar{width:4px;}
@@ -530,7 +531,7 @@ let sharpOn=false,scaleMode='minor',currentMood='melancolico',lastEffMood='melan
 let specFrame=null,specAnalyser=null,specData=null;
 let metroOn=false,metroInterval=null;
 let favorites=[],phraseCounter=1,playbackInterval=null,loopAnimFrame=null;
-let humanizeOn=false,autoPlayTimer=null,videoTimer=null,loopingFavIdx=-1;
+let humanizeOn=false,autoPlayTimer=null,videoTimer=null,loopingFavIdx=-1,lastPlayType='general',lastCardIdx=-1;
 let favOctShift=[];
 function stopFavLoop(){loopingFavIdx=-1;document.querySelectorAll('.loop-active').forEach(b=>b.classList.remove('loop-active'));}
 const LOOP_CIRC=113;
@@ -698,6 +699,7 @@ async function execPlay(phrase,sourceBpm){
 
       // Resetear iconos play de todas las cards
       document.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
+      clearActivePlay();
       document.getElementById('pinBtn').disabled=false;
       const mb=document.getElementById('midiBtn');if(mb)mb.disabled=false;
       resolvePlay();
@@ -1003,11 +1005,14 @@ document.getElementById('generateBtn').addEventListener('click',()=>{
 });
 
 document.getElementById('playBtn').addEventListener('click',()=>{
+  // Visual: este play activo, resto normal
+  setActivePlay('main');
   if(isPlaying){
     stopAll();isPlaying=false;document.getElementById('playBtn').classList.remove('playing');document.getElementById('playIcon').className='pi';
     if(specFrame){cancelAnimationFrame(specFrame);specFrame=null;}specAnalyser=null;drawWaveform();return;
   }
   if(!generatedPhrase.length){simulateWaveform();return;} // No generar automáticamente
+  lastPlayType='general';
   const sp=generatedPhrase.length&&generatedPhrase[0]?._srcBpm;
   execPlay(generatedPhrase.length?generatedPhrase:currentPhrase,sp);
 });
@@ -1100,8 +1105,8 @@ function renderFavs(){
           <button class="fav-btn fav-btn-play" data-play="${i}"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg></button>
           <button class="fav-btn fav-btn-loop" data-loop="${i}" title="Loop">&#8734;</button>
 <span class="fav-octava-label" style="margin-left:3px;font-size:7px;">OCT</span>
-              <button class="fav-oct-btn" data-oct-up="${i}" style="font-size:8px;">&#9650;</button>
-              <button class="fav-oct-btn" data-oct-dn="${i}" style="font-size:8px;">&#9660;</button>
+              <button class="fav-oct-btn" data-oct-up="${i}" style="font-size:12px;">&#9650;</button>
+              <button class="fav-oct-btn" data-oct-dn="${i}" style="font-size:12px;">&#9660;</button>
         </div>
       </div>
       <div class="fav-card-right">
@@ -1117,7 +1122,7 @@ function renderFavs(){
   let playingCardIdx=-1;
 
   function resetAllPlayBtns(){
-    list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');
+    list.querySelectorAll('[data-play]').forEach(x=>{x.style.borderColor='';x.style.color='';x.classList.remove('last-played');x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';});
   }
 
   // PLAY/STOP — cada card tiene su propia frase, NO toca generatedPhrase
@@ -1125,7 +1130,7 @@ function renderFavs(){
     const idx=+b.dataset.play;
     if(playingCardIdx===idx&&isPlaying){
       // Parar esta card
-      stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();
+      stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();clearActivePlay();
     }else{
       // Parar lo anterior — preservar loop si es la misma card
       const prevLoop=loopingFavIdx;
@@ -1136,7 +1141,8 @@ function renderFavs(){
         if(lb)lb.classList.add('loop-active');
       }
       resetAllPlayBtns();
-      playingCardIdx=idx;
+      playingCardIdx=idx;lastPlayType='card';lastCardIdx=idx;
+      setActivePlay(idx);
       b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
       const cardPhrase=[...favorites[idx].phrase];
       const cardSrcBpm=favorites[idx].bpm||100;
@@ -1208,6 +1214,71 @@ function renderFavs(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
+
+// ── SHORTCUTS DE TECLADO ─────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+
+  // Barra espaciadora: play/stop del último tocado
+  if(e.code==='Space'){
+    e.preventDefault();
+    if(isPlaying){
+      stopAll();isPlaying=false;
+      document.getElementById('playBtn').classList.remove('playing');
+      document.getElementById('playIcon').className='pi';
+      document.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
+      clearActivePlay();
+    }else{
+      if(lastPlayType==='card'&&lastCardIdx>=0&&favorites[lastCardIdx]){
+        const cardPhrase=[...favorites[lastCardIdx].phrase];
+        const cardSrcBpm=favorites[lastCardIdx].bpm||100;
+        const playBtn=document.querySelector('[data-play="'+lastCardIdx+'"]');
+        if(playBtn)playBtn.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+        execPlay(cardPhrase,cardSrcBpm);
+      }else if(generatedPhrase.length){
+        lastPlayType='general';
+        const sp=generatedPhrase[0]?._srcBpm;
+        execPlay(generatedPhrase,sp);
+      }
+    }
+  }
+
+  // Tecla M: toggle metrónomo con click
+  if(e.code==='KeyM'){
+    metroOn=!metroOn;
+    // Click sonoro
+    const actx=new(window.AudioContext||window.webkitAudioContext)();
+    const buf=actx.createBuffer(1,actx.sampleRate*0.02,actx.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.15*Math.exp(-i/(actx.sampleRate*0.005));
+    const src=actx.createBufferSource();src.buffer=buf;
+    src.connect(actx.destination);src.start();
+    setTimeout(()=>actx.close(),100);
+  }
+});
+
+
+// ── PLAY ACTIVO VISUAL ───────────────────────────────────────────────────
+function setActivePlay(id){
+  // Resetear todos
+  document.getElementById('playBtn').style.borderColor='';
+  document.getElementById('playBtn').style.color='';
+  document.querySelectorAll('[data-play]').forEach(b=>{b.style.borderColor='';b.style.color='';});
+  // Activar el seleccionado
+  if(id==='main'){
+    document.getElementById('playBtn').style.borderColor='#00c49a';
+    document.getElementById('playBtn').style.color='#00c49a';
+  }else{
+    const btn=document.querySelector('[data-play="'+id+'"]');
+    if(btn){btn.style.borderColor='#00c49a';btn.style.color='#00c49a';}
+  }
+}
+function clearActivePlay(){
+  document.getElementById('playBtn').style.borderColor='';
+  document.getElementById('playBtn').style.color='';
+  document.querySelectorAll('[data-play]').forEach(b=>{b.style.borderColor='';b.style.color='';});
+}
+
 window.addEventListener('load',()=>{
   const cv=document.getElementById('spectrum');
   cv.width=cv.offsetWidth||200;cv.height=cv.offsetHeight||70;
@@ -1216,5 +1287,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v68</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v74</div></body>
 </html>
