@@ -155,7 +155,7 @@ canvas#spectrum{width:100%;height:100%;display:block;}
   <div class="topbar">
     <div class="dropdown-wrap">
       <button class="preset-dd-btn" id="moodBtn">
-        <span id="moodLabel">Melancólico</span>
+        <span id="moodLabel">PRESETS</span>
         <span style="font-size:9px;opacity:0.5">▼</span>
       </button>
       <div class="dropdown-menu" id="moodDd">
@@ -292,12 +292,16 @@ const SCALES={major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],penta_minor:[0,3,5,7
 function buildScale(root,mode){
   const ri=CHR.indexOf(root);if(ri<0)return[];
   const ivs=SCALES[mode]||SCALES.major;const notes=[];
+  // Rango MIDI 55(G3=tu G2) → 81(A5=tu A4) — estricto
+  const MIDI_MIN=55,MIDI_MAX=81;
   for(const oct of [3,4,5]){
     for(const iv of ivs){
       const ni=(ri+iv)%12,no=oct+Math.floor((ri+iv)/12);
       const n=CHR[ni]+no;
-      // Rango quena: G3(196Hz)=Logic G2 → A5(880Hz)=Logic A4
-      if(NOTE_FREQS[n]&&NOTE_FREQS[n]>=196&&NOTE_FREQS[n]<=880)notes.push(n);
+      if(!NOTE_FREQS[n])continue;
+      // Calcular MIDI: C4=60, fórmula estándar
+      const midi=(no+1)*12+ni;
+      if(midi>=MIDI_MIN&&midi<=MIDI_MAX)notes.push(n);
     }
   }
   return[...new Set(notes)].sort((a,b)=>NOTE_FREQS[a]-NOTE_FREQS[b]);
@@ -308,12 +312,12 @@ function rndF(a,b){return a+Math.random()*(b-a);}
 
 function getActiveScaleForMood(moodKey){
   const fk=getFullKey();
-  if(moodKey==='alegre')    return buildScale(fk,'major');
-  if(moodKey==='melancolico')return buildScale(getRelativeMinor(fk),'penta_minor');
-  if(moodKey==='triste')    return buildScale(getRelativeMinor(fk),'penta_minor_add2');
-  if(moodKey==='romantico') return buildScale(fk,'penta_major_add7'); // penta mayor + 7mo grado
-  if(moodKey==='intenso')   return buildScale(fk,'penta_major');
-  return buildScale(fk,'major');
+  if(moodKey==='alegre')     return buildScale(fk,'major');
+  if(moodKey==='melancolico')return buildScale(fk,'penta_minor');
+  if(moodKey==='triste')     return buildScale(fk,'penta_minor_add2');
+  if(moodKey==='romantico')  return buildScale(fk,'penta_major_add7');
+  if(moodKey==='intenso')    return buildScale(fk,'penta_major');
+  return buildScale(fk,Math.random()<0.5?'major':'penta_minor');
 }
 
 // ── MOTOR DE MELODÍAS — motivos + ritmos + estructura ─────────────────────
@@ -497,11 +501,12 @@ function humanizePhrase(phrase){
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let audioCtx=null,scheduledNodes=[],isPlaying=false,currentPhrase=[];
-let sharpOn=false,scaleMode='major',currentMood='melancolico',lastEffMood='melancolico';
+let sharpOn=false,scaleMode='minor',currentMood='melancolico',lastEffMood='melancolico';
 let specFrame=null,specAnalyser=null,specData=null;
 let metroOn=false,metroInterval=null;
 let favorites=[],phraseCounter=1,playbackInterval=null,loopAnimFrame=null;
 let humanizeOn=false,autoPlayTimer=null,videoTimer=null,loopingFavIdx=-1;
+let favOctShift=[];
 function stopFavLoop(){loopingFavIdx=-1;document.querySelectorAll('.loop-active').forEach(b=>b.classList.remove('loop-active'));}
 const LOOP_CIRC=113;
 
@@ -719,50 +724,88 @@ function makeNewPhrase(){
 
 // ── MIDI EXPORT ───────────────────────────────────────────────────────────
 function exportMIDI(phrase,bpm){
-  const tpb=480,mpb=Math.round(60000000/bpm),bd=60/bpm;
-  function nm(n){const note=n.replace(/[0-9]/g,'');const oct=parseInt(n.match(/[0-9]+/)[0]);return Math.max(0,Math.min(127,CHR.indexOf(note)+(oct+1)*12));}
-  function i32(v){return[(v>>24)&0xff,(v>>16)&0xff,(v>>8)&0xff,v&0xff];}
-  function i16(v){return[(v>>8)&0xff,v&0xff];}
-  function vl(v){if(v<128)return[v];const b=[];let n=v;b.unshift(n&0x7f);n>>=7;while(n>0){b.unshift((n&0x7f)|0x80);n>>=7;}return b;}
-  const evts=[];function addE(t,...bytes){evts.push({t,d:bytes});}
-  addE(0,0xff,0x51,0x03,...i32(mpb).slice(1));
-  addE(0,0xB0,0x01,0x00);addE(0,0xE0,0x00,0x40);
-  let t=0;
-  for(const p of phrase){
-    const midi=nm(p.note);
-    const rawDT=Math.round((p.dur/bd)*tpb);
-    const dT=p.staccato?Math.round(rawDT*0.45):rawDT;
-    const vel=Math.max(30,Math.min(118,p.vel||68));
-    const hT=p.humanOffset?Math.round((p.humanOffset/bd)*tpb):0;
-    const ns=Math.max(0,t+hT);
-    if(p.bendUp&&dT>120){
-      // Glide ascendente suave (curva en 6 pasos, primeros 20% de la nota)
-      const steps=6,bEnd=Math.round(dT*0.20),sT=Math.round(bEnd/steps);
-      for(let s=0;s<steps;s++){
-        const bv=Math.round((s/steps)*2800),mv=(bv+8192);
-        addE(ns+sT*s,0xE0,mv&0x7f,(mv>>7)&0x7f);
-      }
-      addE(ns,0x90,midi,vel);addE(ns+bEnd,0xE0,0x00,0x40);addE(t+dT,0x80,midi,0);
-    } else if(p.vibrato&&p.finalNote){
-      addE(ns,0x90,midi,vel);
-      const s=Math.round(dT/7);
-      addE(ns+s*2,0xB0,0x01,0x10);addE(ns+s*3,0xB0,0x01,0x28);
-      addE(ns+s*4,0xB0,0x01,0x50);addE(ns+s*5,0xB0,0x01,0x7F);
-      addE(ns+s*6,0xB0,0x01,0x40);
-      addE(t+dT,0x80,midi,0);addE(t+dT,0xB0,0x01,0x00);
-    } else {
-      addE(ns,0x90,midi,vel);addE(t+dT,0x80,midi,0);
-    }
-    t+=dT;
+  if(!phrase||!phrase.length)return;
+  bpm=bpm||parseInt(document.getElementById('bpmInput').value)||100;
+
+  const note_names=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  // Convertir nombre de nota a número MIDI estándar
+  // C4=60, fórmula: (octava+1)*12 + semitono
+  function noteToMidi(noteName){
+    if(!noteName)return 60;
+    const m=noteName.match(/^([A-G]#?)(-?\d+)$/);
+    if(!m)return 60;
+    const semi=note_names.indexOf(m[1]);
+    const oct=parseInt(m[2]);
+    return (oct+1)*12+semi;
   }
-  addE(t,0xE0,0x00,0x40);addE(t,0xff,0x2f,0x00);
-  evts.sort((a,b)=>a.t-b.t);
-  const eb=[];let pt=0;for(const e of evts){const d=Math.max(0,e.t-pt);eb.push(...vl(d),...e.d);pt=e.t;}
-  const hdr=[0x4d,0x54,0x68,0x64,...i32(6),...i16(0),...i16(1),...i16(tpb)];
-  const trk=[0x4d,0x54,0x72,0x6b,...i32(eb.length),...eb];
-  const all=new Uint8Array([...hdr,...trk]);
-  const url=URL.createObjectURL(new Blob([all],{type:'audio/midi'}));
-  const a=document.createElement('a');a.href=url;a.download='phrase_quena.mid';a.click();URL.revokeObjectURL(url);
+
+  const TPB=480; // ticks por beat
+  const usPerBeat=Math.round(60000000/bpm); // microsegundos por beat
+
+  function writeVarLen(n){
+    if(n<128)return[n];
+    const b=[];
+    let v=n;
+    b.unshift(v&0x7F);v>>=7;
+    while(v>0){b.unshift((v&0x7F)|0x80);v>>=7;}
+    return b;
+  }
+  function w4(n){return[(n>>24)&0xFF,(n>>16)&0xFF,(n>>8)&0xFF,n&0xFF];}
+  function w2(n){return[(n>>8)&0xFF,n&0xFF];}
+
+  // Header MIDI
+  const header=[
+    0x4D,0x54,0x68,0x64, // MThd
+    ...w4(6),            // chunk length
+    ...w2(0),            // format 0
+    ...w2(1),            // 1 track
+    ...w2(TPB)           // ticks per beat
+  ];
+
+  // Track events
+  const events=[];
+
+  // Tempo event
+  events.push(0x00,0xFF,0x51,0x03,
+    (usPerBeat>>16)&0xFF,(usPerBeat>>8)&0xFF,usPerBeat&0xFF);
+
+  // Notas
+  phrase.forEach(p=>{
+    if(!p.note)return;
+    const midi=noteToMidi(p.note);
+    if(midi<0||midi>127)return;
+    const vel=Math.max(1,Math.min(127,p.vel||80));
+    const durBeats=p.dur/(60/bpm);
+    const durTicks=Math.max(1,Math.round(durBeats*TPB));
+    // Staccato: note-off anticipado
+    const noteTicks=p.staccato?Math.round(durTicks*0.45):Math.round(durTicks*0.95);
+
+    // Note On (delta=0)
+    events.push(0x00,0x90,midi,vel);
+    // Note Off
+    events.push(...writeVarLen(noteTicks),0x80,midi,0);
+    // Silencio restante
+    const rest=durTicks-noteTicks;
+    if(rest>0)events.push(...writeVarLen(rest),0x80,0,0);
+  });
+
+  // End of track
+  events.push(0x00,0xFF,0x2F,0x00);
+
+  // Track header
+  const trackLen=events.length;
+  const track=[
+    0x4D,0x54,0x72,0x6B, // MTrk
+    ...w4(trackLen),
+    ...events
+  ];
+
+  const bytes=new Uint8Array([...header,...track]);
+  const blob=new Blob([bytes],{type:'audio/midi'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='quena_phrase.mid';
+  a.click();
 }
 
 // ── SISTEMA DE ESCALA POR MOOD ───────────────────────────────────────────
@@ -784,14 +827,36 @@ function updateScaleDisplay(){
   if(el)el.textContent=sp+' '+info.label;
 }
 function applyMoodToKnob(moodKey){
-  if(moodKey==='melancolico'||moodKey==='triste'){
+  const isMoodMinor=moodKey==='melancolico'||moodKey==='triste';
+  const isMoodMajor=moodKey==='alegre'||moodKey==='romantico';
+
+  if(isMoodMinor && scaleMode!=='minor'){
+    // Estaba en mayor → cambiar a relativa menor
     const fk=getFullKey();
     const relMin=getRelativeMinor(fk);
     const baseNote=relMin.replace('#','');
     const ni=keysLogic.indexOf(baseNote);
     if(ni>=0){snapKnob(ni);sharpOn=relMin.includes('#');
       document.getElementById('sharpBtn').classList.toggle('active',sharpOn);}
+    scaleMode='minor';
+    // Actualizar dropdown de escala
+    document.querySelectorAll('#scaleDd .dd-opt').forEach(o=>{
+      o.classList.toggle('active',o.dataset.scale==='minor');
+    });
+  } else if(isMoodMajor && scaleMode!=='major'){
+    // Estaba en menor → cambiar a relativa mayor
+    const fk=getFullKey();
+    const relMaj=getRelativeMajor(fk);
+    const baseNote=relMaj.replace('#','');
+    const ni=keysLogic.indexOf(baseNote);
+    if(ni>=0){snapKnob(ni);sharpOn=relMaj.includes('#');
+      document.getElementById('sharpBtn').classList.toggle('active',sharpOn);}
+    scaleMode='major';
+    document.querySelectorAll('#scaleDd .dd-opt').forEach(o=>{
+      o.classList.toggle('active',o.dataset.scale==='major');
+    });
   }
+  // Intenso/Aleatorio: no tocan la tonalidad
   updateScaleDisplay();
 }
 
@@ -918,7 +983,11 @@ document.querySelectorAll('.dropdown-menu .dd-opt').forEach(o=>{
     const dd=o.parentElement;const label=dd.previousElementSibling.querySelector('span:first-child');
     dd.querySelectorAll('.dd-opt').forEach(x=>x.classList.remove('active'));
     o.classList.add('active');label.textContent=o.textContent;dd.classList.remove('open');
-    if(dd.id==='moodDd'){currentMood=o.dataset.mood;applyMoodToKnob(currentMood);}
+    if(dd.id==='moodDd'){
+      currentMood=o.dataset.mood;
+      document.getElementById('moodLabel').textContent=o.textContent;
+      applyMoodToKnob(currentMood);
+    }
     if(dd.id==='scaleDd'){scaleMode=o.dataset.scale;updateScaleDisplay();}
   });
 });
@@ -929,6 +998,7 @@ document.getElementById('reverbSlider').addEventListener('input',e=>document.get
 function renderFavs(){
   const list=document.getElementById('favsList');list.innerHTML='';
   if(!favorites.length){list.innerHTML='<div class="fav-card empty">Sin melodías guardadas</div>';return;}
+  favOctShift=favorites.map(()=>0);
   favorites.forEach((fav,i)=>{
     const card=document.createElement('div');card.className='fav-card';
     // Nota en español para el subtítulo
@@ -984,29 +1054,37 @@ function renderFavs(){
   // Octava arriba
   list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
     const idx=+b.dataset.octUp;
+    if(favOctShift[idx]>=2)return; // máx 2 subidas
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
+      // +12 semitones = una octava arriba, puro dato MIDI
       const note=p.note.replace(/[0-9]/g,'');
       const oct=parseInt(p.note.match(/[0-9]+/)[0]);
       return{...p,note:note+(oct+1)};
     });
-    // Marcar flecha arriba en rojo, quitar rojo de abajo
-    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.add('oct-active'));
-    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.remove('oct-active'));
+    favOctShift[idx]++;
+    const upBtns=card.querySelectorAll('[data-oct-up]');
+    const dnBtns=card.querySelectorAll('[data-oct-dn]');
+    if(favOctShift[idx]>0){upBtns.forEach(x=>x.classList.add('oct-active'));dnBtns.forEach(x=>x.classList.remove('oct-active'));}
+    else{upBtns.forEach(x=>x.classList.remove('oct-active'));dnBtns.forEach(x=>x.classList.remove('oct-active'));}
   }));
 
   // Octava abajo
   list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
     const idx=+b.dataset.octDn;
+    if(favOctShift[idx]<=-2)return; // máx 2 bajadas
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
+      // -12 semitones = una octava abajo, puro dato MIDI
       const note=p.note.replace(/[0-9]/g,'');
       const oct=parseInt(p.note.match(/[0-9]+/)[0]);
       return{...p,note:note+(oct-1)};
     });
-    // Marcar flecha abajo en rojo, quitar rojo de arriba
-    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.add('oct-active'));
-    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.remove('oct-active'));
+    favOctShift[idx]--;
+    const upBtns2=card.querySelectorAll('[data-oct-up]');
+    const dnBtns2=card.querySelectorAll('[data-oct-dn]');
+    if(favOctShift[idx]<0){dnBtns2.forEach(x=>x.classList.add('oct-active'));upBtns2.forEach(x=>x.classList.remove('oct-active'));}
+    else{upBtns2.forEach(x=>x.classList.remove('oct-active'));dnBtns2.forEach(x=>x.classList.remove('oct-active'));}
   }));
 
   // Descarga MIDI
