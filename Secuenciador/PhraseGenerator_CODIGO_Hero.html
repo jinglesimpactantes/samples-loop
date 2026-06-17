@@ -531,7 +531,7 @@ let sharpOn=false,scaleMode='minor',currentMood='melancolico',lastEffMood='melan
 let specFrame=null,specAnalyser=null,specData=null;
 let metroOn=false,metroInterval=null;
 let favorites=[],phraseCounter=1,playbackInterval=null,loopAnimFrame=null;
-let humanizeOn=false,autoPlayTimer=null,videoTimer=null,loopingFavIdx=-1,lastPlayType='general',lastCardIdx=-1;
+let humanizeOn=false,autoPlayTimer=null,videoTimer=null,loopingFavIdx=-1,lastPlayType='general',lastCardIdx=-1,playingCardIdx=-1;
 let favOctShift=[];
 function stopFavLoop(){loopingFavIdx=-1;document.querySelectorAll('.loop-active').forEach(b=>b.classList.remove('loop-active'));}
 const LOOP_CIRC=113;
@@ -1005,7 +1005,15 @@ document.getElementById('generateBtn').addEventListener('click',()=>{
 });
 
 document.getElementById('playBtn').addEventListener('click',()=>{
-  // Visual: este play activo, resto normal
+  // Si hay card sonando → parar todo (stop universal)
+  if(playingCardIdx>=0||isPlaying){
+    stopFavLoop();stopAll();isPlaying=false;
+    playingCardIdx=-1;resetAllPlayBtns();clearActivePlay();
+    document.getElementById('playBtn').classList.remove('playing');
+    document.getElementById('playIcon').className='pi';
+    return;
+  }
+  stopFavLoop();
   setActivePlay('main');
   if(isPlaying){
     stopAll();isPlaying=false;document.getElementById('playBtn').classList.remove('playing');document.getElementById('playIcon').className='pi';
@@ -1119,10 +1127,12 @@ function renderFavs(){
   });
 
   // Estado de reproducción por card
-  let playingCardIdx=-1;
-
   function resetAllPlayBtns(){
-    list.querySelectorAll('[data-play]').forEach(x=>{x.style.borderColor='';x.style.color='';x.classList.remove('last-played');x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';});
+    list.querySelectorAll('[data-play]').forEach(x=>{
+      x.style.borderColor='';x.style.color='';
+      x.classList.remove('last-played');
+      x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';
+    });
   }
 
   // PLAY/STOP — cada card tiene su propia frase, NO toca generatedPhrase
@@ -1132,7 +1142,6 @@ function renderFavs(){
       // Parar esta card
       stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();clearActivePlay();
     }else{
-      // Parar lo anterior — preservar loop si es la misma card
       const prevLoop=loopingFavIdx;
       stopFavLoop();stopAll();isPlaying=false;
       if(prevLoop===idx){
@@ -1287,5 +1296,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v74</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v77</div></body>
 </html>
