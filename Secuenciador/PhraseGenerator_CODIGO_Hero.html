@@ -1123,7 +1123,11 @@ function renderFavs(){
       // Parar lo anterior — preservar loop si es la misma card
       const prevLoop=loopingFavIdx;
       stopFavLoop();stopAll();isPlaying=false;
-      if(prevLoop===idx)loopingFavIdx=idx; // Restaurar si era esta card
+      if(prevLoop===idx){
+        loopingFavIdx=idx;
+        const lb=list.querySelector('[data-loop="'+idx+'"]');
+        if(lb)lb.classList.add('loop-active');
+      }
       resetAllPlayBtns();
       playingCardIdx=idx;
       b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
@@ -1202,5 +1206,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v62</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v63</div></body>
 </html>
