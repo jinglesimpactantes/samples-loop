@@ -93,9 +93,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 }}
 .center-dot{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,var(--gold-hover) 0%,var(--gold-dim) 100%);animation:pulseDot 1.6s ease-in-out infinite;z-index:1;}
 
-.dot.exploding{animation:dotExplode 0.4s ease-out forwards;}
-.dot.imploding{animation:dotImplode 0.5s ease-out forwards;}
-.dot.hidden{opacity:0;pointer-events:none;}
+.center-dot.exploding{animation:dotExplode 0.4s ease-out forwards;}
+.center-dot.imploding{animation:dotImplode 0.5s ease-out forwards;}
+.center-dot.hidden{opacity:0;pointer-events:none;}
 @keyframes dotExplode{0%{transform:scale(1);opacity:1;}50%{transform:scale(3);opacity:0.6;}100%{transform:scale(0);opacity:0;}}
 @keyframes dotImplode{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.4);opacity:0.9;}100%{transform:scale(1);opacity:0.7;}}
 /* BOTTOM CONTROLS: más alto */
@@ -323,14 +323,9 @@ function rndF(a,b){return a+Math.random()*(b-a);}
 
 function getActiveScaleForMood(moodKey){
   const fk=getFullKey();
-  if(moodKey==='alegre')     return buildScale(fk,'major');
-  if(moodKey==='melancolico')return buildScale(fk,'penta_minor');
-  if(moodKey==='triste')     return buildScale(fk,'penta_minor_add2');
-  if(moodKey==='romantico')  return buildScale(fk,'penta_major_add7');
-  if(moodKey==='intenso')    return buildScale(fk,'penta_major');
-  // Aleatorio: alternar mayor o menor aleatoriamente (sin tocar scaleMode del usuario)
-  const randMode=Math.random()<0.5?'major':'penta_minor';
-  return buildScale(fk,randMode);
+  // El usuario manda: scaleMode define mayor o menor SIEMPRE
+  const mode=scaleMode==='minor'?'penta_minor':'major';
+  return buildScale(fk,mode);
 }
 
 // ── MOTOR DE MELODÍAS — motivos + ritmos + estructura ─────────────────────
@@ -841,9 +836,8 @@ const NOTE_SPANISH={C:'DO',D:'RE',E:'MI',F:'FA',G:'SOL',A:'LA',B:'SI',
 function getRelativeMajor(root){return CHR[(CHR.indexOf(root)+3)%12];}
 function getMoodDisplayInfo(moodKey){
   const fk=getFullKey();
-  // Solo mostrar MAYOR o MENOR, nunca "penta"
-  if(moodKey==='melancolico'||moodKey==='triste')return{root:fk,label:'menor'};
-  return{root:fk,label:'mayor'};
+  // El label refleja lo que el usuario seleccionó, no el preset
+  return{root:fk, label:scaleMode==='minor'?'menor':'mayor'};
 }
 function updateScaleDisplay(){
   const info=getMoodDisplayInfo(currentMood);
@@ -852,7 +846,14 @@ function updateScaleDisplay(){
   if(el)el.textContent=sp+' '+info.label;
 }
 function applyMoodToKnob(moodKey){
-  // Presets solo controlan estilo de fraseo — NUNCA tocan tonalidad ni knob
+  const isMinor=moodKey==='melancolico'||moodKey==='triste';
+  const isMajor=moodKey==='alegre'||moodKey==='romantico';
+  if(isMinor) scaleMode='minor';
+  else if(isMajor) scaleMode='major';
+  // Actualizar el dropdown visual
+  document.querySelectorAll('#scaleDd .dd-opt').forEach(o=>{
+    o.classList.toggle('active', o.dataset.scale===scaleMode);
+  });
   updateScaleDisplay();
 }
 
@@ -1007,6 +1008,10 @@ document.querySelectorAll('.dropdown-menu .dd-opt').forEach(o=>{
     }
     if(dd.id==='scaleDd'){
       scaleMode=o.dataset.scale;
+      // Actualizar clase active visualmente
+      dd.querySelectorAll('.dd-opt').forEach(opt=>{
+        opt.classList.toggle('active', opt.dataset.scale===scaleMode);
+      });
       updateScaleDisplay();
     }
   });
@@ -1037,13 +1042,9 @@ function renderFavs(){
         <div class="fav-btns">
           <button class="fav-btn fav-btn-play" data-play="${i}"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg></button>
           <button class="fav-btn fav-btn-loop" data-loop="${i}" title="Loop">&#8734;</button>
-          <div class="fav-octava">
-            <span class="fav-octava-label">OCTAVA</span>
-            <div style="display:flex;flex-direction:column;">
-              <button class="fav-oct-btn" data-oct-up="${i}">&#9650;</button>
-              <button class="fav-oct-btn" data-oct-dn="${i}">&#9660;</button>
-            </div>
-          </div>
+<span class="fav-octava-label" style="margin-left:3px;font-size:7px;">OCT</span>
+              <button class="fav-oct-btn" data-oct-up="${i}" style="font-size:8px;">&#9650;</button>
+              <button class="fav-oct-btn" data-oct-dn="${i}" style="font-size:8px;">&#9660;</button>
         </div>
       </div>
       <div class="fav-card-right">
@@ -1075,34 +1076,30 @@ function renderFavs(){
       playingCardIdx=idx;
       b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
       const cardPhrase=[...favorites[idx].phrase];
-      execPlay(cardPhrase).then(()=>{
-        // Al terminar: resetear icono
-        if(playingCardIdx===idx){playingCardIdx=-1;resetAllPlayBtns();}
-      }).catch(()=>{});
+      function playWithLoop(){
+        execPlay(cardPhrase).then(()=>{
+          if(loopingFavIdx===fi){
+            // Loop activo: repetir
+            if(isPlaying)return;
+            playWithLoop();
+          }else{
+            // Sin loop: resetear
+            if(playingCardIdx===fi){playingCardIdx=-1;resetAllPlayBtns();}
+          }
+        }).catch(()=>{});
+      }
+      playWithLoop();
     }
   }));
 
-  // LOOP — activa reproducción en bucle de esta card
+  // LOOP — solo activa el flag, no inicia reproducción
   list.querySelectorAll('[data-loop]').forEach(b=>b.addEventListener('click',()=>{
-    const idx=+b.dataset.loop;
-    if(loopingFavIdx===idx){
-      // Desactivar loop
+    const fi=+b.dataset.loop;
+    if(loopingFavIdx===fi){
       loopingFavIdx=-1;b.classList.remove('loop-active');
-      stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();
     }else{
-      // Activar loop
-      stopFavLoop();stopAll();isPlaying=false;
-      resetAllPlayBtns();
-      loopingFavIdx=idx;b.classList.add('loop-active');
-      playingCardIdx=idx;
-      const pb=list.querySelector('[data-play="'+idx+'"]');
-      if(pb)pb.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
-      const cardPhrase=[...favorites[idx].phrase];
-      function doLoop(){
-        if(loopingFavIdx!==idx){resetAllPlayBtns();return;}
-        execPlay(cardPhrase).then(()=>{doLoop();}).catch(()=>{});
-      }
-      doLoop();
+      stopFavLoop();
+      loopingFavIdx=fi;b.classList.add('loop-active');
     }
   }));
 
