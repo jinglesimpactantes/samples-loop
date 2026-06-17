@@ -485,8 +485,12 @@ function generatePhrase(scale,mood,bpb,bpm){
   // COMPÁS 3: nota larga, resolución en tónica + vibrato
   const fk=getFullKey();
   let finalIdx=idx;let bestD=scale.length+1;
+  // 80%: resolver en la tónica exacta (nota del knob)
+  // 20%: resolver en otra nota cercana de la escala
+  const resolveToTonic=Math.random()<0.80;
   for(let i=0;i<scale.length;i++){
-    if(scale[i].replace(/[0-9]/g,'')===fk){
+    const noteName=scale[i].replace(/[0-9]/g,'');
+    if(resolveToTonic?noteName===fk:noteName!==fk){
       const d=Math.abs(i-idx);if(d<bestD){bestD=d;finalIdx=i;}
     }
   }
