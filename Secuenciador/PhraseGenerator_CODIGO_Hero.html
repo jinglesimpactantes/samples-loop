@@ -76,7 +76,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .vortex-area{flex:1;position:relative;overflow:hidden;}
 
 /* Video: solo cuando se activa con GENERAR */
-.vortex-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.88;display:none;}
+.vortex-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.88;display:none;z-index:2;}
 .vortex-video.playing{display:block;}
 
 /* Puntito siempre vivo con pulso suave */
@@ -84,9 +84,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .vortex-rings-wrap{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .v-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(223,185,111,0);}
 @keyframes vortexGo{0%{transform:rotate(0deg) scale(1);opacity:1;}50%{opacity:0.4;}100%{transform:rotate(360deg) scale(1.1);opacity:0;}}
-@keyframes pulseDot{0%,100%{transform:scale(1);opacity:0.65;box-shadow:0 0 8px var(--gold);}50%{transform:scale(1.25);opacity:1;box-shadow:0 0 20px var(--gold),0 0 40px rgba(223,185,111,0.2);}}
-.center-dot{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,var(--gold-hover) 0%,var(--gold-dim) 100%);animation:pulseDot 2.4s ease-in-out infinite;z-index:5;}
+@keyframes pulseDot{
+  0%{transform:scale(1);opacity:0.7;box-shadow:0 0 8px var(--gold);}
+  25%{transform:scale(1.4);opacity:1;box-shadow:0 0 18px var(--gold);}
+  50%{transform:scale(0.85);opacity:0.5;box-shadow:0 0 4px var(--gold-dim);}
+  75%{transform:scale(1.2);opacity:0.9;box-shadow:0 0 14px var(--gold);}
+  100%{transform:scale(1);opacity:0.7;box-shadow:0 0 8px var(--gold);}
+}}
+.center-dot{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,var(--gold-hover) 0%,var(--gold-dim) 100%);animation:pulseDot 1.6s ease-in-out infinite;z-index:1;}
 
+.dot.exploding{animation:dotExplode 0.4s ease-out forwards;}
+.dot.imploding{animation:dotImplode 0.5s ease-out forwards;}
+.dot.hidden{opacity:0;pointer-events:none;}
+@keyframes dotExplode{0%{transform:scale(1);opacity:1;}50%{transform:scale(3);opacity:0.6;}100%{transform:scale(0);opacity:0;}}
+@keyframes dotImplode{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.4);opacity:0.9;}100%{transform:scale(1);opacity:0.7;}}
 /* BOTTOM CONTROLS: más alto */
 .bottom-controls{height:86px;flex-shrink:0;display:grid;grid-template-columns:74px 1fr 74px;align-items:center;padding:0 12px;background:rgba(0,0,0,0.25);border-top:1px solid var(--border);gap:8px;}
 .play-col{display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:6px;}
@@ -317,10 +328,8 @@ function getActiveScaleForMood(moodKey){
   if(moodKey==='triste')     return buildScale(fk,'penta_minor_add2');
   if(moodKey==='romantico')  return buildScale(fk,'penta_major_add7');
   if(moodKey==='intenso')    return buildScale(fk,'penta_major');
-  // Aleatorio: alternar mayor o menor aleatoriamente
+  // Aleatorio: alternar mayor o menor aleatoriamente (sin tocar scaleMode del usuario)
   const randMode=Math.random()<0.5?'major':'penta_minor';
-  scaleMode=randMode==='major'?'major':'minor';
-  updateScaleDisplay();
   return buildScale(fk,randMode);
 }
 
@@ -520,9 +529,8 @@ function getCtx(){
   return audioCtx;
 }
 function getFullKey(){
-  if(!sharpOn)return currentKeyLogic;
-  const s=currentKeyLogic+'#';
-  return CHR.indexOf(s)>=0?s:currentKeyLogic;
+  if((currentKeyLogic==='E'||currentKeyLogic==='B')&&sharpOn)return currentKeyLogic;
+  return sharpOn?CHR[(CHR.indexOf(currentKeyLogic)+1)%12]:currentKeyLogic;
 }
 
 // ── AUDIO ENGINE ──────────────────────────────────────────────────────────
@@ -611,13 +619,19 @@ function simulateWaveform(){
   }
   c.globalAlpha=1;
 }
-async function execPlay(phrase){
+async function execPlay(phrase,sourceBpm){
   stopAll();
   const bpm=parseInt(document.getElementById('bpmInput').value)||100;
+  // Escalar duraciones si el BPM cambió desde que se generó
+  const bpmRatio=sourceBpm&&sourceBpm!==bpm?(sourceBpm/bpm):1;
+  phrase=phrase.map(p=>bpmRatio!==1?{...p,dur:p.dur*bpmRatio}:p);
   const revAmt=parseInt(document.getElementById('reverbSlider').value)/100;
   isPlaying=true;
   document.getElementById('playBtn').classList.add('playing');
   document.getElementById('playIcon').className='si';
+  // Ocultar puntito durante reproducción
+  const dotP=document.querySelector('.center-dot');
+  if(dotP){dotP.classList.add('hidden');dotP.classList.remove('imploding','exploding');}
   const ctx=getCtx();
   const analyser=ctx.createAnalyser();analyser.fftSize=2048;
   const dry=ctx.createGain(),wet=ctx.createGain();
@@ -655,6 +669,10 @@ async function execPlay(phrase){
       document.getElementById('playBtn').classList.remove('playing');
       document.getElementById('playIcon').className='pi';
       specAnalyser=null;simulateWaveform();
+      // Implosión del puntito al terminar
+      const dotF=document.querySelector('.center-dot');
+      if(dotF){dotF.classList.remove('hidden','exploding');dotF.classList.add('imploding');
+        setTimeout(()=>{dotF.classList.remove('imploding');},500);}
       // Resetear iconos play de todas las cards
       document.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
       document.getElementById('pinBtn').disabled=false;
@@ -727,6 +745,8 @@ function makeNewPhrase(){
   const _mb=document.getElementById('midiBtn');if(_mb)_mb.disabled=false;
   document.getElementById('pinBtn').classList.remove('saved');
   simulateWaveform();
+  const genBpm=parseInt(document.getElementById('bpmInput').value)||100;
+  generatedPhrase=[...currentPhrase].map(p=>({...p,_srcBpm:genBpm})); // Preservar con BPM
 }
 
 // ── MIDI EXPORT ───────────────────────────────────────────────────────────
@@ -832,36 +852,7 @@ function updateScaleDisplay(){
   if(el)el.textContent=sp+' '+info.label;
 }
 function applyMoodToKnob(moodKey){
-  const isMoodMinor=moodKey==='melancolico'||moodKey==='triste';
-  const isMoodMajor=moodKey==='alegre'||moodKey==='romantico';
-
-  if(isMoodMinor && scaleMode!=='minor'){
-    // Estaba en mayor → cambiar a relativa menor
-    const fk=getFullKey();
-    const relMin=getRelativeMinor(fk);
-    const baseNote=relMin.replace('#','');
-    const ni=keysLogic.indexOf(baseNote);
-    if(ni>=0){snapKnob(ni);sharpOn=relMin.includes('#');
-      document.getElementById('sharpBtn').classList.toggle('active',sharpOn);}
-    scaleMode='minor';
-    // Actualizar dropdown de escala
-    document.querySelectorAll('#scaleDd .dd-opt').forEach(o=>{
-      o.classList.toggle('active',o.dataset.scale==='minor');
-    });
-  } else if(isMoodMajor && scaleMode!=='major'){
-    // Estaba en menor → cambiar a relativa mayor
-    const fk=getFullKey();
-    const relMaj=getRelativeMajor(fk);
-    const baseNote=relMaj.replace('#','');
-    const ni=keysLogic.indexOf(baseNote);
-    if(ni>=0){snapKnob(ni);sharpOn=relMaj.includes('#');
-      document.getElementById('sharpBtn').classList.toggle('active',sharpOn);}
-    scaleMode='major';
-    document.querySelectorAll('#scaleDd .dd-opt').forEach(o=>{
-      o.classList.toggle('active',o.dataset.scale==='major');
-    });
-  }
-  // Intenso/Aleatorio: no tocan la tonalidad
+  // Presets solo controlan estilo de fraseo — NUNCA tocan tonalidad ni knob
   updateScaleDisplay();
 }
 
@@ -939,13 +930,17 @@ document.getElementById('generateBtn').addEventListener('click',()=>{
   // Stop si estaba sonando
   if(isPlaying){stopAll();isPlaying=false;document.getElementById('playBtn').classList.remove('playing');document.getElementById('playIcon').className='pi';}
   // Video (robusto: múltiples clicks no colapsan)
+  // Explosión del puntito al generar
+  const dotEl=document.querySelector('.center-dot');
+  if(dotEl){dotEl.classList.remove('imploding','hidden');dotEl.classList.add('exploding');
+    setTimeout(()=>{dotEl.classList.add('hidden');dotEl.classList.remove('exploding');},400);}
   playVideoOnce();
   triggerVortexRings();
   makeNewPhrase();
   // Auto-play con 2 segundos de pausa dramática
   autoPlayTimer=setTimeout(()=>{
     autoPlayTimer=null;
-    if(currentPhrase.length&&!isPlaying)execPlay(currentPhrase);
+    if(generatedPhrase.length&&!isPlaying)execPlay(generatedPhrase);
   },2000);
 });
 
@@ -954,14 +949,15 @@ document.getElementById('playBtn').addEventListener('click',()=>{
     stopAll();isPlaying=false;document.getElementById('playBtn').classList.remove('playing');document.getElementById('playIcon').className='pi';
     if(specFrame){cancelAnimationFrame(specFrame);specFrame=null;}specAnalyser=null;drawWaveform();return;
   }
-  if(!currentPhrase.length)makeNewPhrase();
-  execPlay(currentPhrase);
+  if(!generatedPhrase.length){simulateWaveform();return;} // No generar automáticamente
+  const sp=generatedPhrase.length&&generatedPhrase[0]?._srcBpm;
+  execPlay(generatedPhrase.length?generatedPhrase:currentPhrase,sp);
 });
 document.getElementById('pinBtn').addEventListener('click',()=>{
-  if(!currentPhrase.length)return;
+  if(!generatedPhrase.length)return;
   const bpm=parseInt(document.getElementById('bpmInput').value)||100;
   const names={alegre:'Alegre',melancolico:'Melancólico',triste:'Triste',romantico:'Romántico',intenso:'Intenso',aleatorio:'Aleatorio'};
-  favorites.unshift({name:'Melodía '+phraseCounter++,key:getFullKey(),mood:names[lastEffMood]||lastEffMood,mode:scaleMode,bpm,compas:document.getElementById('compasInput').value||'4/4',phrase:[...currentPhrase]});
+  favorites.unshift({name:'Melodía '+phraseCounter++,key:getFullKey(),mood:names[lastEffMood]||lastEffMood,mode:scaleMode,bpm,compas:document.getElementById('compasInput').value||'4/4',phrase:[...generatedPhrase]});
   renderFavs();document.getElementById('pinBtn').disabled=true;document.getElementById('pinBtn').classList.add('saved');
 });
 document.getElementById('midiBtn')&&document.getElementById('midiBtn').addEventListener('click',()=>{
@@ -983,10 +979,12 @@ document.getElementById('sharpBtn').addEventListener('click',()=>{
 });
 // Deshabilitar # visualmente cuando knob está en MI o SI
 function updateSharpBtn(){
-  const disabled=currentKeyLogic==='E'||currentKeyLogic==='B';
-  document.getElementById('sharpBtn').style.opacity=disabled?'0.3':'1';
-  document.getElementById('sharpBtn').style.pointerEvents=disabled?'none':'auto';
-  if(disabled){sharpOn=false;document.getElementById('sharpBtn').classList.remove('active');}
+  const noSharp=currentKeyLogic==='E'||currentKeyLogic==='B';
+  // En MI y SI: deshabilitar visualmente pero NO apagar el estado sharpOn
+  // El usuario debe apagarlo manualmente
+  document.getElementById('sharpBtn').style.opacity=noSharp?'0.35':'1';
+  document.getElementById('sharpBtn').style.pointerEvents=noSharp?'none':'auto';
+  // No tocar sharpOn — el usuario lo controla
 }
 
 // ── DROPDOWNS ─────────────────────────────────────────────────────────────
@@ -1010,17 +1008,15 @@ document.querySelectorAll('.dropdown-menu .dd-opt').forEach(o=>{
     if(dd.id==='scaleDd'){
       scaleMode=o.dataset.scale;
       updateScaleDisplay();
-      // Si el usuario cambia manualmente y no coincide con el preset → resetear a PRESETS
-      const isMoodMinor=currentMood==='melancolico'||currentMood==='triste';
-      const isMoodMajor=currentMood==='alegre'||currentMood==='romantico';
-      if((isMoodMinor&&scaleMode==='major')||(isMoodMajor&&scaleMode==='minor')){
-        document.getElementById('moodLabel').textContent='PRESETS';
-        currentMood='';
-      }
     }
   });
 });
-document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('open')));
+document.addEventListener('click',e=>{
+  // Solo cerrar si el click NO fue dentro de un dropdown-wrap
+  if(!e.target.closest('.dropdown-wrap')){
+    document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('open'));
+  }
+});
 document.getElementById('reverbSlider').addEventListener('input',e=>document.getElementById('reverbVal').textContent=e.target.value+'%');
 
 // ── FAVORITOS ─────────────────────────────────────────────────────────────
@@ -1029,12 +1025,11 @@ function renderFavs(){
   if(!favorites.length){list.innerHTML='<div class="fav-card empty">Sin melodías guardadas</div>';return;}
   favOctShift=favorites.map(()=>0);
   favorites.forEach((fav,i)=>{
-    const card=document.createElement('div');card.className='fav-card';
-    // Nota en español para el subtítulo
     const noteSpanish={'C':'DO','D':'RE','E':'MI','F':'FA','G':'SOL','A':'LA','B':'SI',
       'C#':'DO#','D#':'RE#','F#':'FA#','G#':'SOL#','A#':'LA#'};
-    const modeLabel=fav.mood.includes('iste')||fav.mood.includes('lanc')?'m':'';
+    const modeLabel=fav.mood==='melancolico'||fav.mood==='triste'?'m':'';
     const noteLabel=(noteSpanish[fav.key]||fav.key)+(modeLabel?'m':'');
+    const card=document.createElement('div');card.className='fav-card';
     card.innerHTML=`
       <div class="fav-card-left">
         <div class="fav-name">${fav.name.toUpperCase()}</div>
@@ -1044,106 +1039,107 @@ function renderFavs(){
           <button class="fav-btn fav-btn-loop" data-loop="${i}" title="Loop">&#8734;</button>
           <div class="fav-octava">
             <span class="fav-octava-label">OCTAVA</span>
-            <div class="fav-octava-btns" style="display:flex;flex-direction:column;">
-              <button class="fav-oct-btn" data-oct-up="${i}" title="Subir octava">&#9650;</button>
-              <button class="fav-oct-btn" data-oct-dn="${i}" title="Bajar octava">&#9660;</button>
+            <div style="display:flex;flex-direction:column;">
+              <button class="fav-oct-btn" data-oct-up="${i}">&#9650;</button>
+              <button class="fav-oct-btn" data-oct-dn="${i}">&#9660;</button>
             </div>
           </div>
         </div>
       </div>
       <div class="fav-card-right">
-        <button class="fav-btn-del" data-del="${i}" title="Eliminar">&#10005;</button>
-        <button class="fav-btn-midi-dl" data-midi="${i}" title="Guardar MIDI">
+        <button class="fav-btn-del" data-del="${i}">&#10005;</button>
+        <button class="fav-btn-midi-dl" data-midi="${i}">
           <svg viewBox="0 0 448 512"><path d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z"/></svg>
         </button>
       </div>`;
     list.appendChild(card);
   });
 
-  // Play/Stop toggle
-  list.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>{
-    const fi=+b.dataset.play;
-    const alreadyPlaying=isPlaying&&currentPhrase===favorites[fi]?.phrase;
+  // Estado de reproducción por card
+  let playingCardIdx=-1;
+
+  function resetAllPlayBtns(){
     list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');
-    if(alreadyPlaying){
-      stopAll();isPlaying=false;
+  }
+
+  // PLAY/STOP — cada card tiene su propia frase, NO toca generatedPhrase
+  list.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>{
+    const idx=+b.dataset.play;
+    if(playingCardIdx===idx&&isPlaying){
+      // Parar esta card
+      stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();
     }else{
+      // Parar lo anterior y reproducir esta card
       stopFavLoop();stopAll();isPlaying=false;
-      currentPhrase=[...favorites[fi].phrase];
+      resetAllPlayBtns();
+      playingCardIdx=idx;
       b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
-      execPlay(currentPhrase);
+      const cardPhrase=[...favorites[idx].phrase];
+      execPlay(cardPhrase).then(()=>{
+        // Al terminar: resetear icono
+        if(playingCardIdx===idx){playingCardIdx=-1;resetAllPlayBtns();}
+      }).catch(()=>{});
     }
   }));
 
-
-  // Loop infinito
+  // LOOP — activa reproducción en bucle de esta card
   list.querySelectorAll('[data-loop]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.loop;
     if(loopingFavIdx===idx){
-      // Desactivar loop — la melodía actual sigue hasta terminar
+      // Desactivar loop
       loopingFavIdx=-1;b.classList.remove('loop-active');
-    } else {
-      // Activar loop para esta card
-      stopFavLoop();
+      stopAll();isPlaying=false;playingCardIdx=-1;resetAllPlayBtns();
+    }else{
+      // Activar loop
+      stopFavLoop();stopAll();isPlaying=false;
+      resetAllPlayBtns();
       loopingFavIdx=idx;b.classList.add('loop-active');
-      // Si ya está reproduciendo esta card, el loop se activa automáticamente al terminar
-      // Si no está reproduciendo, activar play
-      if(!isPlaying){
-        currentPhrase=[...favorites[idx].phrase];
-        list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
-        const playBtn=list.querySelector('[data-play="'+idx+'"]');
-        if(playBtn)playBtn.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
-        function doLoop(){if(loopingFavIdx!==idx)return;
-          execPlay(currentPhrase).then(()=>{if(loopingFavIdx===idx)doLoop();}).catch(()=>{});}
-        doLoop();
+      playingCardIdx=idx;
+      const pb=list.querySelector('[data-play="'+idx+'"]');
+      if(pb)pb.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+      const cardPhrase=[...favorites[idx].phrase];
+      function doLoop(){
+        if(loopingFavIdx!==idx){resetAllPlayBtns();return;}
+        execPlay(cardPhrase).then(()=>{doLoop();}).catch(()=>{});
       }
+      doLoop();
     }
   }));
 
-  // Octava arriba
-  list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
-    const idx=+b.dataset.octUp;
-    if(favOctShift[idx]>=2)return; // máx 2 subidas
+  // OCTAVA
+  list.querySelectorAll('[data-oct-up]').forEach(b=>b.addEventListener('click',()=>{
+    const idx=+b.dataset.octUp;if(favOctShift[idx]>=2)return;
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
-      // +12 semitones = una octava arriba, puro dato MIDI
-      const note=p.note.replace(/[0-9]/g,'');
-      const oct=parseInt(p.note.match(/[0-9]+/)[0]);
-      return{...p,note:note+(oct+1)};
+      return{...p,note:p.note.replace(/[0-9]+/,n=>+n+1)};
     });
     favOctShift[idx]++;
-    const upBtns=card.querySelectorAll('[data-oct-up]');
-    const dnBtns=card.querySelectorAll('[data-oct-dn]');
-    if(favOctShift[idx]>0){upBtns.forEach(x=>x.classList.add('oct-active'));dnBtns.forEach(x=>x.classList.remove('oct-active'));}
-    else{upBtns.forEach(x=>x.classList.remove('oct-active'));dnBtns.forEach(x=>x.classList.remove('oct-active'));}
+    const card=b.closest('.fav-card');
+    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.toggle('oct-active',favOctShift[idx]>0));
+    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.remove('oct-active'));
   }));
-
-  // Octava abajo
-  list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{const card=b.closest('.fav-card');
-    const idx=+b.dataset.octDn;
-    if(favOctShift[idx]<=-2)return; // máx 2 bajadas
+  list.querySelectorAll('[data-oct-dn]').forEach(b=>b.addEventListener('click',()=>{
+    const idx=+b.dataset.octDn;if(favOctShift[idx]<=-2)return;
     favorites[idx].phrase=favorites[idx].phrase.map(p=>{
       if(!p.note)return p;
-      // -12 semitones = una octava abajo, puro dato MIDI
-      const note=p.note.replace(/[0-9]/g,'');
-      const oct=parseInt(p.note.match(/[0-9]+/)[0]);
-      return{...p,note:note+(oct-1)};
+      return{...p,note:p.note.replace(/[0-9]+/,n=>+n-1)};
     });
     favOctShift[idx]--;
-    const upBtns2=card.querySelectorAll('[data-oct-up]');
-    const dnBtns2=card.querySelectorAll('[data-oct-dn]');
-    if(favOctShift[idx]<0){dnBtns2.forEach(x=>x.classList.add('oct-active'));upBtns2.forEach(x=>x.classList.remove('oct-active'));}
-    else{upBtns2.forEach(x=>x.classList.remove('oct-active'));dnBtns2.forEach(x=>x.classList.remove('oct-active'));}
+    const card=b.closest('.fav-card');
+    card.querySelectorAll('[data-oct-dn]').forEach(x=>x.classList.toggle('oct-active',favOctShift[idx]<0));
+    card.querySelectorAll('[data-oct-up]').forEach(x=>x.classList.remove('oct-active'));
   }));
 
-  // Descarga MIDI
+  // MIDI
   list.querySelectorAll('[data-midi]').forEach(b=>b.addEventListener('click',()=>{
-    const fav=favorites[+b.dataset.midi];exportMIDI(fav.phrase,fav.bpm);}));
+    const fav=favorites[+b.dataset.midi];exportMIDI(fav.phrase,fav.bpm);
+  }));
 
-  // Eliminar
+  // ELIMINAR
   list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.del;
     if(loopingFavIdx===idx){stopFavLoop();stopAll();isPlaying=false;}
+    if(playingCardIdx===idx){stopAll();isPlaying=false;playingCardIdx=-1;}
     favorites.splice(idx,1);renderFavs();
   }));
 }
