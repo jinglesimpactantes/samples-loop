@@ -317,7 +317,11 @@ function getActiveScaleForMood(moodKey){
   if(moodKey==='triste')     return buildScale(fk,'penta_minor_add2');
   if(moodKey==='romantico')  return buildScale(fk,'penta_major_add7');
   if(moodKey==='intenso')    return buildScale(fk,'penta_major');
-  return buildScale(fk,Math.random()<0.5?'major':'penta_minor');
+  // Aleatorio: alternar mayor o menor aleatoriamente
+  const randMode=Math.random()<0.5?'major':'penta_minor';
+  scaleMode=randMode==='major'?'major':'minor';
+  updateScaleDisplay();
+  return buildScale(fk,randMode);
 }
 
 // ── MOTOR DE MELODÍAS — motivos + ritmos + estructura ─────────────────────
@@ -628,8 +632,9 @@ async function execPlay(phrase){
   let t=ctx.currentTime+0.05;
   for(const p of phrase){
     const freq=NOTE_FREQS[p.note]; if(!freq){t+=p.dur;continue;}
+    const previewFreq=freq*2; // Preview una octava arriba para coincidir con DAW
     const ns=Math.max(ctx.currentTime,t+(p.humanOffset||0));
-    playFluteNote(freq,ns,p.dur,p.vibrato,p.run||false,p.vel,p.bendUp,p.staccato||false,ctx,analyser);
+    playFluteNote(previewFreq,ns,p.dur,p.vibrato,p.run||false,p.vel,p.bendUp,p.staccato||false,ctx,analyser);
     t+=p.dur;
   }
   const total=phrase.reduce((s,p)=>s+p.dur,0);
@@ -650,6 +655,8 @@ async function execPlay(phrase){
       document.getElementById('playBtn').classList.remove('playing');
       document.getElementById('playIcon').className='pi';
       specAnalyser=null;simulateWaveform();
+      // Resetear iconos play de todas las cards
+      document.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
       document.getElementById('pinBtn').disabled=false;
       const mb=document.getElementById('midiBtn');if(mb)mb.disabled=false;
       resolvePlay();
@@ -813,11 +820,9 @@ const NOTE_SPANISH={C:'DO',D:'RE',E:'MI',F:'FA',G:'SOL',A:'LA',B:'SI',
   'C#':'DO#','D#':'RE#','F#':'FA#','G#':'SOL#','A#':'LA#'};
 function getRelativeMajor(root){return CHR[(CHR.indexOf(root)+3)%12];}
 function getMoodDisplayInfo(moodKey){
-  // El knob YA apunta a la nota correcta — solo mostrar lo que marca
   const fk=getFullKey();
+  // Solo mostrar MAYOR o MENOR, nunca "penta"
   if(moodKey==='melancolico'||moodKey==='triste')return{root:fk,label:'menor'};
-  if(moodKey==='alegre'||moodKey==='romantico')return{root:fk,label:'mayor'};
-  if(moodKey==='intenso')return{root:fk,label:'penta'};
   return{root:fk,label:'mayor'};
 }
 function updateScaleDisplay(){
@@ -888,6 +893,7 @@ function snapKnob(index){
   drawKeyMarks();knob.style.transform=`rotate(${index*(360/7)}deg)`;
   // Actualizar display de escala al girar el knob
   if(typeof updateScaleDisplay==='function')updateScaleDisplay();
+  if(typeof updateSharpBtn==='function')updateSharpBtn();
 }
 // Knob: vertical drag — arrastrar ARRIBA = horario (estándar DAW)
 knob.addEventListener('mousedown',e=>{
@@ -968,7 +974,20 @@ document.getElementById('metroBtn').addEventListener('click',()=>{
   metroOn=!metroOn;document.getElementById('metroBtn').classList.toggle('active',metroOn);
   if(!metroOn&&metroInterval){clearInterval(metroInterval);metroInterval=null;document.getElementById('metroNeedleGroup').style.transform='rotate(0deg)';}
 });
-document.getElementById('sharpBtn').addEventListener('click',()=>{sharpOn=!sharpOn;document.getElementById('sharpBtn').classList.toggle('active',sharpOn);drawKeyMarks();updateScaleDisplay();});
+document.getElementById('sharpBtn').addEventListener('click',()=>{
+  // MI y SI no tienen sostenido (MI#=FA, SI#=DO)
+  if(currentKeyLogic==='E'||currentKeyLogic==='B')return;
+  sharpOn=!sharpOn;
+  document.getElementById('sharpBtn').classList.toggle('active',sharpOn);
+  drawKeyMarks();updateScaleDisplay();
+});
+// Deshabilitar # visualmente cuando knob está en MI o SI
+function updateSharpBtn(){
+  const disabled=currentKeyLogic==='E'||currentKeyLogic==='B';
+  document.getElementById('sharpBtn').style.opacity=disabled?'0.3':'1';
+  document.getElementById('sharpBtn').style.pointerEvents=disabled?'none':'auto';
+  if(disabled){sharpOn=false;document.getElementById('sharpBtn').classList.remove('active');}
+}
 
 // ── DROPDOWNS ─────────────────────────────────────────────────────────────
 document.querySelectorAll('.preset-dd-btn,.scale-name-btn').forEach(btn=>{
@@ -988,7 +1007,17 @@ document.querySelectorAll('.dropdown-menu .dd-opt').forEach(o=>{
       document.getElementById('moodLabel').textContent=o.textContent;
       applyMoodToKnob(currentMood);
     }
-    if(dd.id==='scaleDd'){scaleMode=o.dataset.scale;updateScaleDisplay();}
+    if(dd.id==='scaleDd'){
+      scaleMode=o.dataset.scale;
+      updateScaleDisplay();
+      // Si el usuario cambia manualmente y no coincide con el preset → resetear a PRESETS
+      const isMoodMinor=currentMood==='melancolico'||currentMood==='triste';
+      const isMoodMajor=currentMood==='alegre'||currentMood==='romantico';
+      if((isMoodMinor&&scaleMode==='major')||(isMoodMajor&&scaleMode==='minor')){
+        document.getElementById('moodLabel').textContent='PRESETS';
+        currentMood='';
+      }
+    }
   });
 });
 document.addEventListener('click',()=>document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('open')));
@@ -1033,22 +1062,42 @@ function renderFavs(){
 
   // Play/Stop toggle
   list.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>{
-    const idx=+b.dataset.play;
-    if(isPlaying){stopAll();isPlaying=false;list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');}
-    else{stopFavLoop();currentPhrase=[...favorites[idx].phrase];
-      list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');
-      b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';execPlay(currentPhrase);}
+    const fi=+b.dataset.play;
+    const alreadyPlaying=isPlaying&&currentPhrase===favorites[fi]?.phrase;
+    list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>');
+    if(alreadyPlaying){
+      stopAll();isPlaying=false;
+    }else{
+      stopFavLoop();stopAll();isPlaying=false;
+      currentPhrase=[...favorites[fi].phrase];
+      b.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+      execPlay(currentPhrase);
+    }
   }));
+
 
   // Loop infinito
   list.querySelectorAll('[data-loop]').forEach(b=>b.addEventListener('click',()=>{
     const idx=+b.dataset.loop;
-    if(loopingFavIdx===idx){stopFavLoop();stopAll();isPlaying=false;}
-    else{stopFavLoop();loopingFavIdx=idx;b.classList.add('loop-active');
-      currentPhrase=[...favorites[idx].phrase];
-      function doLoop(){if(loopingFavIdx!==idx)return;
-        execPlay(currentPhrase).then(()=>{if(loopingFavIdx===idx)doLoop();}).catch(()=>{});}
-      doLoop();}
+    if(loopingFavIdx===idx){
+      // Desactivar loop — la melodía actual sigue hasta terminar
+      loopingFavIdx=-1;b.classList.remove('loop-active');
+    } else {
+      // Activar loop para esta card
+      stopFavLoop();
+      loopingFavIdx=idx;b.classList.add('loop-active');
+      // Si ya está reproduciendo esta card, el loop se activa automáticamente al terminar
+      // Si no está reproduciendo, activar play
+      if(!isPlaying){
+        currentPhrase=[...favorites[idx].phrase];
+        list.querySelectorAll('[data-play]').forEach(x=>x.innerHTML='<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>');
+        const playBtn=list.querySelector('[data-play="'+idx+'"]');
+        if(playBtn)playBtn.innerHTML='<svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
+        function doLoop(){if(loopingFavIdx!==idx)return;
+          execPlay(currentPhrase).then(()=>{if(loopingFavIdx===idx)doLoop();}).catch(()=>{});}
+        doLoop();
+      }
+    }
   }));
 
   // Octava arriba
