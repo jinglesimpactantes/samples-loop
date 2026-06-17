@@ -527,7 +527,7 @@ function humanizePhrase(phrase){
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────
-let audioCtx=null,scheduledNodes=[],isPlaying=false,currentPhrase=[];
+let audioCtx=null,scheduledNodes=[],isPlaying=false,currentPhrase=[],generatedPhrase=[];
 let sharpOn=false,scaleMode='minor',currentMood='melancolico',lastEffMood='melancolico';
 let specFrame=null,specAnalyser=null,specData=null;
 let metroOn=false,metroInterval=null;
@@ -1109,7 +1109,7 @@ function renderFavs(){
   favorites.forEach((fav,i)=>{
     const noteSpanish={'C':'DO','D':'RE','E':'MI','F':'FA','G':'SOL','A':'LA','B':'SI',
       'C#':'DO#','D#':'RE#','F#':'FA#','G#':'SOL#','A#':'LA#'};
-    const modeLabel=fav.mood==='melancolico'||fav.mood==='triste'?'m':'';
+    const modeLabel=fav.mode==='minor'?'m':''; // Usar mode guardado, no el mood
     const noteLabel=(noteSpanish[fav.key]||fav.key)+(modeLabel?'m':'');
     const card=document.createElement('div');card.className='fav-card';
     card.innerHTML=`
@@ -1289,5 +1289,5 @@ window.addEventListener('load',()=>{
   c.beginPath();c.moveTo(0,cv.height/2);c.lineTo(cv.width,cv.height/2);c.stroke();
 });
 </script>
-<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v94</div></body>
+<div style="position:fixed;bottom:4px;right:6px;color:red;font-size:14px;font-weight:bold;z-index:9999;opacity:0.7;pointer-events:none;">v96</div></body>
 </html>
