@@ -538,7 +538,7 @@ function addAndeanGraceNotes(phrase, scale){
     // - La nota tiene duración suficiente (>0.15s)
     // - No es nota de run ni final
     // - Probabilidad 65% (similar a tus MIDIs: muy frecuente)
-    if(p.note && p.dur>0.15 && !p.run && !p.finalNote && Math.random()<0.65){
+    if(p.note && p.dur>0.15 && !p.run && !p.finalNote && Math.random()<0.28){
       const noteNames=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
       const m=p.note.match(/^([A-G]#?)(-?\d+)$/);
       if(m){
