@@ -896,16 +896,18 @@ function exportMIDI(phrase,bpm){
     events.push(0x00,0x90,midi,vel);
 
     if(p.vibrato&&noteTicks>100){
-      // Vibrato CC1 curva S — ticks relativos correctos
-      const vibratoStart=Math.round(noteTicks*0.20);
-      const vibratoTicks=noteTicks-vibratoStart;
-      // CC1 en un solo evento al llegar al vibrato
-      events.push(...writeVarLen(vibratoStart),0xB0,0x01,70);
-      // Note Off exactamente al final de noteTicks
-      const remaining=Math.max(0,noteTicks-vibratoStart);
-      events.push(...writeVarLen(remaining),0x80,midi,0);
-      // Reset CC1
+      // CC1=0 al inicio de la nota
       events.push(0x00,0xB0,0x01,0);
+      // Subida rápida 0→127 en 3 pasos (primero 20% de la nota)
+      const stepTicks=Math.max(1,Math.floor(noteTicks*0.07));
+      events.push(...writeVarLen(stepTicks),0xB0,0x01,42);
+      events.push(...writeVarLen(stepTicks),0xB0,0x01,85);
+      events.push(...writeVarLen(stepTicks),0xB0,0x01,127);
+      // Hold en 127 hasta casi el final (dejar 6 ticks para el reset)
+      const holdTicks=Math.max(0,noteTicks-(3*stepTicks)-6);
+      events.push(...writeVarLen(holdTicks),0x80,midi,0);
+      // Reset CC1 brevísimo
+      events.push(...writeVarLen(6),0xB0,0x01,0);
     }else{
       // Note Off normal
       events.push(...writeVarLen(noteTicks),0x80,midi,0);
