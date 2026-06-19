@@ -14,7 +14,7 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Nunito',-apple-system,sans-serif;font-size:12px;color:var(--gold);}
 body{background:#000;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;user-select:none;}
 
-.app-wrapper{width:809px;height:440px;background:url('https://github.com/jinglesimpactantes/samples-loop/blob/main/varios/FondoVista2Quena.jpg?raw=true') center/cover no-repeat;border:none;border-radius:6px;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.app-wrapper{width:809px;height:440px;background:url('./FondoVista2Quena.jpg') center/cover no-repeat;border:none;border-radius:6px;box-shadow:none;display:flex;flex-direction:column;overflow:hidden;position:relative;}
   
 /* TOPBAR - mood completamente dentro, sin desborde */
 .topbar{height:30px;flex-shrink:0;background:rgba(0,0,0,0.15);border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:center;padding:0 8px;position:relative;z-index:200;}
@@ -468,6 +468,8 @@ function generatePhrase(scale,mood,bpb,bpm){
 
   // COMPÁS 1
   applyBar(pickRhythm(mood,bpb),pickContour(mood));
+  // Marcar primera nota como intocable para grace notes
+  if(phrase.length>0)phrase[0].firstNote=true;
 
   // Entre compases: cambio de registro (20%) o run (10%)
   const changeReg=Math.random()<0.20;
@@ -531,72 +533,54 @@ function humanizePhrase(phrase){
 // Apoyatura: nota corta 1-2 semitonos abajo antes de nota importante
 function addAndeanGraceNotes(phrase, scale){
   if(!phrase||!phrase.length)return phrase;
-  const noteNames=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-  const result=[];
-  let graceCount=0;
+  const activeScale=getActiveScaleForMood(lastEffMood);
 
-  // Primera pasada: añadir grace notes con probabilidad moderada
+  // Duración total original — debe preservarse exacta
+  const totalDur=phrase.reduce((s,p)=>s+(p.dur||0),0);
+
+  // Decidir qué notas reciben grace note
+  const graceTargets=new Set();
   for(let i=0;i<phrase.length;i++){
     const p=phrase[i];
-    if(p.note && p.dur>0.15 && !p.run && !p.finalNote && Math.random()<0.35){
-      const m=p.note.match(/^([A-G]#?)(-?[0-9]+)$/);
-      if(m){
-        const semi=noteNames.indexOf(m[1]);
-        const oct=parseInt(m[2]);
-        // 70% descendente, 30% ascendente
-        const goUp=Math.random()<0.30;
-        const steps=Math.random()<0.6?1:2;
-        let grSemi=goUp?semi+steps:semi-steps;
-        let grOct=oct;
-        if(grSemi<0){grSemi+=12;grOct--;}
-        if(grSemi>11){grSemi-=12;grOct++;}
-        const grNote=noteNames[grSemi]+grOct;
-        if(NOTE_FREQS[grNote]){
-          const grDur=0.05+Math.random()*0.03;
-          result.push({note:grNote,dur:grDur,vel:Math.max(30,p.vel-20),run:true,staccato:false,bendUp:false});
-          graceCount++;
-        }
-      }
-    }
-    result.push(p);
+    if(p.firstNote||!p.note||p.dur<=0.12||p.run||p.finalNote)continue;
+    if(activeScale.indexOf(p.note)<0)continue;
+    if(Math.random()<0.35)graceTargets.add(i);
   }
-
-  // Si no llegamos a 2 grace notes, forzar en notas elegibles
-  if(graceCount<2){
-    const eligible=[];
+  // Mínimo 2
+  if(graceTargets.size<2){
+    const cands=[];
     for(let i=0;i<phrase.length;i++){
       const p=phrase[i];
-      if(p.note&&p.dur>0.15&&!p.run&&!p.finalNote)eligible.push(i);
+      if(!p.firstNote&&p.note&&p.dur>0.12&&!p.run&&!p.finalNote&&!graceTargets.has(i)&&activeScale.indexOf(p.note)>=0)cands.push(i);
     }
-    // Mezclar y tomar los que faltan
-    eligible.sort(()=>Math.random()-0.5);
-    const needed=2-graceCount;
-    for(let k=0;k<Math.min(needed,eligible.length);k++){
-      const origIdx=eligible[k];
-      const p=phrase[origIdx];
-      const m=p.note.match(/^([A-G]#?)(-?[0-9]+)$/);
-      if(!m)continue;
-      const semi=noteNames.indexOf(m[1]);
-      const oct=parseInt(m[2]);
-      const goUp=Math.random()<0.30;
-      let grSemi=goUp?semi+1:semi-1;
-      let grOct=oct;
-      if(grSemi<0){grSemi+=12;grOct--;}
-      if(grSemi>11){grSemi-=12;grOct++;}
-      const grNote=noteNames[grSemi]+grOct;
-      if(NOTE_FREQS[grNote]){
-        // Insertar en result justo antes de la nota original
-        const rIdx=result.findIndex(r=>r===p||r.note===p.note&&r.dur===p.dur);
-        if(rIdx>=0){
-          result.splice(rIdx,0,{note:grNote,dur:0.06,vel:Math.max(30,p.vel-20),run:true,staccato:false,bendUp:false});
-        }
-      }
-    }
+    cands.sort(()=>Math.random()-0.5);
+    for(let k=0;k<Math.min(2-graceTargets.size,cands.length);k++)graceTargets.add(cands[k]);
+  }
+
+  // Construir resultado — grace note ROBA duración de la nota principal
+  const result=[];
+  for(let i=0;i<phrase.length;i++){
+    const p=phrase[i];
+    if(!graceTargets.has(i)){result.push(p);continue;}
+    const noteIdx=activeScale.indexOf(p.note);
+    const goUp=Math.random()<0.30;
+    let grNote=goUp&&noteIdx+1<activeScale.length?activeScale[noteIdx+1]:noteIdx>0?activeScale[noteIdx-1]:null;
+    if(!grNote||!NOTE_FREQS[grNote]||grNote===p.note){result.push(p);continue;}
+    const grDur=Math.min(0.06,p.dur*0.3); // roba máx 30% o 60ms
+    result.push({note:grNote,dur:grDur,vel:Math.max(30,(p.vel||80)-20),run:true,staccato:false,bendUp:false,_srcBpm:p._srcBpm});
+    result.push({...p,dur:p.dur-grDur}); // nota principal acortada exactamente
+  }
+
+  // Corregir cualquier drift residual en la última nota
+  const newTotal=result.reduce((s,p)=>s+(p.dur||0),0);
+  const drift=totalDur-newTotal;
+  if(Math.abs(drift)>0.0001&&result.length>0){
+    const last=result[result.length-1];
+    last.dur=Math.max(0.05,last.dur+drift);
   }
 
   return result;
 }
-
 // ── STATE ─────────────────────────────────────────────────────────────────
 let audioCtx=null,scheduledNodes=[],isPlaying=false,currentPhrase=[],generatedPhrase=[];
 let sharpOn=false,scaleMode='minor',currentMood='melancolico',lastEffMood='melancolico';
@@ -895,24 +879,42 @@ function exportMIDI(phrase,bpm){
   events.push(0x00,0xFF,0x51,0x03,
     (usPerBeat>>16)&0xFF,(usPerBeat>>8)&0xFF,usPerBeat&0xFF);
 
-  // Notas
+  // Notas con pitch bend y vibrato (CC1)
   phrase.forEach(p=>{
     if(!p.note)return;
     const midi=noteToMidi(p.note);
     if(midi<0||midi>127)return;
     const vel=Math.max(1,Math.min(127,p.vel||80));
-    const durBeats=p.dur/(60/bpm);
+    // Escalar duración si fue generada a diferente BPM
+    const srcBpm=p._srcBpm||bpm;
+    const durScaled=p.dur*(srcBpm/bpm);
+    const durBeats=durScaled/(60/bpm);
     const durTicks=Math.max(1,Math.round(durBeats*TPB));
-    // Staccato: note-off anticipado
     const noteTicks=p.staccato?Math.round(durTicks*0.45):Math.round(durTicks*0.95);
 
-    // Note On (delta=0)
+    // Note On
     events.push(0x00,0x90,midi,vel);
-    // Note Off
-    events.push(...writeVarLen(noteTicks),0x80,midi,0);
-    // Silencio restante
+
+    if(p.vibrato&&noteTicks>100){
+      // Vibrato CC1 curva S — ticks relativos correctos
+      const vibratoStart=Math.round(noteTicks*0.20);
+      const vibratoTicks=noteTicks-vibratoStart;
+      // CC1 en un solo evento al llegar al vibrato
+      events.push(...writeVarLen(vibratoStart),0xB0,0x01,70);
+      // Note Off exactamente al final de noteTicks
+      const remaining=Math.max(0,noteTicks-vibratoStart);
+      events.push(...writeVarLen(remaining),0x80,midi,0);
+      // Reset CC1
+      events.push(0x00,0xB0,0x01,0);
+    }else{
+      // Note Off normal
+      events.push(...writeVarLen(noteTicks),0x80,midi,0);
+    }
+
+    // Silencio restante hasta siguiente nota
     const rest=durTicks-noteTicks;
     if(rest>0)events.push(...writeVarLen(rest),0x80,0,0);
+
   });
 
   // End of track
@@ -1291,7 +1293,10 @@ function renderFavs(){
 
   // MIDI
   list.querySelectorAll('[data-midi]').forEach(b=>b.addEventListener('click',()=>{
-    const fav=favorites[+b.dataset.midi];exportMIDI(fav.phrase,fav.bpm);
+    const fav=favorites[+b.dataset.midi];
+    // Usar BPM actual del input, no el guardado
+    const currentBpm=parseInt(document.getElementById('bpmInput').value)||100;
+    exportMIDI(fav.phrase,currentBpm);
   }));
 
   // ELIMINAR
