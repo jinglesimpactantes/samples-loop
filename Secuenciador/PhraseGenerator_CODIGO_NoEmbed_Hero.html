@@ -531,41 +531,69 @@ function humanizePhrase(phrase){
 // Apoyatura: nota corta 1-2 semitonos abajo antes de nota importante
 function addAndeanGraceNotes(phrase, scale){
   if(!phrase||!phrase.length)return phrase;
+  const noteNames=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   const result=[];
+  let graceCount=0;
+
+  // Primera pasada: añadir grace notes con probabilidad moderada
   for(let i=0;i<phrase.length;i++){
     const p=phrase[i];
-    // Solo añadir grace note si:
-    // - La nota tiene duración suficiente (>0.15s)
-    // - No es nota de run ni final
-    // - Probabilidad 65% (similar a tus MIDIs: muy frecuente)
-    if(p.note && p.dur>0.15 && !p.run && !p.finalNote && Math.random()<0.28){
-      const noteNames=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-      const m=p.note.match(/^([A-G]#?)(-?\d+)$/);
+    if(p.note && p.dur>0.15 && !p.run && !p.finalNote && Math.random()<0.35){
+      const m=p.note.match(/^([A-G]#?)(-?[0-9]+)$/);
       if(m){
         const semi=noteNames.indexOf(m[1]);
         const oct=parseInt(m[2]);
-        // Apoyatura: 1 o 2 semitonos abajo
+        // 70% descendente, 30% ascendente
+        const goUp=Math.random()<0.30;
         const steps=Math.random()<0.6?1:2;
-        let grSemi=semi-steps;
+        let grSemi=goUp?semi+steps:semi-steps;
         let grOct=oct;
         if(grSemi<0){grSemi+=12;grOct--;}
+        if(grSemi>11){grSemi-=12;grOct++;}
         const grNote=noteNames[grSemi]+grOct;
         if(NOTE_FREQS[grNote]){
-          // Grace note muy corta: 0.05-0.08s
           const grDur=0.05+Math.random()*0.03;
-          result.push({
-            note:grNote,
-            dur:grDur,
-            vel:Math.max(30,p.vel-20),
-            run:true, // tratarla como run para no añadirle otra grace
-            staccato:false,
-            bendUp:false
-          });
+          result.push({note:grNote,dur:grDur,vel:Math.max(30,p.vel-20),run:true,staccato:false,bendUp:false});
+          graceCount++;
         }
       }
     }
     result.push(p);
   }
+
+  // Si no llegamos a 2 grace notes, forzar en notas elegibles
+  if(graceCount<2){
+    const eligible=[];
+    for(let i=0;i<phrase.length;i++){
+      const p=phrase[i];
+      if(p.note&&p.dur>0.15&&!p.run&&!p.finalNote)eligible.push(i);
+    }
+    // Mezclar y tomar los que faltan
+    eligible.sort(()=>Math.random()-0.5);
+    const needed=2-graceCount;
+    for(let k=0;k<Math.min(needed,eligible.length);k++){
+      const origIdx=eligible[k];
+      const p=phrase[origIdx];
+      const m=p.note.match(/^([A-G]#?)(-?[0-9]+)$/);
+      if(!m)continue;
+      const semi=noteNames.indexOf(m[1]);
+      const oct=parseInt(m[2]);
+      const goUp=Math.random()<0.30;
+      let grSemi=goUp?semi+1:semi-1;
+      let grOct=oct;
+      if(grSemi<0){grSemi+=12;grOct--;}
+      if(grSemi>11){grSemi-=12;grOct++;}
+      const grNote=noteNames[grSemi]+grOct;
+      if(NOTE_FREQS[grNote]){
+        // Insertar en result justo antes de la nota original
+        const rIdx=result.findIndex(r=>r===p||r.note===p.note&&r.dur===p.dur);
+        if(rIdx>=0){
+          result.splice(rIdx,0,{note:grNote,dur:0.06,vel:Math.max(30,p.vel-20),run:true,staccato:false,bendUp:false});
+        }
+      }
+    }
+  }
+
   return result;
 }
 
