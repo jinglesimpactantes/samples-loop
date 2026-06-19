@@ -174,13 +174,7 @@ canvas#spectrum{width:100%;height:100%;display:block;}
 <div class="app-wrapper">
 
   <div class="topbar">
-    <!-- BOTÓN CERRAR "X" ESTILO MAC (X MÁS GORDA) A LA DERECHA -->
-    <button onclick="window.location.href='hise://volver'" style="position: absolute; right: 14px; width: 18px; height: 18px; background: #e74c3c; border: 1px solid #c0392b; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.4);">
-      <svg viewBox="0 0 24 24" width="10" height="10" stroke="#5c0000" stroke-width="7.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
+
 
     <div class="dropdown-wrap">
       <button class="preset-dd-btn" id="moodBtn">
@@ -1141,14 +1135,7 @@ function renderFavs(){
     list.appendChild(card);
   });
 
-  // Estado de reproducción por card
-  function resetAllPlayBtns(){
-    list.querySelectorAll('[data-play]').forEach(x=>{
-      x.style.borderColor='';x.style.color='';
-      x.classList.remove('last-played');
-      x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';
-    });
-  }
+  // resetAllPlayBtns definida globalmente
 
   // PLAY/STOP — cada card tiene su propia frase, NO toca generatedPhrase
   list.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>{
@@ -1273,6 +1260,15 @@ document.addEventListener('keydown',e=>{
 
 
 // ── PLAY ACTIVO VISUAL ───────────────────────────────────────────────────
+function resetAllPlayBtns(){
+  const list=document.getElementById('favsList');
+  if(!list)return;
+  list.querySelectorAll('[data-play]').forEach(x=>{
+    x.style.borderColor='';x.style.color='';
+    x.classList.remove('last-played');
+    x.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-left:1px"><polygon points="5,3 19,12 5,21"/></svg>';
+  });
+}
 function setActivePlay(id){
   // Quitar turquesa de todos los plays
   document.getElementById('playBtn').style.borderColor='';
