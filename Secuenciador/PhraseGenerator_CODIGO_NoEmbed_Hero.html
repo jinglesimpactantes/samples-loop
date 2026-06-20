@@ -493,9 +493,13 @@ function generatePhrase(scale,mood,bpb,bpm){
     idx=runTarget;
   }
 
+  // Respiración entre compás 1 y 2 (silencio breve ~0.1 beat)
+  phrase.push({note:null,dur:bd*0.1,vel:0,staccato:false,bendUp:false,rest:true});
   // COMPÁS 2
   applyBar(pickRhythm(mood,bpb),pickContour(mood));
 
+  // Respiración entre compás 2 y 3
+  phrase.push({note:null,dur:bd*0.1,vel:0,staccato:false,bendUp:false,rest:true});
   // COMPÁS 3: nota larga, resolución en tónica + vibrato
   const fk=getFullKey();
   let finalIdx=idx;let bestD=scale.length+1;
@@ -546,7 +550,13 @@ function addAndeanGraceNotes(phrase, scale){
     if(activeScale.indexOf(p.note)<0)continue;
     if(Math.random()<0.35)graceTargets.add(i);
   }
-  // Mínimo 2
+  // Mínimo 2, máximo 3
+  if(graceTargets.size>3){
+    const arr=[...graceTargets];
+    arr.sort(()=>Math.random()-0.5);
+    graceTargets.clear();
+    arr.slice(0,3).forEach(i=>graceTargets.add(i));
+  }
   if(graceTargets.size<2){
     const cands=[];
     for(let i=0;i<phrase.length;i++){
@@ -557,7 +567,7 @@ function addAndeanGraceNotes(phrase, scale){
     for(let k=0;k<Math.min(2-graceTargets.size,cands.length);k++)graceTargets.add(cands[k]);
   }
 
-  // Construir resultado — grace note ROBA duración de la nota principal
+  // Construir resultado — grace note roba del FINAL de la nota ANTERIOR
   const result=[];
   for(let i=0;i<phrase.length;i++){
     const p=phrase[i];
@@ -566,9 +576,18 @@ function addAndeanGraceNotes(phrase, scale){
     const goUp=Math.random()<0.30;
     let grNote=goUp&&noteIdx+1<activeScale.length?activeScale[noteIdx+1]:noteIdx>0?activeScale[noteIdx-1]:null;
     if(!grNote||!NOTE_FREQS[grNote]||grNote===p.note){result.push(p);continue;}
-    const grDur=Math.min(0.06,p.dur*0.3); // roba máx 30% o 60ms
+    const grDur=Math.min(0.06,p.dur*0.3);
+    // Acortar la nota anterior para que la grace note se anticipe
+    if(result.length>0){
+      const prev=result[result.length-1];
+      if(prev.dur>grDur+0.05){
+        prev.dur=prev.dur-grDur; // nota anterior se acorta
+      }
+    }
+    // Grace note entra antes del tiempo fuerte
     result.push({note:grNote,dur:grDur,vel:Math.max(30,(p.vel||80)-20),run:true,staccato:false,bendUp:false,_srcBpm:p._srcBpm});
-    result.push({...p,dur:p.dur-grDur}); // nota principal acortada exactamente
+    // Nota principal entra justo después — duración completa sin cambios
+    result.push({...p});
   }
 
   // Corregir cualquier drift residual en la última nota
@@ -897,9 +916,9 @@ function exportMIDI(phrase,bpm){
 
     if(p.vibrato&&noteTicks>100){
       // CC1=0 al inicio de la nota
-      events.push(0x00,0xB0,0x01,0);
-      // Subida rápida 0→127 en 3 pasos (primero 20% de la nota)
-      const stepTicks=Math.max(1,Math.floor(noteTicks*0.07));
+      events.push(...writeVarLen(Math.round(noteTicks*0.35)),0xB0,0x01,0);
+      // Subida rápida 0→127 en 3 pasos (desde mitad de la nota)
+      const stepTicks=Math.max(1,Math.floor(noteTicks*0.15));
       events.push(...writeVarLen(stepTicks),0xB0,0x01,42);
       events.push(...writeVarLen(stepTicks),0xB0,0x01,85);
       events.push(...writeVarLen(stepTicks),0xB0,0x01,127);
