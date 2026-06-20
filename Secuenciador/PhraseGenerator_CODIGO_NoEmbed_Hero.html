@@ -42,13 +42,13 @@ body{background:#000;height:100vh;overflow:hidden;display:flex;align-items:cente
 /* MAIN */
 .main{display:grid;grid-template-columns:210px 1fr 210px;flex:1;min-height:0;padding:6px 6px 6px 6px;gap:6px;}
 
-.panel{background:rgba(0,0,0,0.08);border:1px solid var(--border);border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden;}
+.panel{background:rgba(0,0,0,0.08);border:1px solid var(--border);border-radius:4px;padding:6px;display:flex;flex-direction:column;gap:3px;min-height:0;overflow:hidden;}
 .sec-label{font-size:12px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;font-weight:800;text-shadow:0 1px 3px rgba(0,0,0,0.8);}
 
 .scale-name-btn{width:100%;background:linear-gradient(180deg,#2a1b12 0%,#150c07 100%);border:1px solid var(--border);padding:7px 12px;border-radius:4px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:8px;color:var(--gold);font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 2px 6px rgba(0,0,0,0.6);}
 
-.key-selector-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:rgba(0,0,0,0.12);padding:6px;border-radius:4px;border:1px solid var(--border);}
-.key-knob-area{position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;}
+.key-selector-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:rgba(0,0,0,0.12);padding:3px;border-radius:4px;border:1px solid var(--border);}
+.key-knob-area{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;}
 .key-marks-svg{position:absolute;width:100%;height:100%;top:0;left:0;pointer-events:none;}.key-mark-text{pointer-events:all;}
 .key-mark-text{font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:middle;fill:var(--gold-dim);cursor:pointer;transition:fill 0.1s;}
 .key-mark-text:hover{fill:var(--gold-hover);}
@@ -425,7 +425,8 @@ function pickContour(mood){
 
 function computeVel(durBeats,mood){
   let base=52+durBeats*9;
-  if(mood==='intenso')base+=10;
+  if(mood==='intenso')base+=25;
+  else if(mood==='alegre')base+=8;
   else if(mood==='triste')base-=10;
   else if(mood==='romantico')base+=3;
   return Math.round(Math.max(34,Math.min(108,base+rndF(-9,9))));
@@ -446,14 +447,14 @@ function generatePhrase(scale,mood,bpb,bpm){
   let bendCount=0;
   const maxBends=(mood==='romantico'||mood==='melancolico')?2:1;
   // Probabilidad de staccato por mood
-  const staccatoProb={alegre:0.30,melancolico:0.15,triste:0.10,romantico:0.15,intenso:0.65}[mood]||0.20;
+  const staccatoProb={alegre:0.30,melancolico:0.08,triste:0.10,romantico:0.15,intenso:0.75}[mood]||0.20;
 
   // Aplica un compás de ritmo + contorno
   function applyBar(rhythm,contour){
     for(let i=0;i<rhythm.length;i++){
       const rawDelta=contour[i%contour.length];
       // Sin saltos de octava abruptos en melodía libre (máx 4 grados)
-      const delta=Math.max(-4,Math.min(4,rawDelta));
+      const delta=Math.max(-5,Math.min(5,rawDelta));
       idx=Math.max(0,Math.min(scale.length-1,idx+delta));
       const durBeats=rhythm[i];
       const vel=computeVel(durBeats,mood);
@@ -467,13 +468,25 @@ function generatePhrase(scale,mood,bpb,bpm){
   }
 
   // COMPÁS 1
-  applyBar(pickRhythm(mood,bpb),pickContour(mood));
+  // Intenso/Alegre(20%): arrancar con run ascendente característico
+  if(mood==='intenso'||(mood==='alegre'&&Math.random()<0.20)){
+    const openRunLen=mood==='intenso'?rndInt(6,9):rndInt(3,5);
+    const openRunTarget=Math.min(scale.length-1,idx+openRunLen);
+    for(let r=idx;r<openRunTarget;r++){
+      const runVel=75+Math.floor((r-idx)*(50/openRunLen)); // crescendo
+      phrase.push({note:scale[r],dur:bd*0.09,vel:runVel,run:true,staccato:false,bendUp:false,firstNote:r===idx});
+    }
+    idx=openRunTarget;
+  }else{
+    applyBar(pickRhythm(mood,bpb),pickContour(mood));
+  }
   // Marcar primera nota como intocable para grace notes
   if(phrase.length>0)phrase[0].firstNote=true;
 
   // Entre compases: cambio de registro (20%) o run (10%)
   const changeReg=Math.random()<0.20;
-  const doRun=!changeReg&&Math.random()<0.10;
+  const runProbPreset={intenso:0.35,alegre:0.22,melancolico:0.08,romantico:0.08,triste:0.02}[mood]||0.10;
+  const doRun=!changeReg&&Math.random()<runProbPreset;
 
   if(changeReg){
     // Salto al otro registro (SOLO aquí se permiten saltos de octava)
@@ -485,12 +498,19 @@ function generatePhrase(scale,mood,bpb,bpm){
   }else if(doRun&&scale.length>5){
     // Run rápido ascendente (deslizar dedos — técnica quena)
     // Solo aquí se permiten saltos grandes
-    const runLen=rndInt(4,6);
-    const runTarget=Math.min(scale.length-1,idx+runLen);
-    for(let r=idx;r<runTarget;r++){
-      phrase.push({note:scale[r],dur:bd*0.08,vel:52,run:true,staccato:false,bendUp:undefined});
+    const runLen=mood==='intenso'?rndInt(3,5):mood==='alegre'?rndInt(3,5):rndInt(3,4);
+    // Intenso: 70% descendente, 30% ascendente
+    const goDescRun=(mood==='intenso'&&Math.random()<0.70)||(mood!=='intenso'&&Math.random()<0.40);
+    const runStep=goDescRun?-1:1;
+    const runStart=goDescRun?Math.min(scale.length-1,idx+2):idx;
+    let ri=runStart;
+    for(let r=0;r<runLen;r++){
+      if(ri<0||ri>=scale.length)break;
+      const runVel=mood==='intenso'?rndInt(85,120):mood==='alegre'?rndInt(75,100):52;
+      phrase.push({note:scale[ri],dur:bd*0.09,vel:runVel,run:true,staccato:false,bendUp:undefined});
+      ri+=runStep;
     }
-    idx=runTarget;
+    idx=Math.max(0,Math.min(scale.length-1,ri));
   }
 
   // Respiración entre compás 1 y 2 (silencio breve ~0.1 beat)
@@ -573,10 +593,10 @@ function addAndeanGraceNotes(phrase, scale){
     const p=phrase[i];
     if(!graceTargets.has(i)){result.push(p);continue;}
     const noteIdx=activeScale.indexOf(p.note);
-    const goUp=Math.random()<0.30;
+    const goUp=Math.random()<0.22;
     let grNote=goUp&&noteIdx+1<activeScale.length?activeScale[noteIdx+1]:noteIdx>0?activeScale[noteIdx-1]:null;
     if(!grNote||!NOTE_FREQS[grNote]||grNote===p.note){result.push(p);continue;}
-    const grDur=Math.min(0.06,p.dur*0.3);
+    const grDur=Math.min(0.048,p.dur*0.28);
     // Acortar la nota anterior para que la grace note se anticipe
     if(result.length>0){
       const prev=result[result.length-1];
@@ -953,7 +973,7 @@ function exportMIDI(phrase,bpm){
   const blob=new Blob([bytes],{type:'audio/midi'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='quena_phrase.mid';
+  const midiCount=(window._midiExportCount=(window._midiExportCount||0)+1);a.download='Melodia'+midiCount+'.mid';
   a.click();
 }
 
